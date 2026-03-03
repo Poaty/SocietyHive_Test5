@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="bg">#F6BFC6</color>        <!-- pink background -->
+    <color name="button1">#8D2E3A</color>    <!-- maroon button -->
+    <color name="signup_link">#FFFFFF</color>     <!-- you can change to a brighter white/blue -->
+    <color name="icon_tint">#2B2B2B</color>       <!-- icon tint -->
+    <color name="field_stroke">#BDBDBD</color>    <!-- outline stroke -->
+</resources>
