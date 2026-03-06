@@ -7,4 +7,6 @@
     <color name="signup_link">#FFFFFF</color>     <!-- you can change to a brighter white/blue -->
     <color name="icon_tint">#2B2B2B</color>       <!-- icon tint -->
     <color name="field_stroke">#BDBDBD</color>    <!-- outline stroke -->
+    <color name="chip_bg">#FFFFFF</color>
+    <color name="chip_text">#1E1E1E</color>
 </resources>

@@ -6,7 +6,16 @@
     android:layout_height="match_parent"
     android:background="@color/bg">
 
-    <!-- Nav Host (where fragments appear) -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/mainToolbar"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@color/button1"
+        app:titleTextColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/navHost"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -14,7 +23,7 @@
         android:layout_height="0dp"
         app:defaultNavHost="true"
         app:navGraph="@navigation/main_nav_graph"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mainToolbar"
         app:layout_constraintBottom_toTopOf="@id/navContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -26,8 +35,6 @@
         android:background="@drawable/bg_bottom_nav"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -39,9 +46,7 @@
             android:background="@android:color/transparent"
             app:menu="@menu/bottom_nav_menu"
             app:labelVisibilityMode="labeled"
-            app:itemHorizontalTranslationEnabled="false"
-            app:itemIconSize="24dp"
-            app:itemTextAppearanceActive="@style/BottomNavText"
-            app:itemTextAppearanceInactive="@style/BottomNavText"/>
+            app:itemHorizontalTranslationEnabled="false"/>
     </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

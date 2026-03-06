@@ -15,6 +15,16 @@
         android:label="Events" />
 
     <fragment
+        android:id="@+id/eventDetailsFragment"
+        android:name="com.example.societyhive_test5.EventDetailsFragment"
+        android:label="Event Details">
+
+        <argument
+            android:name="eventId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
         android:id="@+id/chatsFragment"
         android:name="com.example.societyhive_test5.ChatsFragment"
         android:label="Chats" />
