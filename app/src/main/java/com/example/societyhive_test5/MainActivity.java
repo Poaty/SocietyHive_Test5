@@ -1,6 +1,9 @@
 package com.example.societyhive_test5;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,47 +18,80 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
 
     private NavController navController;
-    private AppBarConfiguration appBarConfiguration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Views
         MaterialToolbar toolbar = findViewById(R.id.mainToolbar);
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
-
-        // Toolbar as ActionBar
         setSupportActionBar(toolbar);
 
-        // NavController from NavHost
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+
         NavHostFragment navHostFragment =
                 (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.navHost);
 
-        if (navHostFragment == null) {
-            // If this happens, your activity_main.xml id/name is wrong
-            return;
+        if (navHostFragment != null) {
+            navController = navHostFragment.getNavController();
+
+            AppBarConfiguration appBarConfiguration =
+                    new AppBarConfiguration.Builder(
+                            R.id.homeFragment,
+                            R.id.eventsFragment,
+                            R.id.chatsFragment,
+                            R.id.qrFragment
+                    ).build();
+
+            NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+            NavigationUI.setupWithNavController(bottomNav, navController);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.profile_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.menu_profile) {
+            navController.navigate(R.id.profileFragment);
+            return true;
         }
 
-        navController = navHostFragment.getNavController();
+        if (id == R.id.menu_preferences) {
+            navController.navigate(R.id.preferencesFragment);
+            return true;
+        }
 
-        // These are your TOP LEVEL destinations (no back arrow on these)
-        appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.homeFragment,
-                R.id.eventsFragment,
-                R.id.chatsFragment,
-                R.id.qrFragment
-        ).build();
+        if (id == R.id.menu_settings) {
+            navController.navigate(R.id.settingsFragment);
+            return true;
+        }
 
-        // Hook up toolbar + bottom nav
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(bottomNav, navController);
+        if (id == R.id.menu_logout) {
+
+            Intent intent = new Intent(this, LoginActivity.class);
+
+            intent.setFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK
+            );
+
+            startActivity(intent);
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
+        return navController.navigateUp() || super.onSupportNavigateUp();
     }
 }

@@ -33,4 +33,20 @@
         android:id="@+id/qrFragment"
         android:name="com.example.societyhive_test5.QrFragment"
         android:label="QR" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.societyhive_test5.ProfileFragment"
+        android:label="Profile" />
+
+    <fragment
+        android:id="@+id/preferencesFragment"
+        android:name="com.example.societyhive_test5.PreferencesFragment"
+        android:label="Preferences" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.societyhive_test5.SettingsFragment"
+        android:label="Settings" />
+
 </navigation>

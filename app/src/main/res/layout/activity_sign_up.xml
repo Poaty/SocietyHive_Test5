@@ -276,7 +276,7 @@
             android:layout_height="wrap_content"
             android:text="Log in"
             android:textStyle="bold"
-            android:textColor="@android:color/white"
+            android:textColor="@color/button1"
             android:textSize="14sp"
             android:clickable="true"
             android:focusable="true"/>

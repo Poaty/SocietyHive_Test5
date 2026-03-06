@@ -3,49 +3,42 @@ package com.example.societyhive_test5;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.button.MaterialButton;
+
+import java.util.List;
 
 /**
- * Adapter using ListAdapter + DiffUtil (ready for Firebase updates).
+ * Expandable hybrid event cards:
+ * - collapsed: quick scan + attending indicator
+ * - expanded: description + organiser + attend button + view details button
  */
-public class EventsAdapter extends ListAdapter<Event, EventsAdapter.EventVH> {
+public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventVH> {
 
-    public interface OnGoingChangedListener {
-        void onGoingChanged(@NonNull Event event, boolean going);
+    public interface OnAttendClickListener {
+        void onAttendClick(@NonNull Event event, boolean attending);
     }
 
-    private final OnGoingChangedListener listener;
-
-    public EventsAdapter(OnGoingChangedListener listener) {
-        super(DIFF_CALLBACK);
-        this.listener = listener;
+    public interface OnViewDetailsClickListener {
+        void onViewDetailsClick(@NonNull Event event);
     }
 
-    public interface OnEventClickListener {
-        void onEventClick(@NonNull Event event);
+    private final List<Event> events;
+    private final OnAttendClickListener attendListener;
+    private final OnViewDetailsClickListener detailsListener;
+
+    public EventsAdapter(@NonNull List<Event> events,
+                         @NonNull OnAttendClickListener attendListener,
+                         @NonNull OnViewDetailsClickListener detailsListener) {
+        this.events = events;
+        this.attendListener = attendListener;
+        this.detailsListener = detailsListener;
     }
-
-    private static final DiffUtil.ItemCallback<Event> DIFF_CALLBACK =
-            new DiffUtil.ItemCallback<Event>() {
-                @Override
-                public boolean areItemsTheSame(@NonNull Event oldItem, @NonNull Event newItem) {
-                    return oldItem.getId().equals(newItem.getId());
-                }
-
-                @Override
-                public boolean areContentsTheSame(@NonNull Event oldItem, @NonNull Event newItem) {
-                    return oldItem.getName().equals(newItem.getName())
-                            && oldItem.getInfo().equals(newItem.getInfo())
-                            && oldItem.isGoing() == newItem.isGoing();
-                }
-            };
 
     @NonNull
     @Override
@@ -56,36 +49,78 @@ public class EventsAdapter extends ListAdapter<Event, EventsAdapter.EventVH> {
 
     @Override
     public void onBindViewHolder(@NonNull EventVH holder, int position) {
-        Event event = getItem(position);
-        holder.bind(event, listener);
+        holder.bind(events.get(position));
     }
 
-    static class EventVH extends RecyclerView.ViewHolder {
-        private final MaterialCheckBox cbGoing;
-        private final TextView tvName;
-        private final TextView tvInfo;
+    @Override
+    public int getItemCount() {
+        return events.size();
+    }
+
+    public void updateList(@NonNull List<Event> newEvents) {
+        List<Event> copy = new java.util.ArrayList<>(newEvents);
+        events.clear();
+        events.addAll(copy);
+        notifyDataSetChanged();
+    }
+
+    class EventVH extends RecyclerView.ViewHolder {
+        private final TextView tvEventName;
+        private final TextView tvEventDateTime;
+        private final TextView tvEventLocation;
+        private final TextView tvAttendingIndicator;
+
+        private final LinearLayout layoutExpanded;
+        private final TextView tvExpandedDescription;
+        private final TextView tvExpandedOrganiser;
+        private final MaterialButton btnAttend;
+        private final MaterialButton btnViewDetails;
 
         EventVH(@NonNull View itemView) {
             super(itemView);
-            cbGoing = itemView.findViewById(R.id.cbGoing);
-            tvName = itemView.findViewById(R.id.tvEventName);
-            tvInfo = itemView.findViewById(R.id.tvEventInfo);
+            tvEventName = itemView.findViewById(R.id.tvEventName);
+            tvEventDateTime = itemView.findViewById(R.id.tvEventDateTime);
+            tvEventLocation = itemView.findViewById(R.id.tvEventLocation);
+            tvAttendingIndicator = itemView.findViewById(R.id.tvAttendingIndicator);
+
+            layoutExpanded = itemView.findViewById(R.id.layoutExpanded);
+            tvExpandedDescription = itemView.findViewById(R.id.tvExpandedDescription);
+            tvExpandedOrganiser = itemView.findViewById(R.id.tvExpandedOrganiser);
+            btnAttend = itemView.findViewById(R.id.btnAttendEvent);
+            btnViewDetails = itemView.findViewById(R.id.btnViewDetails);
         }
 
-        void bind(@NonNull Event event, OnGoingChangedListener listener) {
-            tvName.setText(event.getName());
-            tvInfo.setText(event.getInfo());
+        void bind(@NonNull Event event) {
+            tvEventName.setText(event.getName());
+            tvEventDateTime.setText(event.getDateTime());
+            tvEventLocation.setText(event.getLocation());
 
-            // Prevent recycler reuse triggering listener unexpectedly
-            cbGoing.setOnCheckedChangeListener(null);
-            cbGoing.setChecked(event.isGoing());
+            if (event.isAttending()) {
+                tvAttendingIndicator.setVisibility(View.VISIBLE);
+                tvAttendingIndicator.setText("Attending");
+                btnAttend.setText("Attending");
+            } else {
+                tvAttendingIndicator.setVisibility(View.GONE);
+                btnAttend.setText("Attend Event");
+            }
 
-            cbGoing.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                event.setGoing(isChecked);
-                if (listener != null) {
-                    listener.onGoingChanged(event, isChecked);
-                }
+            layoutExpanded.setVisibility(event.isExpanded() ? View.VISIBLE : View.GONE);
+            tvExpandedDescription.setText(event.getDescription());
+            tvExpandedOrganiser.setText(event.getOrganiser());
+
+            itemView.setOnClickListener(v -> {
+                event.setExpanded(!event.isExpanded());
+                notifyItemChanged(getBindingAdapterPosition());
             });
+
+            btnAttend.setOnClickListener(v -> {
+                boolean newState = !event.isAttending();
+                event.setAttending(newState);
+                notifyItemChanged(getBindingAdapterPosition());
+                attendListener.onAttendClick(event, newState);
+            });
+
+            btnViewDetails.setOnClickListener(v -> detailsListener.onViewDetailsClick(event));
         }
     }
 }

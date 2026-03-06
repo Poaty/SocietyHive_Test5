@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,24 +18,18 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * UI-first Events screen.
- * Later: replace dummy data with Firestore query + submitList(results).
+ * Events screen with hybrid expandable cards.
+ * Later swap dummy data + local filters with Firestore queries.
  */
 public class EventsFragment extends Fragment {
 
     private final List<Event> allEvents = new ArrayList<>();
+    private final List<Event> filteredEvents = new ArrayList<>();
     private EventsAdapter adapter;
 
     public EventsFragment() {
         super(R.layout.fragment_events);
     }
-    @Override
-    public void onCreate(@androidx.annotation.Nullable android.os.Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setEnterTransition(new com.google.android.material.transition.MaterialFadeThrough());
-    }
-
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable android.os.Bundle savedInstanceState) {
@@ -43,16 +38,19 @@ public class EventsFragment extends Fragment {
         RecyclerView rv = view.findViewById(R.id.rvEvents);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         rv.setHasFixedSize(true);
-        rv.setItemAnimator(new androidx.recyclerview.widget.DefaultItemAnimator());
-        rv.addItemDecoration(new androidx.recyclerview.widget.DividerItemDecoration(
-                requireContext(),
-                androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
-        ));
 
-        adapter = new EventsAdapter((event, going) -> {
-            // TODO (later): write attendance to Firestore:
-            // events/{eventId}/attendees/{uid}
-        });
+        adapter = new EventsAdapter(
+                new ArrayList<>(),
+                (event, attending) -> {
+                    // TODO later: write attendance state to Firestore
+                },
+                event -> {
+                    android.os.Bundle b = new android.os.Bundle();
+                    b.putString("eventId", event.getId());
+                    NavHostFragment.findNavController(this)
+                            .navigate(R.id.eventDetailsFragment, b);
+                }
+        );
 
         rv.setAdapter(adapter);
 
@@ -65,14 +63,60 @@ public class EventsFragment extends Fragment {
     private void seedDummyEvents() {
         if (!allEvents.isEmpty()) return;
 
-        allEvents.add(new Event("e1", "Society Mixer", "18:00 • Wed • Student Union", false));
-        allEvents.add(new Event("e2", "Karaoke Night", "19:30 • Fri • The Loft", true));
-        allEvents.add(new Event("e3", "Career Talk: Grad Roles", "16:00 • Tue • Newton LT", false));
-        allEvents.add(new Event("e4", "Board Games Social", "17:00 • Thu • Library Lounge", false));
-        allEvents.add(new Event("e5", "Five-a-side Football", "20:00 • Mon • Sports Centre", true));
-        allEvents.add(new Event("e6", "Hack Night", "18:30 • Sat • Makerspace", false));
-        allEvents.add(new Event("e7", "Study Group", "14:00 • Sun • City Campus", false));
-        allEvents.add(new Event("e8", "Freshers Meetup", "12:00 • Next Week • Atrium", false));
+        allEvents.add(new Event(
+                "e1",
+                "Nottingham Car Show",
+                "19-Nov-2025 • 17:00",
+                "Royal Concert Hall",
+                "Motorsport Society",
+                "This event doesn't actually exist, but it shows how the expanded card can preview more information before opening a full details page.",
+                true,
+                false
+        ));
+
+        allEvents.add(new Event(
+                "e2",
+                "Society Mixer",
+                "20-Nov-2025 • 18:00",
+                "Student Union",
+                "Business Society",
+                "Meet new members, socialise, and hear about upcoming society activities.",
+                false,
+                false
+        ));
+
+        allEvents.add(new Event(
+                "e3",
+                "Hack Night",
+                "22-Nov-2025 • 18:30",
+                "Makerspace",
+                "Computing Society",
+                "Bring your laptop and work on projects in a relaxed, collaborative session.",
+                false,
+                false
+        ));
+
+        allEvents.add(new Event(
+                "e4",
+                "Career Talk: Grad Roles",
+                "25-Nov-2025 • 16:00",
+                "Newton LT",
+                "Careers Hub",
+                "A speaker session covering graduate roles, interview expectations, and application tips.",
+                false,
+                false
+        ));
+
+        allEvents.add(new Event(
+                "e5",
+                "Freshers Meetup",
+                "Next Week • 12:00",
+                "Atrium",
+                "Student Union",
+                "A welcome event for new students to connect with societies and student reps.",
+                false,
+                false
+        ));
     }
 
     private void hookSearch(@NonNull View view) {
@@ -92,7 +136,6 @@ public class EventsFragment extends Fragment {
     private void hookChips(@NonNull View view) {
         ChipGroup group = view.findViewById(R.id.chipGroupFilters);
         if (group == null) return;
-
         group.setOnCheckedChangeListener((chipGroup, checkedId) -> applyFilters(view));
     }
 
@@ -107,23 +150,26 @@ public class EventsFragment extends Fragment {
         ChipGroup group = view.findViewById(R.id.chipGroupFilters);
         if (group != null) checkedId = group.getCheckedChipId();
 
-        List<Event> filtered = new ArrayList<>();
+        filteredEvents.clear();
+
         for (Event e : allEvents) {
-            if (!query.isEmpty()) {
-                String n = e.getName().toLowerCase(Locale.UK);
-                if (!n.contains(query)) continue;
+            if (!query.isEmpty() && !e.getName().toLowerCase(Locale.UK).contains(query)) {
+                continue;
             }
 
-            // Placeholder filter behavior until you have real dates:
             if (checkedId == R.id.chipThisWeek) {
-                if (e.getInfo().toLowerCase(Locale.UK).contains("next week")) continue;
+                if (e.getDateTime().toLowerCase(Locale.UK).contains("next week")) {
+                    continue;
+                }
             } else if (checkedId == R.id.chipNextWeek) {
-                if (!e.getInfo().toLowerCase(Locale.UK).contains("next week")) continue;
+                if (!e.getDateTime().toLowerCase(Locale.UK).contains("next week")) {
+                    continue;
+                }
             }
 
-            filtered.add(e);
+            filteredEvents.add(e);
         }
 
-        adapter.submitList(filtered);
+        adapter.updateList(filteredEvents);
     }
 }

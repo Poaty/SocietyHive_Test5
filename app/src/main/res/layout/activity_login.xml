@@ -175,7 +175,7 @@
             android:layout_height="wrap_content"
             android:text="Sign Up"
             android:textStyle="bold"
-            android:textColor="@color/signup_link"
+            android:textColor="@color/button1"
             android:textSize="14sp"
             android:clickable="true"
             android:focusable="true"/>
