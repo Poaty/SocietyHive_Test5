@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "985478269227",
+    "project_id": "societyhive-affd9",
+    "storage_bucket": "societyhive-affd9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985478269227:android:cf7cff9ed6878c344a5d6e",
+        "android_client_info": {
+          "package_name": "com.example.societyhive_test5"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBI0mx9yitnHmoZDNjAmRTH334-RoTYZwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
