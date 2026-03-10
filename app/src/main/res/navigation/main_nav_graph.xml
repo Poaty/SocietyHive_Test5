@@ -30,6 +30,17 @@
         android:label="Chats" />
 
     <fragment
+        android:id="@+id/chatConversationFragment"
+        android:name="com.example.societyhive_test5.ChatConversationFragment"
+        android:label="Chat">
+        <argument android:name="chatId" app:argType="string" />
+        <argument android:name="chatTitle" app:argType="string" />
+        <argument android:name="chatColor" app:argType="string" />
+    </fragment>
+
+
+
+    <fragment
         android:id="@+id/qrFragment"
         android:name="com.example.societyhive_test5.QrFragment"
         android:label="QR" />
