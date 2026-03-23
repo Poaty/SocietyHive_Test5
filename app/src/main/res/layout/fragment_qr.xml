@@ -52,12 +52,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- Fake dark preview background for UI-first stage -->
-            <View
-                android:id="@+id/viewCameraSurface"
+            <!-- Live camera preview -->
+            <androidx.camera.view.PreviewView
+                android:id="@+id/previewView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="#2A2A2A"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
