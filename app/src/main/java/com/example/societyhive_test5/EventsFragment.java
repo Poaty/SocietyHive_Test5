@@ -345,9 +345,8 @@ public class EventsFragment extends Fragment {
         filteredEvents.clear();
 
         for (Event e : allEvents) {
-            // Visibility: must be public OR user is in this event's society
-            boolean canSee = e.isPublic() || userSocietyIds.contains(e.getSocietyId());
-            if (!canSee) continue;
+            // Visibility: only show events from societies the user belongs to
+            if (!userSocietyIds.contains(e.getSocietyId())) continue;
 
             // Search filter
             if (!query.isEmpty() && !e.getName().toLowerCase(Locale.UK).contains(query)) continue;
