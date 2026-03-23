@@ -55,23 +55,26 @@ public class MainActivity extends AppCompatActivity {
                     .setRestoreState(false)
                     .build();
 
+            // Flag to block re-entrant calls between the item listener and destination listener.
+            // navigate() dispatches onDestinationChanged synchronously, which calls
+            // setSelectedItemId, which re-fires the item listener — causing an infinite loop.
+            final boolean[] isNavigating = {false};
+
             bottomNav.setOnItemSelectedListener(item -> {
+                if (isNavigating[0]) return true;
+                isNavigating[0] = true;
                 try {
                     navController.navigate(item.getItemId(), null, bottomNavOptions);
-                    return true;
-                } catch (Exception e) {
-                    return false;
-                }
+                } catch (Exception ignored) {}
+                isNavigating[0] = false;
+                return true;
             });
 
-            // Keep the bottom nav selected item in sync with the NavController.
-            // Guard against calling setSelectedItemId when already selected to prevent
-            // an infinite loop: navigate → onDestinationChanged → setSelectedItemId → navigate...
+            // Sync the bottom nav icon when navigating back via the back arrow.
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int id = destination.getId();
-                if ((id == R.id.homeFragment || id == R.id.eventsFragment
-                        || id == R.id.chatsFragment || id == R.id.qrFragment)
-                        && bottomNav.getSelectedItemId() != id) {
+                if (id == R.id.homeFragment || id == R.id.eventsFragment
+                        || id == R.id.chatsFragment || id == R.id.qrFragment) {
                     bottomNav.setSelectedItemId(id);
                 }
             });
