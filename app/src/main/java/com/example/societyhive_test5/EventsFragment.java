@@ -13,12 +13,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Events screen.
@@ -31,13 +39,19 @@ import java.util.Locale;
  *   organiser   (String)
  *   description (String)
  *
+ * Attendance is persisted to Firestore under:
+ *   userAttendance/{userId}/attendingEvents/{eventId}
+ *     eventId    (String)
+ *     eventName  (String)
+ *     attendedAt (Timestamp)
+ *
  * Falls back to hard-coded dummy data if Firestore returns nothing,
  * so the screen is never blank during development.
- *
- * Attend button: toggles local UI state now; Firestore write is
- * a clearly marked TODO so you can add it when ready.
  */
 public class EventsFragment extends Fragment {
+
+    private static final String ATTENDANCE_COLLECTION = "userAttendance";
+    private static final String ATTENDING_SUB = "attendingEvents";
 
     private final List<Event> allEvents = new ArrayList<>();
     private final List<Event> filteredEvents = new ArrayList<>();
@@ -61,16 +75,7 @@ public class EventsFragment extends Fragment {
 
         adapter = new EventsAdapter(
                 new ArrayList<>(),
-                (event, attending) -> {
-                    // TODO: write attendance state to Firestore
-                    // Example:
-                    // FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    // if (user == null) return;
-                    // DocumentReference ref = FirebaseFirestore.getInstance()
-                    //     .collection("events").document(event.getId())
-                    //     .collection("attendees").document(user.getUid());
-                    // if (attending) ref.set(...); else ref.delete();
-                },
+                this::toggleAttendance,
                 event -> {
                     android.os.Bundle b = new android.os.Bundle();
                     b.putString("eventId", event.getId());
@@ -84,7 +89,7 @@ public class EventsFragment extends Fragment {
         hookSearch(view);
         hookChips(view);
 
-        // Load from Firestore; fall back to dummy data if collection is empty
+        // Step 1: load events, then Step 2: merge attendance state
         loadEventsFromFirestore();
     }
 
@@ -102,7 +107,7 @@ public class EventsFragment extends Fragment {
                     allEvents.clear();
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
-                        Event event = new Event(
+                        allEvents.add(new Event(
                                 doc.getId(),
                                 safeString(doc.getString("name"), "Unnamed Event"),
                                 safeString(doc.getString("dateTime"), "TBC"),
@@ -111,30 +116,126 @@ public class EventsFragment extends Fragment {
                                 safeString(doc.getString("description"), ""),
                                 false,
                                 false
-                        );
-                        allEvents.add(event);
+                        ));
                     }
 
                     if (allEvents.isEmpty()) {
-                        // Firestore collection is empty — use dummy data for now
                         seedDummyEvents();
+                    }
+
+                    // Step 2: load which events this user is attending, then render
+                    loadAttendanceAndMerge();
+                })
+                .addOnFailureListener(e -> {
+                    if (!isAdded()) return;
+
+                    if (allEvents.isEmpty()) {
+                        seedDummyEvents();
+                    }
+
+                    Toast.makeText(requireContext(),
+                            "Could not load events: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+
+                    // Still attempt to load attendance even if events partially failed
+                    loadAttendanceAndMerge();
+                });
+    }
+
+    /**
+     * Fetches the set of event IDs the current user is attending from Firestore
+     * (userAttendance/{userId}/attendingEvents), marks those events in allEvents,
+     * then calls applyFilters() to render the final list.
+     */
+    private void loadAttendanceAndMerge() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            // Not logged in — show events without any attendance state
+            applyFilters();
+            return;
+        }
+
+        FirebaseFirestore.getInstance()
+                .collection(ATTENDANCE_COLLECTION)
+                .document(user.getUid())
+                .collection(ATTENDING_SUB)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!isAdded()) return;
+
+                    // Collect all event IDs the user is attending into a Set
+                    Set<String> attendingIds = new HashSet<>();
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        attendingIds.add(doc.getId());
+                    }
+
+                    // Mark each event with the user's actual attendance state
+                    for (Event event : allEvents) {
+                        event.setAttending(attendingIds.contains(event.getId()));
                     }
 
                     applyFilters();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-
-                    // Could not reach Firestore — fall back to dummy data silently
-                    if (allEvents.isEmpty()) {
-                        seedDummyEvents();
-                        applyFilters();
-                    }
-
-                    Toast.makeText(requireContext(),
-                            "Could not load events: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                    // Couldn't load attendance — render events without marking any
+                    applyFilters();
                 });
+    }
+
+    // -------------------------------------------------------------------------
+    // Attendance toggle — writes/deletes in Firestore
+    // -------------------------------------------------------------------------
+
+    /**
+     * Called when the user taps "Attend Event" or "Attending".
+     *
+     * Firestore path: userAttendance/{userId}/attendingEvents/{eventId}
+     *   - Attending:     set document with eventId, eventName, attendedAt
+     *   - Not attending: delete document
+     *
+     * The adapter has already updated local state optimistically. If the Firestore
+     * write fails we revert the local state and show a toast.
+     */
+    private void toggleAttendance(@NonNull Event event, boolean attending) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(requireContext(),
+                    "Please log in to attend events.", Toast.LENGTH_SHORT).show();
+            // Revert the optimistic UI update
+            event.setAttending(!attending);
+            adapter.notifyDataSetChanged();
+            return;
+        }
+
+        DocumentReference ref = FirebaseFirestore.getInstance()
+                .collection(ATTENDANCE_COLLECTION)
+                .document(user.getUid())
+                .collection(ATTENDING_SUB)
+                .document(event.getId());
+
+        if (attending) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("eventId", event.getId());
+            data.put("eventName", event.getName());
+            data.put("attendedAt", Timestamp.now());
+
+            ref.set(data).addOnFailureListener(e -> {
+                if (!isAdded()) return;
+                event.setAttending(false);
+                adapter.notifyDataSetChanged();
+                Toast.makeText(requireContext(),
+                        "Failed to save attendance.", Toast.LENGTH_SHORT).show();
+            });
+        } else {
+            ref.delete().addOnFailureListener(e -> {
+                if (!isAdded()) return;
+                event.setAttending(true);
+                adapter.notifyDataSetChanged();
+                Toast.makeText(requireContext(),
+                        "Failed to remove attendance.", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -149,7 +250,7 @@ public class EventsFragment extends Fragment {
                 "Royal Concert Hall",
                 "Motorsport Society",
                 "This event doesn't actually exist, but it shows how the expanded card can preview more information before opening a full details page.",
-                true,
+                false,
                 false
         ));
         allEvents.add(new Event(
