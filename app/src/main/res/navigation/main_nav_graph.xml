@@ -18,7 +18,6 @@
         android:id="@+id/eventDetailsFragment"
         android:name="com.example.societyhive_test5.EventDetailsFragment"
         android:label="Event Details">
-
         <argument
             android:name="eventId"
             app:argType="string" />
@@ -33,12 +32,11 @@
         android:id="@+id/chatConversationFragment"
         android:name="com.example.societyhive_test5.ChatConversationFragment"
         android:label="Chat">
-        <argument android:name="chatId" app:argType="string" />
-        <argument android:name="chatTitle" app:argType="string" />
-        <argument android:name="chatColor" app:argType="string" />
+        <!-- societyId is the primary key used to read/write messages -->
+        <argument android:name="societyId"  app:argType="string" android:defaultValue="" />
+        <argument android:name="chatTitle"  app:argType="string" android:defaultValue="" />
+        <argument android:name="chatColor"  app:argType="string" android:defaultValue="#8D2E3A" />
     </fragment>
-
-
 
     <fragment
         android:id="@+id/qrFragment"

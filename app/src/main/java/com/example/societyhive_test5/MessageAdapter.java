@@ -30,10 +30,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TYPE_SENT) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_sent, parent, false);
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_sent, parent, false);
             return new SentVH(v);
         } else {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_received, parent, false);
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_received, parent, false);
             return new ReceivedVH(v);
         }
     }
@@ -45,7 +47,19 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (holder instanceof SentVH) {
             ((SentVH) holder).tvMessage.setText(message.getText());
         } else if (holder instanceof ReceivedVH) {
-            ((ReceivedVH) holder).tvMessage.setText(message.getText());
+            ReceivedVH vh = (ReceivedVH) holder;
+            vh.tvMessage.setText(message.getText());
+
+            // Show sender name above received messages
+            if (vh.tvSenderName != null) {
+                String name = message.getSenderName();
+                if (name != null && !name.isEmpty()) {
+                    vh.tvSenderName.setVisibility(View.VISIBLE);
+                    vh.tvSenderName.setText(name);
+                } else {
+                    vh.tvSenderName.setVisibility(View.GONE);
+                }
+            }
         }
     }
 
@@ -60,6 +74,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
+    // -------------------------------------------------------------------------
+    // ViewHolders
+    // -------------------------------------------------------------------------
+
     static class SentVH extends RecyclerView.ViewHolder {
         final TextView tvMessage;
         SentVH(@NonNull View itemView) {
@@ -70,9 +88,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     static class ReceivedVH extends RecyclerView.ViewHolder {
         final TextView tvMessage;
+        final TextView tvSenderName; // may be null if layout doesn't have it yet
         ReceivedVH(@NonNull View itemView) {
             super(itemView);
             tvMessage = itemView.findViewById(R.id.tvMessageReceived);
+            tvSenderName = itemView.findViewById(R.id.tvMessageSenderName);
         }
     }
 }
