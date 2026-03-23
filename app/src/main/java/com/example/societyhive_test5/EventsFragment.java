@@ -188,7 +188,7 @@ public class EventsFragment extends Fragment {
                 .addOnSuccessListener((DocumentSnapshot doc) -> {
                     if (!isAdded()) return;
                     userSocietyIds.clear();
-                    List<?> ids = doc.get("societyIds", List.class);
+                    List<?> ids = (List<?>) doc.get("societyIds");
                     if (ids != null) {
                         for (Object id : ids) {
                             if (id instanceof String) userSocietyIds.add((String) id);
