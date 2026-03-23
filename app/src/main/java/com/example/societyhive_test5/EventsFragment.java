@@ -17,6 +17,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -31,22 +32,17 @@ import java.util.Set;
 /**
  * Events screen.
  *
- * Loads events from Firestore collection: events/{eventId}
- * Expected fields per document:
- *   name        (String)
- *   dateTime    (String)
- *   location    (String)
- *   organiser   (String)
- *   description (String)
+ * Loads events from Firestore: events/{eventId}
+ * Filters by visibility:
+ *   - isPublic == true  → visible to everyone
+ *   - isPublic == false → visible only if user is in the event's society
  *
- * Attendance is persisted to Firestore under:
- *   userAttendance/{userId}/attendingEvents/{eventId}
- *     eventId    (String)
- *     eventName  (String)
- *     attendedAt (Timestamp)
+ * Attendance persisted to: userAttendance/{userId}/attendingEvents/{eventId}
  *
- * Falls back to hard-coded dummy data if Firestore returns nothing,
- * so the screen is never blank during development.
+ * Loading sequence:
+ *   1. loadEventsFromFirestore()    — fetch all event documents
+ *   2. loadAttendanceAndMerge()     — mark which events user is attending
+ *   3. loadUserSocietiesAndFilter() — fetch user's societyIds, filter list, render
  */
 public class EventsFragment extends Fragment {
 
@@ -56,9 +52,10 @@ public class EventsFragment extends Fragment {
     private final List<Event> allEvents = new ArrayList<>();
     private final List<Event> filteredEvents = new ArrayList<>();
     private EventsAdapter adapter;
-
-    // Keeps a reference to the root view for filter reapplication
     private View rootView;
+
+    // The societies this user belongs to — used for visibility filtering
+    private final Set<String> userSocietyIds = new HashSet<>();
 
     public EventsFragment() {
         super(R.layout.fragment_events);
@@ -85,16 +82,14 @@ public class EventsFragment extends Fragment {
         );
 
         rv.setAdapter(adapter);
-
         hookSearch(view);
         hookChips(view);
 
-        // Step 1: load events, then Step 2: merge attendance state
         loadEventsFromFirestore();
     }
 
     // -------------------------------------------------------------------------
-    // Firestore loading
+    // Step 1 — Load events
     // -------------------------------------------------------------------------
 
     private void loadEventsFromFirestore() {
@@ -105,7 +100,6 @@ public class EventsFragment extends Fragment {
                     if (!isAdded()) return;
 
                     allEvents.clear();
-
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         allEvents.add(new Event(
                                 doc.getId(),
@@ -114,44 +108,35 @@ public class EventsFragment extends Fragment {
                                 safeString(doc.getString("location"), "TBC"),
                                 safeString(doc.getString("organiser"), "Unknown"),
                                 safeString(doc.getString("description"), ""),
+                                safeString(doc.getString("societyId"), ""),
+                                Boolean.TRUE.equals(doc.getBoolean("isPublic")),
                                 false,
                                 false
                         ));
                     }
 
-                    if (allEvents.isEmpty()) {
-                        seedDummyEvents();
-                    }
+                    if (allEvents.isEmpty()) seedDummyEvents();
 
-                    // Step 2: load which events this user is attending, then render
                     loadAttendanceAndMerge();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-
-                    if (allEvents.isEmpty()) {
-                        seedDummyEvents();
-                    }
-
+                    if (allEvents.isEmpty()) seedDummyEvents();
                     Toast.makeText(requireContext(),
                             "Could not load events: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
-
-                    // Still attempt to load attendance even if events partially failed
                     loadAttendanceAndMerge();
                 });
     }
 
-    /**
-     * Fetches the set of event IDs the current user is attending from Firestore
-     * (userAttendance/{userId}/attendingEvents), marks those events in allEvents,
-     * then calls applyFilters() to render the final list.
-     */
+    // -------------------------------------------------------------------------
+    // Step 2 — Merge attendance state
+    // -------------------------------------------------------------------------
+
     private void loadAttendanceAndMerge() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            // Not logged in — show events without any attendance state
-            applyFilters();
+            loadUserSocietiesAndFilter();
             return;
         }
 
@@ -162,23 +147,57 @@ public class EventsFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
-
-                    // Collect all event IDs the user is attending into a Set
                     Set<String> attendingIds = new HashSet<>();
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         attendingIds.add(doc.getId());
                     }
-
-                    // Mark each event with the user's actual attendance state
                     for (Event event : allEvents) {
                         event.setAttending(attendingIds.contains(event.getId()));
                     }
+                    loadUserSocietiesAndFilter();
+                })
+                .addOnFailureListener(e -> {
+                    if (!isAdded()) return;
+                    loadUserSocietiesAndFilter();
+                });
+    }
 
+    // -------------------------------------------------------------------------
+    // Step 3 — Load user's societies, then filter and render
+    // -------------------------------------------------------------------------
+
+    /**
+     * Fetches the current user's societyIds from users/{uid}, then calls
+     * applyFilters() so the list only shows events the user is allowed to see.
+     *
+     * Visibility rule:
+     *   show event if event.isPublic == true
+     *               OR event.societyId is in the user's societyIds
+     */
+    private void loadUserSocietiesAndFilter() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            applyFilters();
+            return;
+        }
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(user.getUid())
+                .get()
+                .addOnSuccessListener((DocumentSnapshot doc) -> {
+                    if (!isAdded()) return;
+                    userSocietyIds.clear();
+                    List<?> ids = doc.get("societyIds", List.class);
+                    if (ids != null) {
+                        for (Object id : ids) {
+                            if (id instanceof String) userSocietyIds.add((String) id);
+                        }
+                    }
                     applyFilters();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-                    // Couldn't load attendance — render events without marking any
                     applyFilters();
                 });
     }
@@ -187,22 +206,11 @@ public class EventsFragment extends Fragment {
     // Attendance toggle — writes/deletes in Firestore
     // -------------------------------------------------------------------------
 
-    /**
-     * Called when the user taps "Attend Event" or "Attending".
-     *
-     * Firestore path: userAttendance/{userId}/attendingEvents/{eventId}
-     *   - Attending:     set document with eventId, eventName, attendedAt
-     *   - Not attending: delete document
-     *
-     * The adapter has already updated local state optimistically. If the Firestore
-     * write fails we revert the local state and show a toast.
-     */
     private void toggleAttendance(@NonNull Event event, boolean attending) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Toast.makeText(requireContext(),
                     "Please log in to attend events.", Toast.LENGTH_SHORT).show();
-            // Revert the optimistic UI update
             event.setAttending(!attending);
             adapter.notifyDataSetChanged();
             return;
@@ -219,7 +227,6 @@ public class EventsFragment extends Fragment {
             data.put("eventId", event.getId());
             data.put("eventName", event.getName());
             data.put("attendedAt", Timestamp.now());
-
             ref.set(data).addOnFailureListener(e -> {
                 if (!isAdded()) return;
                 event.setAttending(false);
@@ -239,7 +246,9 @@ public class EventsFragment extends Fragment {
     }
 
     // -------------------------------------------------------------------------
-    // Dummy data (used until Firestore events collection is populated)
+    // Dummy data — used until Firestore events collection is populated.
+    // societyId values match whatever document IDs you have in your
+    // Firestore societies collection. Update them to match yours.
     // -------------------------------------------------------------------------
 
     private void seedDummyEvents() {
@@ -249,9 +258,10 @@ public class EventsFragment extends Fragment {
                 "19-Nov-2025 • 17:00",
                 "Royal Concert Hall",
                 "Motorsport Society",
-                "This event doesn't actually exist, but it shows how the expanded card can preview more information before opening a full details page.",
-                false,
-                false
+                "A showcase of classic and modern cars around Nottingham city centre.",
+                "motorsport-society-id",
+                false, // members only
+                false, false
         ));
         allEvents.add(new Event(
                 "e2",
@@ -260,8 +270,9 @@ public class EventsFragment extends Fragment {
                 "Student Union",
                 "Business Society",
                 "Meet new members, socialise, and hear about upcoming society activities.",
-                false,
-                false
+                "business-society-id",
+                true, // public — anyone can see this
+                false, false
         ));
         allEvents.add(new Event(
                 "e3",
@@ -270,8 +281,9 @@ public class EventsFragment extends Fragment {
                 "Makerspace",
                 "Computing Society",
                 "Bring your laptop and work on projects in a relaxed, collaborative session.",
-                false,
-                false
+                "computing-society-id",
+                false, // members only
+                false, false
         ));
         allEvents.add(new Event(
                 "e4",
@@ -280,8 +292,9 @@ public class EventsFragment extends Fragment {
                 "Newton LT",
                 "Careers Hub",
                 "A speaker session covering graduate roles, interview expectations, and application tips.",
-                false,
-                false
+                "careers-hub-id",
+                true, // public — open taster
+                false, false
         ));
         allEvents.add(new Event(
                 "e5",
@@ -290,25 +303,22 @@ public class EventsFragment extends Fragment {
                 "Atrium",
                 "Student Union",
                 "A welcome event for new students to connect with societies and student reps.",
-                false,
-                false
+                "student-union-id",
+                true, // public
+                false, false
         ));
     }
 
     // -------------------------------------------------------------------------
-    // Search and chip filters
+    // Search, chip filters, and rendering
     // -------------------------------------------------------------------------
 
     private void hookSearch(@NonNull View view) {
         View et = view.findViewById(R.id.etSearchEvents);
         if (!(et instanceof android.widget.EditText)) return;
-
-        android.widget.EditText etSearch = (android.widget.EditText) et;
-        etSearch.addTextChangedListener(new TextWatcher() {
+        ((android.widget.EditText) et).addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                applyFilters();
-            }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { applyFilters(); }
             @Override public void afterTextChanged(Editable s) {}
         });
     }
@@ -335,10 +345,14 @@ public class EventsFragment extends Fragment {
         filteredEvents.clear();
 
         for (Event e : allEvents) {
-            if (!query.isEmpty() && !e.getName().toLowerCase(Locale.UK).contains(query)) {
-                continue;
-            }
+            // Visibility: must be public OR user is in this event's society
+            boolean canSee = e.isPublic() || userSocietyIds.contains(e.getSocietyId());
+            if (!canSee) continue;
 
+            // Search filter
+            if (!query.isEmpty() && !e.getName().toLowerCase(Locale.UK).contains(query)) continue;
+
+            // Chip filter
             if (checkedId == R.id.chipThisWeek) {
                 if (e.getDateTime().toLowerCase(Locale.UK).contains("next week")) continue;
             } else if (checkedId == R.id.chipNextWeek) {

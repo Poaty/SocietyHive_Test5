@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
  *     location    (String)
  *     organiser   (String)
  *     description (String)
+ *     societyId   (String)  — links the event to a society
+ *     isPublic    (boolean) — true = visible to all / QR-accessible
  *
  * 'attending' and 'expanded' are local UI state — not stored in Firestore.
  */
@@ -22,6 +24,8 @@ public class Event {
     private String location;
     private String organiser;
     private String description;
+    private String societyId;
+    private boolean isPublic;
 
     // UI-only state (not from Firestore)
     private boolean attending;
@@ -36,6 +40,8 @@ public class Event {
                  @NonNull String location,
                  @NonNull String organiser,
                  @NonNull String description,
+                 @NonNull String societyId,
+                 boolean isPublic,
                  boolean attending,
                  boolean expanded) {
         this.id = id;
@@ -44,6 +50,8 @@ public class Event {
         this.location = location;
         this.organiser = organiser;
         this.description = description;
+        this.societyId = societyId;
+        this.isPublic = isPublic;
         this.attending = attending;
         this.expanded = expanded;
     }
@@ -54,6 +62,7 @@ public class Event {
     @NonNull public String getLocation() { return location != null ? location : ""; }
     @NonNull public String getOrganiser() { return organiser != null ? organiser : ""; }
     @NonNull public String getDescription() { return description != null ? description : ""; }
+    @NonNull public String getSocietyId() { return societyId != null ? societyId : ""; }
 
     public void setId(String id) { this.id = id; }
     public void setName(String name) { this.name = name; }
@@ -61,6 +70,10 @@ public class Event {
     public void setLocation(String location) { this.location = location; }
     public void setOrganiser(String organiser) { this.organiser = organiser; }
     public void setDescription(String description) { this.description = description; }
+    public void setSocietyId(String societyId) { this.societyId = societyId; }
+
+    public boolean isPublic() { return isPublic; }
+    public void setPublic(boolean isPublic) { this.isPublic = isPublic; }
 
     public boolean isAttending() { return attending; }
     public void setAttending(boolean attending) { this.attending = attending; }
