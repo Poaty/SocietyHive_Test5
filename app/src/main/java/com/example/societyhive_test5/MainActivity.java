@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -45,7 +46,32 @@ public class MainActivity extends AppCompatActivity {
                     ).build();
 
             NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-            NavigationUI.setupWithNavController(bottomNav, navController);
+
+            // Custom bottom nav setup: always navigate cleanly without saving/restoring
+            // secondary screens (Profile, Preferences, Settings) opened from the toolbar.
+            NavOptions bottomNavOptions = new NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .setPopUpTo(R.id.homeFragment, false, false)
+                    .setRestoreState(false)
+                    .build();
+
+            bottomNav.setOnItemSelectedListener(item -> {
+                try {
+                    navController.navigate(item.getItemId(), null, bottomNavOptions);
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+            });
+
+            // Keep the bottom nav selected item in sync with the NavController
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                int id = destination.getId();
+                if (id == R.id.homeFragment || id == R.id.eventsFragment
+                        || id == R.id.chatsFragment || id == R.id.qrFragment) {
+                    bottomNav.setSelectedItemId(id);
+                }
+            });
         }
     }
 
