@@ -64,11 +64,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            // Keep the bottom nav selected item in sync with the NavController
+            // Keep the bottom nav selected item in sync with the NavController.
+            // Guard against calling setSelectedItemId when already selected to prevent
+            // an infinite loop: navigate → onDestinationChanged → setSelectedItemId → navigate...
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int id = destination.getId();
-                if (id == R.id.homeFragment || id == R.id.eventsFragment
-                        || id == R.id.chatsFragment || id == R.id.qrFragment) {
+                if ((id == R.id.homeFragment || id == R.id.eventsFragment
+                        || id == R.id.chatsFragment || id == R.id.qrFragment)
+                        && bottomNav.getSelectedItemId() != id) {
                     bottomNav.setSelectedItemId(id);
                 }
             });
