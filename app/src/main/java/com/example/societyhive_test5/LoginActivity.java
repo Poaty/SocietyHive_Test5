@@ -54,17 +54,36 @@ public class LoginActivity extends AppCompatActivity {
 
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
-                        } else {
+                        if (!task.isSuccessful()) {
                             String msg = task.getException() != null
                                     ? task.getException().getMessage()
                                     : "Unknown login error";
                             Toast.makeText(LoginActivity.this,
                                     "Login failed: " + msg,
                                     Toast.LENGTH_LONG).show();
+                            return;
                         }
+
+                        // Fetch the user's saved theme before launching MainActivity so
+                        // ThemeHelper.apply() in MainActivity reads the correct key immediately
+                        // — no colour flash on the home screen.
+                        String uid = mAuth.getCurrentUser().getUid();
+                        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(uid)
+                                .get()
+                                .addOnCompleteListener(docTask -> {
+                                    if (docTask.isSuccessful()
+                                            && docTask.getResult() != null
+                                            && docTask.getResult().exists()) {
+                                        String key = docTask.getResult().getString("themeKey");
+                                        if (key != null && !key.isEmpty()) {
+                                            ThemeHelper.save(LoginActivity.this, key);
+                                        }
+                                    }
+                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                    finish();
+                                });
                     });
         });
 

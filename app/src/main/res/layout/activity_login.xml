@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg">
+    android:background="?attr/colorPrimaryContainer">
 
     <LinearLayout
         android:id="@+id/loginContainer"
@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Login"
-            android:textColor="@android:color/white"
+            android:textColor="?attr/colorOnPrimaryContainer"
             android:textSize="40sp"
             android:textStyle="bold" />
 
@@ -38,7 +38,7 @@
             android:layout_marginTop="40dp"
             app:cardCornerRadius="36dp"
             app:cardElevation="8dp"
-            app:cardBackgroundColor="@android:color/white">
+            app:cardBackgroundColor="?attr/colorSurface">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -53,7 +53,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_email"
-                    app:tint="@color/icon_tint" />
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilEmail"
@@ -61,12 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxStrokeColor="@color/field_stroke">
+                    app:boxBackgroundMode="none">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etEmail"
@@ -89,7 +84,7 @@
             android:layout_marginTop="18dp"
             app:cardCornerRadius="36dp"
             app:cardElevation="8dp"
-            app:cardBackgroundColor="@android:color/white">
+            app:cardBackgroundColor="?attr/colorSurface">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -104,7 +99,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_lock"
-                    app:tint="@color/icon_tint" />
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilPassword"
@@ -112,12 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxStrokeColor="@color/field_stroke">
+                    app:boxBackgroundMode="none">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPassword"
@@ -142,9 +132,7 @@
             android:layout_marginTop="40dp"
             android:text="Login"
             android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            app:cornerRadius="28dp"
-            app:backgroundTint="@color/button1" />
+            app:cornerRadius="28dp" />
 
         <!-- Bottom text row -->
         <LinearLayout
@@ -159,7 +147,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Don't have an account? "
-                android:textColor="@android:color/white"
+                android:textColor="?attr/colorOnPrimaryContainer"
                 android:textSize="14sp" />
 
             <TextView
@@ -168,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:text="Sign Up"
                 android:textStyle="bold"
-                android:textColor="@color/button1"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="14sp"
                 android:clickable="true"
                 android:focusable="true" />

@@ -52,12 +52,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- Dark background shown while scanner is loading -->
-            <View
-                android:id="@+id/viewCameraSurface"
+            <!-- Live camera preview — fills the card -->
+            <com.journeyapps.barcodescanner.BarcodeView
+                android:id="@+id/barcodeView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="#2A2A2A"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

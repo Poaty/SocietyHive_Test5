@@ -98,6 +98,7 @@ public class SignUpActivity extends AppCompatActivity {
                         userData.put("email", user.getEmail());
                         userData.put("role", "member");
                         userData.put("societyIds", new ArrayList<String>());
+                        userData.put("themeKey", "crimson");
                         userData.put("createdAt", FieldValue.serverTimestamp());
 
                         db.collection("users")

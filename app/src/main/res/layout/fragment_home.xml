@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg">
+    android:background="?attr/colorPrimaryContainer">
 
     <!-- Welcome -->
     <TextView
@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Welcome, User"
-        android:textColor="@android:color/white"
+        android:textColor="?attr/colorOnPrimaryContainer"
         android:textSize="34sp"
         android:textStyle="bold"
         android:layout_marginStart="24dp"
@@ -28,7 +28,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginEnd="18dp"
         android:layout_marginTop="18dp"
-        app:cardBackgroundColor="@color/button1"
+        app:cardBackgroundColor="?attr/colorPrimary"
         app:cardCornerRadius="14dp"
         app:cardElevation="8dp"
         app:layout_constraintTop_toBottomOf="@id/tvWelcome"
@@ -52,7 +52,7 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:src="@drawable/ic_clip"
-                    app:tint="@android:color/white"/>
+                    app:tint="?attr/colorOnPrimary"/>
 
                 <TextView
                     android:id="@+id/tvPinnedTitle"
@@ -60,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:text="Pinned"
-                    android:textColor="@android:color/white"
+                    android:textColor="?attr/colorOnPrimary"
                     android:textSize="26sp"
                     android:textStyle="bold"/>
             </LinearLayout>
@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="This is the pinned message\nThis is more of the same message\nGuess what?\nEven more of the same message.\nToodles."
-                android:textColor="@android:color/white"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="14sp"/>
 
         </LinearLayout>
@@ -83,7 +83,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Quick Access"
-        android:textColor="#CCFFFFFF"
+        android:textColor="?attr/colorOnPrimaryContainer"
         android:textSize="14sp"
         android:textStyle="bold"
         android:layout_marginStart="24dp"
@@ -100,7 +100,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="16dp"
-        app:cardBackgroundColor="@color/button1"
+        app:cardBackgroundColor="?attr/colorPrimary"
         app:cardCornerRadius="18dp"
         app:cardElevation="10dp"
         app:layout_constraintTop_toBottomOf="@id/tvQuickAccess"
@@ -125,7 +125,7 @@
                 android:focusable="true"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#F7D7DC"
+                app:cardBackgroundColor="?attr/colorSecondaryContainer"
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1">
 
@@ -140,7 +140,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_events"
-                        app:tint="#1E1E1E"/>
+                        app:tint="?attr/colorOnSecondaryContainer"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -148,7 +148,7 @@
                         android:layout_marginTop="10dp"
                         android:text="Events"
                         android:textStyle="bold"
-                        android:textColor="#1E1E1E"/>
+                        android:textColor="?attr/colorOnSecondaryContainer"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -161,7 +161,7 @@
                 android:focusable="true"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#F7D7DC"
+                app:cardBackgroundColor="?attr/colorSecondaryContainer"
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1">
 
@@ -176,7 +176,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_chat"
-                        app:tint="#1E1E1E"/>
+                        app:tint="?attr/colorOnSecondaryContainer"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -184,7 +184,7 @@
                         android:layout_marginTop="10dp"
                         android:text="Chats"
                         android:textStyle="bold"
-                        android:textColor="#1E1E1E"/>
+                        android:textColor="?attr/colorOnSecondaryContainer"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -197,7 +197,7 @@
                 android:focusable="true"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#F7D7DC"
+                app:cardBackgroundColor="?attr/colorSecondaryContainer"
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1">
 
@@ -212,7 +212,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_qr"
-                        app:tint="#1E1E1E"/>
+                        app:tint="?attr/colorOnSecondaryContainer"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -220,7 +220,7 @@
                         android:layout_marginTop="10dp"
                         android:text="QR Code"
                         android:textStyle="bold"
-                        android:textColor="#1E1E1E"/>
+                        android:textColor="?attr/colorOnSecondaryContainer"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -233,7 +233,7 @@
                 android:focusable="true"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#F7D7DC"
+                app:cardBackgroundColor="?attr/colorSecondaryContainer"
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1">
 
@@ -248,7 +248,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_calendar"
-                        app:tint="#1E1E1E"/>
+                        app:tint="?attr/colorOnSecondaryContainer"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -256,7 +256,7 @@
                         android:layout_marginTop="10dp"
                         android:text="Calendar"
                         android:textStyle="bold"
-                        android:textColor="#1E1E1E"/>
+                        android:textColor="?attr/colorOnSecondaryContainer"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -269,7 +269,7 @@
                 android:focusable="true"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#F7D7DC"
+                app:cardBackgroundColor="?attr/colorSecondaryContainer"
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1">
 
@@ -284,7 +284,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_polls"
-                        app:tint="#1E1E1E"/>
+                        app:tint="?attr/colorOnSecondaryContainer"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -292,7 +292,7 @@
                         android:layout_marginTop="10dp"
                         android:text="Polls"
                         android:textStyle="bold"
-                        android:textColor="#1E1E1E"/>
+                        android:textColor="?attr/colorOnSecondaryContainer"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -305,7 +305,7 @@
                 android:focusable="true"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="#F7D7DC"
+                app:cardBackgroundColor="?attr/colorSecondaryContainer"
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1">
 
@@ -320,7 +320,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_gallery"
-                        app:tint="#1E1E1E"/>
+                        app:tint="?attr/colorOnSecondaryContainer"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -328,7 +328,7 @@
                         android:layout_marginTop="10dp"
                         android:text="Gallery"
                         android:textStyle="bold"
-                        android:textColor="#1E1E1E"/>
+                        android:textColor="?attr/colorOnSecondaryContainer"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

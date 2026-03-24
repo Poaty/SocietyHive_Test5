@@ -9,7 +9,7 @@
     android:focusable="true"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="#F7F4F7">
+    app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
             android:text="Event Name"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:textColor="#1E1E1E" />
+            android:textColor="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/tvEventDateTime"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="19-Nov-2025 • 17:00"
-            android:textColor="#666666"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="13sp" />
 
         <TextView
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:text="Royal Concert Hall"
-            android:textColor="#666666"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="13sp" />
 
         <TextView
@@ -55,7 +55,7 @@
             android:paddingEnd="10dp"
             android:paddingBottom="4dp"
             android:text="Attending"
-            android:textColor="@color/button1"
+            android:textColor="?attr/colorPrimary"
             android:textStyle="bold"
             android:visibility="gone" />
 
@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:text="Description"
                 android:textStyle="bold"
-                android:textColor="#1E1E1E" />
+                android:textColor="?attr/colorOnSurface" />
 
             <TextView
                 android:id="@+id/tvExpandedDescription"
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="Description goes here."
-                android:textColor="#444444" />
+                android:textColor="?attr/colorOnSurfaceVariant" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -88,7 +88,7 @@
                 android:layout_marginTop="12dp"
                 android:text="Organiser"
                 android:textStyle="bold"
-                android:textColor="#1E1E1E" />
+                android:textColor="?attr/colorOnSurface" />
 
             <TextView
                 android:id="@+id/tvExpandedOrganiser"
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="Society Name"
-                android:textColor="#444444" />
+                android:textColor="?attr/colorOnSurfaceVariant" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -111,9 +111,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="View Details"
-                    android:textAllCaps="false"
-                    android:textColor="@color/button1"
-                    app:strokeColor="@color/button1" />
+                    android:textAllCaps="false" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAttendEvent"
@@ -122,8 +120,6 @@
                     android:layout_marginStart="10dp"
                     android:text="Attend Event"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    app:backgroundTint="@color/button1"
                     app:cornerRadius="20dp" />
 
             </LinearLayout>

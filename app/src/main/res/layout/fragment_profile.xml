@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="22dp"
             app:cardElevation="8dp"
-            app:cardBackgroundColor="#F7E0E4"
+            app:cardBackgroundColor="?attr/colorSecondaryContainer"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -35,7 +35,7 @@
                     android:layout_height="84dp"
                     android:src="@drawable/ic_profile"
                     app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-                    app:tint="@color/button1" />
+                    app:tint="?attr/colorPrimary" />
 
                 <TextView
                     android:id="@+id/tvProfileName"
@@ -45,7 +45,7 @@
                     android:text="SocietyHive Member"
                     android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="#1E1E1E" />
+                    android:textColor="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/tvProfileEmail"
@@ -54,7 +54,7 @@
                     android:layout_marginTop="6dp"
                     android:text="member@email.com"
                     android:textSize="14sp"
-                    android:textColor="#666666" />
+                    android:textColor="?attr/colorOnSurfaceVariant" />
 
                 <TextView
                     android:id="@+id/tvProfileRole"
@@ -67,7 +67,7 @@
                     android:paddingEnd="12dp"
                     android:paddingBottom="6dp"
                     android:text="Member"
-                    android:textColor="@color/button1"
+                    android:textColor="?attr/colorPrimary"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -81,7 +81,7 @@
             android:text="My Societies"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#1E1E1E"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintTop_toBottomOf="@id/cardProfileTop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="Manage the societies you follow and control which communities you stay connected with."
-            android:textColor="#666666"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="13sp"
             app:layout_constraintTop_toBottomOf="@id/tvSocietiesHeader"
             app:layout_constraintStart_toStartOf="parent"
@@ -116,7 +116,7 @@
             android:layout_marginBottom="12dp"
             app:cardCornerRadius="22dp"
             app:cardElevation="6dp"
-            app:cardBackgroundColor="@android:color/white"
+            app:cardBackgroundColor="?attr/colorSurface"
             app:layout_constraintTop_toBottomOf="@id/rvJoinedSocieties"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:text="Account"
                     android:textStyle="bold"
-                    android:textColor="#1E1E1E"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp" />
 
                 <TextView
@@ -141,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="Later you can add edit profile, privacy controls, and membership settings here."
-                    android:textColor="#666666"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="13sp" />
 
             </LinearLayout>
