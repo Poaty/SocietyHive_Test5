@@ -15,6 +15,22 @@
         android:orientation="vertical"
         android:padding="18dp">
 
+        <!-- Society name badge -->
+        <TextView
+            android:id="@+id/tvSocietyName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_attending_indicator"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
         <!-- Poll title -->
         <TextView
             android:id="@+id/tvPollTitle"
