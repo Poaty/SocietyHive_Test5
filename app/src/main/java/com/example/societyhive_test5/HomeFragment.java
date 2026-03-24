@@ -108,6 +108,13 @@ public class HomeFragment extends Fragment {
                             .navigate(R.id.calendarFragment));
         }
 
-        // Polls and Gallery — not yet wired to real destinations.
+        View tilePolls = view.findViewById(R.id.tilePolls);
+        if (tilePolls != null) {
+            tilePolls.setOnClickListener(v ->
+                    NavHostFragment.findNavController(this)
+                            .navigate(R.id.pollsFragment));
+        }
+
+        // Gallery — not yet wired to a real destination.
     }
 }

@@ -63,4 +63,9 @@
         android:name="com.example.societyhive_test5.CalendarFragment"
         android:label="Calendar" />
 
+    <fragment
+        android:id="@+id/pollsFragment"
+        android:name="com.example.societyhive_test5.PollsFragment"
+        android:label="Polls" />
+
 </navigation>
