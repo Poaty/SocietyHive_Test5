@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> {
 
@@ -40,23 +42,29 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
         holder.tvTitle.setText(poll.getTitle());
         holder.tvQuestion.setText(poll.getQuestion());
 
+        List<String> options = poll.getOptions();
+        List<Integer> counts = poll.getVoteCounts();
+        int total = poll.getTotalVotes();
+        boolean hasVoted = poll.isHasVoted();
+
         // Build option rows dynamically
         holder.optionsContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(holder.itemView.getContext());
-        List<String> options = poll.getOptions();
 
         for (int i = 0; i < options.size(); i++) {
             final int index = i;
             View optionView = inflater.inflate(R.layout.item_poll_option, holder.optionsContainer, false);
 
-            TextView tvText = optionView.findViewById(R.id.tvOptionText);
-            ImageView ivCheckbox = optionView.findViewById(R.id.ivCheckbox);
+            TextView tvText        = optionView.findViewById(R.id.tvOptionText);
+            ImageView ivCheckbox   = optionView.findViewById(R.id.ivCheckbox);
+            View layoutResult      = optionView.findViewById(R.id.layoutVoteResult);
+            ProgressBar progress   = optionView.findViewById(R.id.progressVotes);
+            TextView tvCount       = optionView.findViewById(R.id.tvVoteCount);
 
             tvText.setText(options.get(i));
 
-            // Show selected or voted state
-            boolean isVotedOption = poll.isHasVoted() && poll.getVotedOptionIndex() == i;
-            boolean isSelectedOption = !poll.isHasVoted() && poll.getSelectedOptionIndex() == i;
+            boolean isVotedOption    = hasVoted && poll.getVotedOptionIndex() == i;
+            boolean isSelectedOption = !hasVoted && poll.getSelectedOptionIndex() == i;
 
             if (isVotedOption || isSelectedOption) {
                 ivCheckbox.setImageResource(R.drawable.ic_check);
@@ -67,8 +75,17 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
                 ivCheckbox.clearColorFilter();
             }
 
-            // Only allow tapping if user hasn't voted yet
-            if (!poll.isHasVoted()) {
+            if (hasVoted && !counts.isEmpty() && i < counts.size()) {
+                // Show results row
+                layoutResult.setVisibility(View.VISIBLE);
+                int voteCount = counts.get(i);
+                int pct = total > 0 ? (int) Math.round((voteCount * 100.0) / total) : 0;
+                progress.setProgress(pct);
+                tvCount.setText(String.format(Locale.UK, "%d vote%s (%d%%)",
+                        voteCount, voteCount == 1 ? "" : "s", pct));
+            } else {
+                layoutResult.setVisibility(View.GONE);
+                // Allow tapping if user hasn't voted yet
                 optionView.setOnClickListener(v -> {
                     poll.setSelectedOptionIndex(index);
                     notifyItemChanged(holder.getAdapterPosition());
@@ -78,18 +95,18 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             holder.optionsContainer.addView(optionView);
         }
 
-        // Already voted state
-        if (poll.isHasVoted()) {
-            holder.tvAlreadyVoted.setVisibility(View.VISIBLE);
+        // Footer: total votes label or Vote button
+        if (hasVoted) {
+            holder.tvTotalVotes.setVisibility(View.VISIBLE);
+            holder.tvTotalVotes.setText(
+                    String.format(Locale.UK, "%d total vote%s", total, total == 1 ? "" : "s"));
             holder.btnVote.setVisibility(View.GONE);
         } else {
-            holder.tvAlreadyVoted.setVisibility(View.GONE);
+            holder.tvTotalVotes.setVisibility(View.GONE);
             holder.btnVote.setVisibility(View.VISIBLE);
             holder.btnVote.setOnClickListener(v -> {
                 int selected = poll.getSelectedOptionIndex();
-                if (selected >= 0) {
-                    voteListener.onVote(poll, selected);
-                }
+                if (selected >= 0) voteListener.onVote(poll, selected);
             });
         }
     }
@@ -107,16 +124,16 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
         final TextView tvTitle;
         final TextView tvQuestion;
         final LinearLayout optionsContainer;
-        final TextView tvAlreadyVoted;
+        final TextView tvTotalVotes;
         final com.google.android.material.button.MaterialButton btnVote;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvPollTitle);
-            tvQuestion = itemView.findViewById(R.id.tvPollQuestion);
+            tvTitle        = itemView.findViewById(R.id.tvPollTitle);
+            tvQuestion     = itemView.findViewById(R.id.tvPollQuestion);
             optionsContainer = itemView.findViewById(R.id.optionsContainer);
-            tvAlreadyVoted = itemView.findViewById(R.id.tvAlreadyVoted);
-            btnVote = itemView.findViewById(R.id.btnVote);
+            tvTotalVotes   = itemView.findViewById(R.id.tvTotalVotes);
+            btnVote        = itemView.findViewById(R.id.btnVote);
         }
     }
 }

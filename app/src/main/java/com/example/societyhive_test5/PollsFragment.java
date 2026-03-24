@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,9 +28,8 @@ import java.util.Set;
 /**
  * Polls screen.
  *
- * Loads active polls from Firestore and shows only those belonging to
- * the user's societies. Users can vote once per poll; their vote is
- * persisted to polls/{pollId}/votes/{userId}.
+ * Loads active polls for the user's societies. Reads ALL vote documents per poll
+ * so we can show per-option counts and totals after the user votes.
  */
 public class PollsFragment extends Fragment {
 
@@ -47,7 +47,6 @@ public class PollsFragment extends Fragment {
 
         RecyclerView rv = view.findViewById(R.id.rvPolls);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
-
         adapter = new PollsAdapter(this::submitVote);
         rv.setAdapter(adapter);
 
@@ -91,8 +90,6 @@ public class PollsFragment extends Fragment {
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         String societyId = doc.getString("societyId");
-
-                        // Only show polls for the user's societies (or open polls with no society)
                         if (societyId != null && !societyId.isEmpty()
                                 && !userSocietyIds.contains(societyId)) continue;
 
@@ -111,11 +108,10 @@ public class PollsFragment extends Fragment {
                             }
                         }
                         poll.setOptions(options);
-
                         polls.add(poll);
                     }
 
-                    checkVoteStatusForAll();
+                    loadAllVotes();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
@@ -124,15 +120,14 @@ public class PollsFragment extends Fragment {
                 });
     }
 
-    /** For each loaded poll, check whether the current user has already voted. */
-    private void checkVoteStatusForAll() {
+    /**
+     * For each poll, reads the entire votes subcollection.
+     * This gives us both the current user's vote status and the counts per option.
+     */
+    private void loadAllVotes() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null || polls.isEmpty()) {
-            adapter.updateList(polls);
-            return;
-        }
+        if (polls.isEmpty()) { adapter.updateList(polls); return; }
 
-        // Use a counter to know when all async reads are done
         final int[] remaining = {polls.size()};
 
         for (Poll poll : polls) {
@@ -140,20 +135,38 @@ public class PollsFragment extends Fragment {
                     .collection("polls")
                     .document(poll.getId())
                     .collection("votes")
-                    .document(user.getUid())
                     .get()
                     .addOnCompleteListener(task -> {
-                        if (isAdded() && task.isSuccessful() && task.getResult().exists()) {
-                            Long idx = task.getResult().getLong("optionIndex");
-                            if (idx != null) {
-                                poll.setHasVoted(true);
-                                poll.setVotedOptionIndex(idx.intValue());
+                        if (isAdded() && task.isSuccessful()) {
+                            QuerySnapshot voteDocs = task.getResult();
+
+                            // Tally votes per option
+                            Map<Integer, Integer> counts = new HashMap<>();
+                            for (QueryDocumentSnapshot voteDoc : voteDocs) {
+                                Long idx = voteDoc.getLong("optionIndex");
+                                if (idx == null) continue;
+                                int i = idx.intValue();
+                                counts.put(i, counts.containsKey(i) ? counts.get(i) + 1 : 1);
+
+                                // Check if this is the current user's vote
+                                if (user != null && voteDoc.getId().equals(user.getUid())) {
+                                    poll.setHasVoted(true);
+                                    poll.setVotedOptionIndex(i);
+                                }
                             }
+
+                            // Store counts list aligned to options
+                            List<Integer> countList = new ArrayList<>();
+                            for (int i = 0; i < poll.getOptions().size(); i++) {
+                                countList.add(counts.containsKey(i) ? counts.get(i) : 0);
+                            }
+                            poll.setVoteCounts(countList);
+                            poll.setTotalVotes(voteDocs.size());
                         }
+
                         remaining[0]--;
-                        if (remaining[0] == 0) {
-                            // All checks done — update the UI
-                            if (isAdded()) adapter.updateList(polls);
+                        if (remaining[0] == 0 && isAdded()) {
+                            adapter.updateList(polls);
                         }
                     });
         }
@@ -166,8 +179,7 @@ public class PollsFragment extends Fragment {
     private void submitVote(@NonNull Poll poll, int optionIndex) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            Toast.makeText(requireContext(),
-                    "Please log in to vote.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please log in to vote.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -183,16 +195,20 @@ public class PollsFragment extends Fragment {
                 .set(voteData)
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
+                    // Optimistically update local counts
+                    List<Integer> counts = new ArrayList<>(poll.getVoteCounts());
+                    while (counts.size() < poll.getOptions().size()) counts.add(0);
+                    counts.set(optionIndex, counts.get(optionIndex) + 1);
+                    poll.setVoteCounts(counts);
+                    poll.setTotalVotes(poll.getTotalVotes() + 1);
                     poll.setHasVoted(true);
                     poll.setVotedOptionIndex(optionIndex);
                     adapter.notifyDataSetChanged();
-                    Toast.makeText(requireContext(),
-                            "Vote recorded!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Vote recorded!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(),
-                            "Failed to submit vote.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Failed to submit vote.", Toast.LENGTH_SHORT).show();
                 });
     }
 
