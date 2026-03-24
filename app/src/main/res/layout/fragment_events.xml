@@ -6,19 +6,32 @@
     android:layout_height="match_parent"
     android:paddingTop="12dp">
 
+    <!-- Calendar navigation button -->
+    <ImageButton
+        android:id="@+id/btnCalendar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/ic_calendar"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="?attr/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/cardSearch" />
+
     <!-- Search pill -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSearch"
         android:layout_width="0dp"
         android:layout_height="54dp"
         android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="8dp"
         app:cardCornerRadius="28dp"
         app:cardElevation="6dp"
         app:cardBackgroundColor="?attr/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toStartOf="@id/btnCalendar">
 
         <LinearLayout
             android:layout_width="match_parent"

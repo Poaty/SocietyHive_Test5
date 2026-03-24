@@ -21,7 +21,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -84,6 +88,9 @@ public class EventsFragment extends Fragment {
         rv.setAdapter(adapter);
         hookSearch(view);
         hookChips(view);
+
+        view.findViewById(R.id.btnCalendar).setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.calendarFragment));
 
         loadEventsFromFirestore();
     }
@@ -344,6 +351,11 @@ public class EventsFragment extends Fragment {
 
         filteredEvents.clear();
 
+        // Pre-compute week boundaries for chip filters
+        Calendar thisWeekStart = getWeekStart(0);
+        Calendar thisWeekEnd   = getWeekStart(1);
+        Calendar nextWeekEnd   = getWeekStart(2);
+
         for (Event e : allEvents) {
             // Visibility: show if user is in the society OR is already attending (e.g. joined via QR)
             if (!userSocietyIds.contains(e.getSocietyId()) && !e.isAttending()) continue;
@@ -351,11 +363,18 @@ public class EventsFragment extends Fragment {
             // Search filter
             if (!query.isEmpty() && !e.getName().toLowerCase(Locale.UK).contains(query)) continue;
 
-            // Chip filter
-            if (checkedId == R.id.chipThisWeek) {
-                if (e.getDateTime().toLowerCase(Locale.UK).contains("next week")) continue;
-            } else if (checkedId == R.id.chipNextWeek) {
-                if (!e.getDateTime().toLowerCase(Locale.UK).contains("next week")) continue;
+            // Chip date filter
+            if (checkedId == R.id.chipThisWeek || checkedId == R.id.chipNextWeek) {
+                Date eventDate = parseEventDate(e.getDateTime());
+                if (eventDate == null) continue; // undatable events are excluded from week filters
+
+                if (checkedId == R.id.chipThisWeek) {
+                    if (eventDate.before(thisWeekStart.getTime())
+                            || !eventDate.before(thisWeekEnd.getTime())) continue;
+                } else {
+                    if (eventDate.before(thisWeekEnd.getTime())
+                            || !eventDate.before(nextWeekEnd.getTime())) continue;
+                }
             }
 
             filteredEvents.add(e);
@@ -367,6 +386,34 @@ public class EventsFragment extends Fragment {
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * Returns a Calendar set to Monday 00:00:00 of the week that is
+     * {@code weeksFromNow} weeks from the current week.
+     */
+    @NonNull
+    private static Calendar getWeekStart(int weeksFromNow) {
+        Calendar cal = Calendar.getInstance(Locale.UK);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.add(Calendar.WEEK_OF_YEAR, weeksFromNow);
+        return cal;
+    }
+
+    /** Parses the date portion of a dateTime string like "19-Nov-2025 • 17:00". */
+    @Nullable
+    private static Date parseEventDate(@Nullable String dateTime) {
+        if (dateTime == null || !dateTime.contains(" • ")) return null;
+        try {
+            return new SimpleDateFormat("dd-MMM-yyyy", Locale.UK)
+                    .parse(dateTime.split(" • ")[0].trim());
+        } catch (ParseException e) {
+            return null;
+        }
+    }
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {
