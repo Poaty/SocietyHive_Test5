@@ -39,6 +39,16 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Poll poll = polls.get(position);
+
+        // Society name badge
+        String societyName = poll.getSocietyName();
+        if (societyName != null && !societyName.isEmpty()) {
+            holder.tvSocietyName.setVisibility(View.VISIBLE);
+            holder.tvSocietyName.setText(societyName);
+        } else {
+            holder.tvSocietyName.setVisibility(View.GONE);
+        }
+
         holder.tvTitle.setText(poll.getTitle());
         holder.tvQuestion.setText(poll.getQuestion());
 
@@ -121,6 +131,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
+        final TextView tvSocietyName;
         final TextView tvTitle;
         final TextView tvQuestion;
         final LinearLayout optionsContainer;
@@ -129,6 +140,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
+            tvSocietyName  = itemView.findViewById(R.id.tvSocietyName);
             tvTitle        = itemView.findViewById(R.id.tvPollTitle);
             tvQuestion     = itemView.findViewById(R.id.tvPollQuestion);
             optionsContainer = itemView.findViewById(R.id.optionsContainer);

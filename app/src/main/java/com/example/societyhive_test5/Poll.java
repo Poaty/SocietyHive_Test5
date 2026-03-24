@@ -25,6 +25,9 @@ public class Poll {
     private String societyId;
     private boolean isActive;
 
+    // Fetched separately — not stored in the poll document
+    private String societyName = "";
+
     // UI-only state
     private int selectedOptionIndex = -1; // -1 = nothing tapped yet
     private boolean hasVoted = false;
@@ -66,4 +69,7 @@ public class Poll {
 
     public int getTotalVotes() { return totalVotes; }
     public void setTotalVotes(int totalVotes) { this.totalVotes = totalVotes; }
+
+    public String getSocietyName() { return societyName; }
+    public void setSocietyName(String societyName) { this.societyName = societyName != null ? societyName : ""; }
 }

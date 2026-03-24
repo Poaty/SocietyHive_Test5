@@ -28,8 +28,13 @@ import java.util.Set;
 /**
  * Polls screen.
  *
- * Loads active polls for the user's societies. Reads ALL vote documents per poll
- * so we can show per-option counts and totals after the user votes.
+ * Loading sequence:
+ *   1. Load user's societyIds
+ *   2. Load active polls, filter by societyId
+ *   3. Fetch society names for display
+ *   4. Load all votes per poll (counts + user's own vote status)
+ *      Falls back to a direct document read for the user's vote if the
+ *      collection query is denied (e.g. restrictive rules).
  */
 public class PollsFragment extends Fragment {
 
@@ -54,7 +59,7 @@ public class PollsFragment extends Fragment {
     }
 
     // -------------------------------------------------------------------------
-    // Loading sequence
+    // Step 1 — User societies
     // -------------------------------------------------------------------------
 
     private void loadUserSocietiesThenPolls() {
@@ -62,9 +67,7 @@ public class PollsFragment extends Fragment {
         if (user == null) { loadPolls(); return; }
 
         FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
+                .collection("users").document(user.getUid()).get()
                 .addOnSuccessListener((DocumentSnapshot doc) -> {
                     if (!isAdded()) return;
                     userSocietyIds.clear();
@@ -78,6 +81,10 @@ public class PollsFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> { if (isAdded()) loadPolls(); });
     }
+
+    // -------------------------------------------------------------------------
+    // Step 2 — Load polls
+    // -------------------------------------------------------------------------
 
     private void loadPolls() {
         FirebaseFirestore.getInstance()
@@ -111,19 +118,53 @@ public class PollsFragment extends Fragment {
                         polls.add(poll);
                     }
 
-                    loadAllVotes();
+                    fetchSocietyNamesThenVotes();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(),
-                            "Could not load polls.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Could not load polls.", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    /**
-     * For each poll, reads the entire votes subcollection.
-     * This gives us both the current user's vote status and the counts per option.
-     */
+    // -------------------------------------------------------------------------
+    // Step 3 — Fetch society names
+    // -------------------------------------------------------------------------
+
+    private void fetchSocietyNamesThenVotes() {
+        Set<String> ids = new HashSet<>();
+        for (Poll p : polls) {
+            if (!p.getSocietyId().isEmpty()) ids.add(p.getSocietyId());
+        }
+
+        if (ids.isEmpty()) { loadAllVotes(); return; }
+
+        final int[] remaining = {ids.size()};
+        final Map<String, String> nameMap = new HashMap<>();
+
+        for (String sid : ids) {
+            FirebaseFirestore.getInstance()
+                    .collection("societies").document(sid).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult().exists()) {
+                            String name = task.getResult().getString("name");
+                            if (name != null) nameMap.put(sid, name);
+                        }
+                        remaining[0]--;
+                        if (remaining[0] == 0) {
+                            for (Poll p : polls) {
+                                String name = nameMap.get(p.getSocietyId());
+                                if (name != null) p.setSocietyName(name);
+                            }
+                            if (isAdded()) loadAllVotes();
+                        }
+                    });
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Step 4 — Load votes (counts + hasVoted check)
+    // -------------------------------------------------------------------------
+
     private void loadAllVotes() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (polls.isEmpty()) { adapter.updateList(polls); return; }
@@ -131,45 +172,66 @@ public class PollsFragment extends Fragment {
         final int[] remaining = {polls.size()};
 
         for (Poll poll : polls) {
+            // Try reading the whole votes collection (requires permissive read rules).
+            // If that fails, fall back to reading just the current user's vote document.
             FirebaseFirestore.getInstance()
-                    .collection("polls")
-                    .document(poll.getId())
+                    .collection("polls").document(poll.getId())
                     .collection("votes")
                     .get()
                     .addOnCompleteListener(task -> {
-                        if (isAdded() && task.isSuccessful()) {
-                            QuerySnapshot voteDocs = task.getResult();
+                        if (!isAdded()) { finishOne(remaining); return; }
 
-                            // Tally votes per option
-                            Map<Integer, Integer> counts = new HashMap<>();
-                            for (QueryDocumentSnapshot voteDoc : voteDocs) {
-                                Long idx = voteDoc.getLong("optionIndex");
-                                if (idx == null) continue;
-                                int i = idx.intValue();
-                                counts.put(i, counts.containsKey(i) ? counts.get(i) + 1 : 1);
-
-                                // Check if this is the current user's vote
-                                if (user != null && voteDoc.getId().equals(user.getUid())) {
-                                    poll.setHasVoted(true);
-                                    poll.setVotedOptionIndex(i);
-                                }
-                            }
-
-                            // Store counts list aligned to options
-                            List<Integer> countList = new ArrayList<>();
-                            for (int i = 0; i < poll.getOptions().size(); i++) {
-                                countList.add(counts.containsKey(i) ? counts.get(i) : 0);
-                            }
-                            poll.setVoteCounts(countList);
-                            poll.setTotalVotes(voteDocs.size());
-                        }
-
-                        remaining[0]--;
-                        if (remaining[0] == 0 && isAdded()) {
-                            adapter.updateList(polls);
+                        if (task.isSuccessful()) {
+                            applyVoteDocs(poll, task.getResult(), user);
+                            finishOne(remaining);
+                        } else {
+                            // Permission denied — fall back to user's own document only
+                            if (user == null) { finishOne(remaining); return; }
+                            FirebaseFirestore.getInstance()
+                                    .collection("polls").document(poll.getId())
+                                    .collection("votes").document(user.getUid())
+                                    .get()
+                                    .addOnCompleteListener(fallback -> {
+                                        if (isAdded() && fallback.isSuccessful()
+                                                && fallback.getResult().exists()) {
+                                            Long idx = fallback.getResult().getLong("optionIndex");
+                                            if (idx != null) {
+                                                poll.setHasVoted(true);
+                                                poll.setVotedOptionIndex(idx.intValue());
+                                            }
+                                        }
+                                        finishOne(remaining);
+                                    });
                         }
                     });
         }
+    }
+
+    private void applyVoteDocs(Poll poll, QuerySnapshot voteDocs, FirebaseUser user) {
+        Map<Integer, Integer> counts = new HashMap<>();
+        for (QueryDocumentSnapshot voteDoc : voteDocs) {
+            Long idx = voteDoc.getLong("optionIndex");
+            if (idx == null) continue;
+            int i = idx.intValue();
+            counts.put(i, counts.containsKey(i) ? counts.get(i) + 1 : 1);
+
+            if (user != null && voteDoc.getId().equals(user.getUid())) {
+                poll.setHasVoted(true);
+                poll.setVotedOptionIndex(i);
+            }
+        }
+
+        List<Integer> countList = new ArrayList<>();
+        for (int i = 0; i < poll.getOptions().size(); i++) {
+            countList.add(counts.containsKey(i) ? counts.get(i) : 0);
+        }
+        poll.setVoteCounts(countList);
+        poll.setTotalVotes(voteDocs.size());
+    }
+
+    private void finishOne(int[] remaining) {
+        remaining[0]--;
+        if (remaining[0] == 0 && isAdded()) adapter.updateList(polls);
     }
 
     // -------------------------------------------------------------------------
@@ -188,14 +250,12 @@ public class PollsFragment extends Fragment {
         voteData.put("votedAt", Timestamp.now());
 
         FirebaseFirestore.getInstance()
-                .collection("polls")
-                .document(poll.getId())
-                .collection("votes")
-                .document(user.getUid())
+                .collection("polls").document(poll.getId())
+                .collection("votes").document(user.getUid())
                 .set(voteData)
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
-                    // Optimistically update local counts
+                    // Optimistic local update
                     List<Integer> counts = new ArrayList<>(poll.getVoteCounts());
                     while (counts.size() < poll.getOptions().size()) counts.add(0);
                     counts.set(optionIndex, counts.get(optionIndex) + 1);
