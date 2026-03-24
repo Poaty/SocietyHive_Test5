@@ -29,6 +29,8 @@ public class Poll {
     private int selectedOptionIndex = -1; // -1 = nothing tapped yet
     private boolean hasVoted = false;
     private int votedOptionIndex = -1;
+    private List<Integer> voteCounts = new ArrayList<>(); // votes per option index
+    private int totalVotes = 0;
 
     public Poll() {}
 
@@ -58,4 +60,10 @@ public class Poll {
 
     public int getVotedOptionIndex() { return votedOptionIndex; }
     public void setVotedOptionIndex(int i) { this.votedOptionIndex = i; }
+
+    public List<Integer> getVoteCounts() { return voteCounts; }
+    public void setVoteCounts(List<Integer> voteCounts) { this.voteCounts = voteCounts; }
+
+    public int getTotalVotes() { return totalVotes; }
+    public void setTotalVotes(int totalVotes) { this.totalVotes = totalVotes; }
 }
