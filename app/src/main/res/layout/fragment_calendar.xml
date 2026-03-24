@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -10,9 +11,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Calendar card -->
+        <!-- Custom calendar card -->
         <com.google.android.material.card.MaterialCardView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -20,11 +20,133 @@
             app:cardElevation="4dp"
             app:cardBackgroundColor="#FFFFFF">
 
-            <CalendarView
-                android:id="@+id/calendarView"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
 
+                <!-- Month / Year navigation row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp">
+
+                    <!-- Month navigation -->
+                    <TextView
+                        android:id="@+id/btnPrevMonth"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:gravity="center"
+                        android:text="&#8249;"
+                        android:textSize="26sp"
+                        android:textColor="@color/button1"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    <TextView
+                        android:id="@+id/tvMonth"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="January"
+                        android:textStyle="bold"
+                        android:textColor="#1E1E1E"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/btnNextMonth"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:gravity="center"
+                        android:text="&#8250;"
+                        android:textSize="26sp"
+                        android:textColor="@color/button1"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    <!-- Thin divider between month and year controls -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@color/field_stroke" />
+
+                    <!-- Year navigation -->
+                    <TextView
+                        android:id="@+id/btnPrevYear"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:gravity="center"
+                        android:text="&#8249;"
+                        android:textSize="26sp"
+                        android:textColor="@color/button1"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    <TextView
+                        android:id="@+id/tvYear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="52dp"
+                        android:gravity="center"
+                        android:text="2025"
+                        android:textStyle="bold"
+                        android:textColor="#1E1E1E"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/btnNextYear"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:gravity="center"
+                        android:text="&#8250;"
+                        android:textSize="26sp"
+                        android:textColor="@color/button1"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+                </LinearLayout>
+
+                <!-- Day-of-week headers -->
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="*"
+                    android:layout_marginTop="4dp">
+                    <TableRow>
+                        <TextView android:text="S" android:gravity="center" android:textSize="12sp" android:textColor="#9E9E9E" android:padding="6dp"/>
+                        <TextView android:text="M" android:gravity="center" android:textSize="12sp" android:textColor="#9E9E9E" android:padding="6dp"/>
+                        <TextView android:text="T" android:gravity="center" android:textSize="12sp" android:textColor="#9E9E9E" android:padding="6dp"/>
+                        <TextView android:text="W" android:gravity="center" android:textSize="12sp" android:textColor="#9E9E9E" android:padding="6dp"/>
+                        <TextView android:text="T" android:gravity="center" android:textSize="12sp" android:textColor="#9E9E9E" android:padding="6dp"/>
+                        <TextView android:text="F" android:gravity="center" android:textSize="12sp" android:textColor="#9E9E9E" android:padding="6dp"/>
+                        <TextView android:text="S" android:gravity="center" android:textSize="12sp" android:textColor="#9E9E9E" android:padding="6dp"/>
+                    </TableRow>
+                </TableLayout>
+
+                <!-- Day grid — populated programmatically -->
+                <TableLayout
+                    android:id="@+id/calendarTable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="*"
+                    android:layout_marginBottom="8dp" />
+
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Divider -->

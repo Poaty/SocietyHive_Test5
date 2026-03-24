@@ -403,13 +403,18 @@ public class EventsFragment extends Fragment {
         return cal;
     }
 
-    /** Parses the date portion of a dateTime string like "19-Nov-2025 • 17:00". */
+    /**
+     * Parses the date from a dateTime string.
+     * Handles both "dd-MMM-yyyy" and "dd-MMM-yyyy • HH:mm" formats.
+     */
     @Nullable
     private static Date parseEventDate(@Nullable String dateTime) {
-        if (dateTime == null || !dateTime.contains(" • ")) return null;
+        if (dateTime == null || dateTime.isEmpty()) return null;
         try {
-            return new SimpleDateFormat("dd-MMM-yyyy", Locale.UK)
-                    .parse(dateTime.split(" • ")[0].trim());
+            String datePart = dateTime.contains(" • ")
+                    ? dateTime.split(" • ")[0].trim()
+                    : dateTime.trim();
+            return new SimpleDateFormat("dd-MMM-yyyy", Locale.UK).parse(datePart);
         } catch (ParseException e) {
             return null;
         }
