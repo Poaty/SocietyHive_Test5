@@ -101,10 +101,13 @@ public class HomeFragment extends Fragment {
                             .navigate(R.id.qrFragment));
         }
 
-        // Calendar, Polls, Gallery — not yet wired to real destinations.
-        // Uncomment and add nav IDs once those fragments exist.
-        // view.findViewById(R.id.tileCalendar).setOnClickListener(...);
-        // view.findViewById(R.id.tilePolls).setOnClickListener(...);
-        // view.findViewById(R.id.tileGallery).setOnClickListener(...);
+        View tileCalendar = view.findViewById(R.id.tileCalendar);
+        if (tileCalendar != null) {
+            tileCalendar.setOnClickListener(v ->
+                    NavHostFragment.findNavController(this)
+                            .navigate(R.id.calendarFragment));
+        }
+
+        // Polls and Gallery — not yet wired to real destinations.
     }
 }
