@@ -8,19 +8,34 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Home screen.
  *
- * - Loads the signed-in user's first name from Firestore and shows
- *   "Welcome, <FirstName>" in tvWelcome.
- * - Wires the quick-access dashboard tiles to their nav destinations.
+ * - Loads the signed-in user's name, role and society IDs from Firestore in one read.
+ * - Shows the Admin Items section only when role == "admin".
+ * - Loads and displays announcements for the user's societies inline (above Quick Access).
+ * - Wires all dashboard tiles to their nav destinations.
  */
 public class HomeFragment extends Fragment {
+
+    private AnnouncementsAdapter announcementsAdapter;
+    private final List<Announcement> announcements = new ArrayList<>();
+    private final Set<String> userSocietyIds = new HashSet<>();
 
     public HomeFragment() {
         super(R.layout.fragment_home);
@@ -30,91 +45,172 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        loadWelcomeName(view);
+        RecyclerView rvAnnouncements = view.findViewById(R.id.rvAnnouncements);
+        rvAnnouncements.setLayoutManager(new LinearLayoutManager(requireContext()));
+        announcementsAdapter = new AnnouncementsAdapter();
+        rvAnnouncements.setAdapter(announcementsAdapter);
+
         wireTiles(view);
+        loadUserData(view);
     }
 
     // -------------------------------------------------------------------------
-    // Firestore: load user's name
+    // Single Firestore read: name + role + societyIds
     // -------------------------------------------------------------------------
 
-    private void loadWelcomeName(@NonNull View view) {
+    private void loadUserData(@NonNull View view) {
         TextView tvWelcome = view.findViewById(R.id.tvWelcome);
-        if (tvWelcome == null) return;
+        if (tvWelcome != null) tvWelcome.setText("Welcome back");
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            tvWelcome.setText("Welcome");
-            return;
-        }
-
-        // Show a placeholder immediately so the screen isn't blank while loading
-        tvWelcome.setText("Welcome back");
+        if (user == null) return;
 
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(user.getUid())
                 .get()
                 .addOnSuccessListener(doc -> {
-                    if (!isAdded()) return; // fragment may have been detached
+                    if (!isAdded()) return;
 
+                    // Name
                     String fullName = doc.getString("fullName");
-                    if (fullName != null && !fullName.trim().isEmpty()) {
-                        // Use only the first word (first name) to keep the greeting short
+                    if (tvWelcome != null && fullName != null && !fullName.trim().isEmpty()) {
                         String firstName = fullName.trim().split("\\s+")[0];
                         tvWelcome.setText("Welcome, " + firstName);
-                    } else {
+                    } else if (tvWelcome != null) {
                         tvWelcome.setText("Welcome");
                     }
+
+                    // Role
+                    String role = doc.getString("role");
+                    boolean isAdmin = "admin".equalsIgnoreCase(role);
+                    showAdminSection(view, isAdmin);
+
+                    // Society IDs
+                    userSocietyIds.clear();
+                    List<?> ids = (List<?>) doc.get("societyIds");
+                    if (ids != null) {
+                        for (Object id : ids) {
+                            if (id instanceof String) userSocietyIds.add((String) id);
+                        }
+                    }
+
+                    loadAnnouncements(view);
                 })
                 .addOnFailureListener(e -> {
-                    // Silent failure — placeholder text stays
+                    // Silent — placeholder text stays
                 });
     }
 
+    private void showAdminSection(@NonNull View view, boolean visible) {
+        int visibility = visible ? View.VISIBLE : View.GONE;
+        view.findViewById(R.id.tvAdminItems).setVisibility(visibility);
+        view.findViewById(R.id.cardAdminDashboard).setVisibility(visibility);
+    }
+
     // -------------------------------------------------------------------------
-    // Quick-access tile navigation
+    // Announcements
+    // -------------------------------------------------------------------------
+
+    private void loadAnnouncements(@NonNull View view) {
+        FirebaseFirestore.getInstance()
+                .collection("announcements")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!isAdded()) return;
+                    announcements.clear();
+
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        String societyId = doc.getString("societyId");
+                        // Only show announcements for societies the user belongs to
+                        if (societyId != null && !societyId.isEmpty()
+                                && !userSocietyIds.contains(societyId)) continue;
+
+                        Announcement a = new Announcement();
+                        a.setId(doc.getId());
+                        a.setTitle(safeString(doc.getString("title"), ""));
+                        a.setContent(safeString(doc.getString("content"), ""));
+                        a.setSocietyId(societyId != null ? societyId : "");
+                        a.setCreatedBy(safeString(doc.getString("createdBy"), ""));
+                        a.setCreatedAt(doc.getTimestamp("createdAt"));
+                        announcements.add(a);
+                    }
+
+                    fetchAnnouncementSocietyNames(view);
+                })
+                .addOnFailureListener(e -> {
+                    // Silent — no announcements shown
+                });
+    }
+
+    private void fetchAnnouncementSocietyNames(@NonNull View view) {
+        Set<String> ids = new HashSet<>();
+        for (Announcement a : announcements) {
+            if (!a.getSocietyId().isEmpty()) ids.add(a.getSocietyId());
+        }
+
+        if (ids.isEmpty()) {
+            publishAnnouncements(view);
+            return;
+        }
+
+        final int[] remaining = {ids.size()};
+        final Map<String, String> nameMap = new HashMap<>();
+
+        for (String sid : ids) {
+            FirebaseFirestore.getInstance()
+                    .collection("societies").document(sid).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult().exists()) {
+                            String name = task.getResult().getString("name");
+                            if (name != null) nameMap.put(sid, name);
+                        }
+                        remaining[0]--;
+                        if (remaining[0] == 0) {
+                            for (Announcement a : announcements) {
+                                String name = nameMap.get(a.getSocietyId());
+                                if (name != null) a.setSocietyName(name);
+                            }
+                            if (isAdded()) publishAnnouncements(view);
+                        }
+                    });
+        }
+    }
+
+    private void publishAnnouncements(@NonNull View view) {
+        announcementsAdapter.updateList(announcements);
+
+        int visibility = announcements.isEmpty() ? View.GONE : View.VISIBLE;
+        view.findViewById(R.id.tvAnnouncementsLabel).setVisibility(visibility);
+        view.findViewById(R.id.rvAnnouncements).setVisibility(visibility);
+    }
+
+    // -------------------------------------------------------------------------
+    // Tile navigation
     // -------------------------------------------------------------------------
 
     private void wireTiles(@NonNull View view) {
-        // Each tile navigates to the matching bottom-nav destination.
-        // If a destination doesn't exist in your nav graph yet, comment out that line.
+        wire(view, R.id.tileEvents,            R.id.eventsFragment);
+        wire(view, R.id.tileChats,             R.id.chatsFragment);
+        wire(view, R.id.tileQr,                R.id.qrFragment);
+        wire(view, R.id.tileCalendar,          R.id.calendarFragment);
+        wire(view, R.id.tilePolls,             R.id.pollsFragment);
+        wire(view, R.id.tilePostAnnouncement,  R.id.createAnnouncementFragment);
+        // tileGallery — destination not yet implemented
+    }
 
-        View tileEvents = view.findViewById(R.id.tileEvents);
-        if (tileEvents != null) {
-            tileEvents.setOnClickListener(v ->
-                    NavHostFragment.findNavController(this)
-                            .navigate(R.id.eventsFragment));
+    private void wire(@NonNull View root, int tileId, int destId) {
+        View tile = root.findViewById(tileId);
+        if (tile != null) {
+            tile.setOnClickListener(v ->
+                    NavHostFragment.findNavController(this).navigate(destId));
         }
+    }
 
-        View tileChats = view.findViewById(R.id.tileChats);
-        if (tileChats != null) {
-            tileChats.setOnClickListener(v ->
-                    NavHostFragment.findNavController(this)
-                            .navigate(R.id.chatsFragment));
-        }
+    // -------------------------------------------------------------------------
 
-        View tileQr = view.findViewById(R.id.tileQr);
-        if (tileQr != null) {
-            tileQr.setOnClickListener(v ->
-                    NavHostFragment.findNavController(this)
-                            .navigate(R.id.qrFragment));
-        }
-
-        View tileCalendar = view.findViewById(R.id.tileCalendar);
-        if (tileCalendar != null) {
-            tileCalendar.setOnClickListener(v ->
-                    NavHostFragment.findNavController(this)
-                            .navigate(R.id.calendarFragment));
-        }
-
-        View tilePolls = view.findViewById(R.id.tilePolls);
-        if (tilePolls != null) {
-            tilePolls.setOnClickListener(v ->
-                    NavHostFragment.findNavController(this)
-                            .navigate(R.id.pollsFragment));
-        }
-
-        // Gallery — not yet wired to a real destination.
+    @NonNull
+    private String safeString(@Nullable String value, @NonNull String fallback) {
+        return (value != null && !value.trim().isEmpty()) ? value.trim() : fallback;
     }
 }

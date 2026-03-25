@@ -1,338 +1,298 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimaryContainer">
 
-    <!-- Welcome -->
-    <TextView
-        android:id="@+id/tvWelcome"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Welcome, User"
-        android:textColor="?attr/colorOnPrimaryContainer"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="70dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
 
-    <!-- Pinned card -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardPinned"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginTop="18dp"
-        app:cardBackgroundColor="?attr/colorPrimary"
-        app:cardCornerRadius="14dp"
-        app:cardElevation="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tvWelcome"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        <!-- Welcome -->
+        <TextView
+            android:id="@+id/tvWelcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome, User"
+            android:textColor="?attr/colorOnPrimaryContainer"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="18dp" />
 
-        <LinearLayout
+        <!-- Pinned card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPinned"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            app:cardBackgroundColor="?attr/colorPrimary"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <ImageView
-                    android:id="@+id/ivPinned"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_clip"
-                    app:tint="?attr/colorOnPrimary"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_clip"
+                        app:tint="?attr/colorOnPrimary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="Pinned"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/tvPinnedTitle"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tvPinnedBody"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text="Pinned"
+                    android:layout_marginTop="10dp"
+                    android:text=""
                     android:textColor="?attr/colorOnPrimary"
-                    android:textSize="26sp"
-                    android:textStyle="bold"/>
-            </LinearLayout>
+                    android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/tvPinnedBody"
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Announcements section (hidden when empty) -->
+        <TextView
+            android:id="@+id/tvAnnouncementsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Announcements"
+            android:textColor="?attr/colorOnPrimaryContainer"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="18dp"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvAnnouncements"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="false"
+            android:visibility="gone" />
+
+        <!-- Quick Access label -->
+        <TextView
+            android:id="@+id/tvQuickAccess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quick Access"
+            android:textColor="?attr/colorOnPrimaryContainer"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="18dp" />
+
+        <!-- Quick Access grid card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardDashboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="?attr/colorPrimary"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="10dp">
+
+            <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="This is the pinned message\nThis is more of the same message\nGuess what?\nEven more of the same message.\nToodles."
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="14sp"/>
+                android:padding="14dp"
+                android:columnCount="2">
 
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tileEvents"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_events" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Events" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-    <!-- Quick access label -->
-    <TextView
-        android:id="@+id/tvQuickAccess"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Quick Access"
-        android:textColor="?attr/colorOnPrimaryContainer"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="18dp"
-        app:layout_constraintTop_toBottomOf="@id/cardPinned"
-        app:layout_constraintStart_toStartOf="parent"/>
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tileChats"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_chat" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Chats" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-    <!-- Dashboard background card -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardDashboard"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="16dp"
-        app:cardBackgroundColor="?attr/colorPrimary"
-        app:cardCornerRadius="18dp"
-        app:cardElevation="10dp"
-        app:layout_constraintTop_toBottomOf="@id/tvQuickAccess"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tileQr"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_qr" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="QR Code" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-        <GridLayout
-            android:id="@+id/gridQuickAccess"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tileCalendar"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_calendar" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Calendar" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tilePolls"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_polls" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Polls" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tileGallery"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_gallery" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Gallery" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </GridLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Admin Items label (hidden for non-admins) -->
+        <TextView
+            android:id="@+id/tvAdminItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Admin Items"
+            android:textColor="?attr/colorOnPrimaryContainer"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="18dp"
+            android:visibility="gone" />
+
+        <!-- Admin Items grid card (hidden for non-admins) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardAdminDashboard"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="14dp"
-            android:columnCount="2"
-            android:rowCount="3">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="?attr/colorPrimary"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="10dp"
+            android:visibility="gone">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/tileEvents"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_margin="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1">
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="14dp"
+                android:columnCount="2">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="10dp">
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tilePostAnnouncement"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_add" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Post" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Announcement" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_events"
-                        app:tint="?attr/colorOnSecondaryContainer"/>
+                <!-- Placeholder for next admin tile -->
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:layout_columnWeight="1" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Events"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnSecondaryContainer"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            </GridLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/tileChats"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_margin="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_chat"
-                        app:tint="?attr/colorOnSecondaryContainer"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Chats"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnSecondaryContainer"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/tileQr"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_margin="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_qr"
-                        app:tint="?attr/colorOnSecondaryContainer"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="QR Code"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnSecondaryContainer"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/tileCalendar"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_margin="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_calendar"
-                        app:tint="?attr/colorOnSecondaryContainer"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Calendar"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnSecondaryContainer"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/tilePolls"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_margin="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_polls"
-                        app:tint="?attr/colorOnSecondaryContainer"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Polls"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnSecondaryContainer"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/tileGallery"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_margin="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_gallery"
-                        app:tint="?attr/colorOnSecondaryContainer"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Gallery"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnSecondaryContainer"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-        </GridLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
