@@ -3,8 +3,7 @@ package com.example.societyhive_test5;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,19 +27,19 @@ import java.util.Map;
 /**
  * Admin screen for posting a new announcement.
  *
- * If the admin belongs to a single society the societyId is picked automatically.
- * If they belong to multiple, a Spinner lets them choose which society to post to.
+ * Loads all societies from Firestore so the admin can post to any society
+ * regardless of their own membership. Society is chosen via an exposed
+ * dropdown menu that clearly labels itself "Select Society".
  */
 public class CreateAnnouncementFragment extends Fragment {
 
-    private TextInputEditText etTitle;
-    private TextInputEditText etContent;
-    private Spinner spinnerSociety;
-    private TextView tvSocietyLabel;
+    private TextInputEditText    etTitle;
+    private TextInputEditText    etContent;
+    private AutoCompleteTextView actvSociety;
 
-    // Parallel lists: display names and their Firestore IDs
     private final List<String> societyNames = new ArrayList<>();
     private final List<String> societyIds   = new ArrayList<>();
+    private int selectedSocietyIndex = 0;
 
     public CreateAnnouncementFragment() {
         super(R.layout.fragment_create_announcement);
@@ -50,10 +49,9 @@ public class CreateAnnouncementFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        etTitle         = view.findViewById(R.id.etTitle);
-        etContent       = view.findViewById(R.id.etContent);
-        spinnerSociety  = view.findViewById(R.id.spinnerSociety);
-        tvSocietyLabel  = view.findViewById(R.id.tvSocietyLabel);
+        etTitle     = view.findViewById(R.id.etTitle);
+        etContent   = view.findViewById(R.id.etContent);
+        actvSociety = view.findViewById(R.id.actvSociety);
 
         MaterialButton btnPost = view.findViewById(R.id.btnPostAnnouncement);
         btnPost.setOnClickListener(v -> attemptPost());
@@ -62,12 +60,8 @@ public class CreateAnnouncementFragment extends Fragment {
     }
 
     // -------------------------------------------------------------------------
-    // Load the admin's societies to populate the spinner
-    // -------------------------------------------------------------------------
 
     private void loadSocieties() {
-        // Load every society from Firestore so the admin can post to any of them,
-        // regardless of which societies they are personally a member of.
         FirebaseFirestore.getInstance()
                 .collection("societies")
                 .get()
@@ -80,7 +74,7 @@ public class CreateAnnouncementFragment extends Fragment {
                         societyIds.add(doc.getId());
                         societyNames.add(name != null ? name : doc.getId());
                     }
-                    setupSpinner();
+                    setupSocietyDropdown();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
@@ -89,28 +83,21 @@ public class CreateAnnouncementFragment extends Fragment {
                 });
     }
 
-    private void setupSpinner() {
+    private void setupSocietyDropdown() {
         if (societyIds.isEmpty()) {
             Toast.makeText(requireContext(),
                     "No societies found. Add societies to Firestore first.",
                     Toast.LENGTH_LONG).show();
             return;
         }
-        // Always show the picker so the admin can choose which society to post to.
-        tvSocietyLabel.setVisibility(View.VISIBLE);
-        spinnerSociety.setVisibility(View.VISIBLE);
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                societyNames
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSociety.setAdapter(adapter);
+                requireContext(), android.R.layout.simple_dropdown_item_1line, societyNames);
+        actvSociety.setAdapter(adapter);
+        actvSociety.setText(societyNames.get(0), false);
+        actvSociety.setOnItemClickListener(
+                (parent, v, position, id) -> selectedSocietyIndex = position);
     }
 
-    // -------------------------------------------------------------------------
-    // Post
     // -------------------------------------------------------------------------
 
     private void attemptPost() {
@@ -126,19 +113,18 @@ public class CreateAnnouncementFragment extends Fragment {
             return;
         }
         if (societyIds.isEmpty()) {
-            Toast.makeText(requireContext(), "No society found to post to.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(),
+                    "No society found to post to.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        String selectedSocietyId = societyIds.get(spinnerSociety.getSelectedItemPosition());
-
         Map<String, Object> data = new HashMap<>();
         data.put("title",     title);
         data.put("content",   content);
-        data.put("societyId", selectedSocietyId);
+        data.put("societyId", societyIds.get(selectedSocietyIndex));
         data.put("createdBy", user.getUid());
         data.put("createdAt", Timestamp.now());
 
@@ -147,7 +133,8 @@ public class CreateAnnouncementFragment extends Fragment {
                 .add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(), "Announcement posted!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(),
+                            "Announcement posted!", Toast.LENGTH_SHORT).show();
                     NavHostFragment.findNavController(this).navigateUp();
                 })
                 .addOnFailureListener(e -> {

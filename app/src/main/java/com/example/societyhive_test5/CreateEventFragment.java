@@ -5,8 +5,7 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,16 +55,15 @@ public class CreateEventFragment extends Fragment {
     private TextInputEditText etDescription;
     private TextInputEditText etLocation;
     private TextInputEditText etDateTime;
-    private SwitchMaterial    switchPublic;
-    private Spinner           spinnerSociety;
-    private TextView          tvSocietyLabel;
+    private SwitchMaterial       switchPublic;
+    private AutoCompleteTextView actvSociety;
 
-    // Picked date/time parts
     private int pickedYear, pickedMonth, pickedDay, pickedHour, pickedMinute;
     private boolean dateTimePicked = false;
 
     private final List<String> societyNames = new ArrayList<>();
     private final List<String> societyIds   = new ArrayList<>();
+    private int selectedSocietyIndex = 0;
 
     public CreateEventFragment() {
         super(R.layout.fragment_create_event);
@@ -79,9 +77,8 @@ public class CreateEventFragment extends Fragment {
         etDescription  = view.findViewById(R.id.etDescription);
         etLocation     = view.findViewById(R.id.etLocation);
         etDateTime     = view.findViewById(R.id.etDateTime);
-        switchPublic   = view.findViewById(R.id.switchPublic);
-        spinnerSociety = view.findViewById(R.id.spinnerSociety);
-        tvSocietyLabel = view.findViewById(R.id.tvSocietyLabel);
+        switchPublic = view.findViewById(R.id.switchPublic);
+        actvSociety  = view.findViewById(R.id.actvSociety);
 
         MaterialButton btnCreate = view.findViewById(R.id.btnCreateEvent);
 
@@ -139,7 +136,7 @@ public class CreateEventFragment extends Fragment {
                         societyIds.add(doc.getId());
                         societyNames.add(name != null ? name : doc.getId());
                     }
-                    setupSpinner();
+                    setupSocietyDropdown();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
@@ -148,20 +145,19 @@ public class CreateEventFragment extends Fragment {
                 });
     }
 
-    private void setupSpinner() {
+    private void setupSocietyDropdown() {
         if (societyIds.isEmpty()) {
             Toast.makeText(requireContext(),
                     "No societies found. Add societies to Firestore first.",
                     Toast.LENGTH_LONG).show();
             return;
         }
-        tvSocietyLabel.setVisibility(View.VISIBLE);
-        spinnerSociety.setVisibility(View.VISIBLE);
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(), android.R.layout.simple_spinner_item, societyNames);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSociety.setAdapter(adapter);
+                requireContext(), android.R.layout.simple_dropdown_item_1line, societyNames);
+        actvSociety.setAdapter(adapter);
+        actvSociety.setText(societyNames.get(0), false);
+        actvSociety.setOnItemClickListener(
+                (parent, v, position, id) -> selectedSocietyIndex = position);
     }
 
     // -------------------------------------------------------------------------
@@ -196,7 +192,7 @@ public class CreateEventFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        String societyId = societyIds.get(spinnerSociety.getSelectedItemPosition());
+        String societyId = societyIds.get(selectedSocietyIndex);
         boolean isPublic = switchPublic.isChecked();
 
         // Fetch the admin's display name to use as organiser

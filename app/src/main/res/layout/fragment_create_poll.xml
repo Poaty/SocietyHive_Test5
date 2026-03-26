@@ -111,30 +111,30 @@
                     app:strokeColor="?attr/colorOnPrimary"
                     app:cornerRadius="28dp" />
 
-                <!-- Society selector -->
-                <TextView
-                    android:id="@+id/tvSocietyLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Society:"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:textSize="14sp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="6dp"
-                    android:visibility="gone" />
-
-                <Spinner
-                    android:id="@+id/spinnerSociety"
+                <!-- Society dropdown -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilSociety"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/bg_spinner"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:visibility="gone" />
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:hint="Select Society"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:boxStrokeWidth="1dp">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actvSociety"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:cursorVisible="false" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Create Poll button -->
                 <com.google.android.material.button.MaterialButton
