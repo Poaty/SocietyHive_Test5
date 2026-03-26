@@ -134,8 +134,7 @@
                         android:textColorHint="?attr/colorOnPrimary"
                         android:focusable="false"
                         android:clickable="true"
-                        android:cursorVisible="false"
-                        android:hint="Tap to pick date &amp; time" />
+                        android:cursorVisible="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Public / Private toggle -->
