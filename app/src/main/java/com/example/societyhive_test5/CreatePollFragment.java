@@ -4,9 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -52,9 +51,12 @@ public class CreatePollFragment extends Fragment {
     private Spinner spinnerSociety;
     private TextView tvSocietyLabel;
 
+    private AutoCompleteTextView actvSociety;
+
     private final List<TextInputEditText> optionFields = new ArrayList<>();
     private final List<String> societyNames = new ArrayList<>();
     private final List<String> societyIds   = new ArrayList<>();
+    private int selectedSocietyIndex = 0;
 
     public CreatePollFragment() {
         super(R.layout.fragment_create_poll);
@@ -64,11 +66,10 @@ public class CreatePollFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        etTitle        = view.findViewById(R.id.etTitle);
-        etQuestion     = view.findViewById(R.id.etQuestion);
+        etTitle          = view.findViewById(R.id.etTitle);
+        etQuestion       = view.findViewById(R.id.etQuestion);
         optionsContainer = view.findViewById(R.id.optionsContainer);
-        spinnerSociety = view.findViewById(R.id.spinnerSociety);
-        tvSocietyLabel = view.findViewById(R.id.tvSocietyLabel);
+        actvSociety      = view.findViewById(R.id.actvSociety);
 
         MaterialButton btnAddOption  = view.findViewById(R.id.btnAddOption);
         MaterialButton btnCreatePoll = view.findViewById(R.id.btnCreatePoll);
@@ -109,7 +110,7 @@ public class CreatePollFragment extends Fragment {
                         societyIds.add(doc.getId());
                         societyNames.add(name != null ? name : doc.getId());
                     }
-                    setupSpinner();
+                    setupSocietyDropdown();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
@@ -118,20 +119,19 @@ public class CreatePollFragment extends Fragment {
                 });
     }
 
-    private void setupSpinner() {
+    private void setupSocietyDropdown() {
         if (societyIds.isEmpty()) {
             Toast.makeText(requireContext(),
                     "No societies found. Add societies to Firestore first.",
                     Toast.LENGTH_LONG).show();
             return;
         }
-        tvSocietyLabel.setVisibility(View.VISIBLE);
-        spinnerSociety.setVisibility(View.VISIBLE);
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(), android.R.layout.simple_spinner_item, societyNames);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSociety.setAdapter(adapter);
+                requireContext(), android.R.layout.simple_dropdown_item_1line, societyNames);
+        actvSociety.setAdapter(adapter);
+        actvSociety.setText(societyNames.get(0), false);
+        actvSociety.setOnItemClickListener(
+                (parent, v, position, id) -> selectedSocietyIndex = position);
     }
 
     // -------------------------------------------------------------------------
@@ -168,7 +168,7 @@ public class CreatePollFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        String societyId = societyIds.get(spinnerSociety.getSelectedItemPosition());
+        String societyId = societyIds.get(selectedSocietyIndex);
 
         Map<String, Object> data = new HashMap<>();
         data.put("title",     title);
