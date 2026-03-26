@@ -109,16 +109,33 @@ public class ChatsFragment extends Fragment {
                 .addOnSuccessListener(userDoc -> {
                     if (!isAdded()) return;
 
+                    boolean isAdmin = "admin".equalsIgnoreCase(userDoc.getString("role"));
+
+                    if (isAdmin) {
+                        // Admins see every society's chat
+                        db.collection("societies")
+                                .get()
+                                .addOnSuccessListener(querySnapshot -> {
+                                    if (!isAdded()) return;
+                                    allChats.clear();
+                                    if (querySnapshot.isEmpty()) { applySearch(); return; }
+                                    AtomicInteger remaining = new AtomicInteger(querySnapshot.size());
+                                    for (QueryDocumentSnapshot societyDoc : querySnapshot) {
+                                        addChatFromSociety(societyDoc, db, remaining);
+                                    }
+                                });
+                        return;
+                    }
+
+                    // Regular users — load only their societies
                     List<String> societyIds = (List<String>) userDoc.get("societyIds");
                     if (societyIds == null || societyIds.isEmpty()) {
-                        // User has no societies — show empty state
                         allChats.clear();
                         applySearch();
                         return;
                     }
 
                     allChats.clear();
-                    // Use AtomicInteger to know when all society docs have loaded
                     AtomicInteger remaining = new AtomicInteger(societyIds.size());
 
                     for (String societyId : societyIds) {

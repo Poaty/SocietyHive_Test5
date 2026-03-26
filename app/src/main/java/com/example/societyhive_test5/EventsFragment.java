@@ -60,6 +60,7 @@ public class EventsFragment extends Fragment {
 
     // The societies this user belongs to — used for visibility filtering
     private final Set<String> userSocietyIds = new HashSet<>();
+    private boolean isAdmin = false;
 
     public EventsFragment() {
         super(R.layout.fragment_events);
@@ -194,6 +195,7 @@ public class EventsFragment extends Fragment {
                 .get()
                 .addOnSuccessListener((DocumentSnapshot doc) -> {
                     if (!isAdded()) return;
+                    isAdmin = "admin".equalsIgnoreCase(doc.getString("role"));
                     userSocietyIds.clear();
                     List<?> ids = (List<?>) doc.get("societyIds");
                     if (ids != null) {
@@ -357,8 +359,8 @@ public class EventsFragment extends Fragment {
         Calendar nextWeekEnd   = getWeekStart(2);
 
         for (Event e : allEvents) {
-            // Visibility: show if user is in the society OR is already attending (e.g. joined via QR)
-            if (!userSocietyIds.contains(e.getSocietyId()) && !e.isAttending()) continue;
+            // Visibility: admins see all events; others see their society's events or ones they attend
+            if (!isAdmin && !userSocietyIds.contains(e.getSocietyId()) && !e.isAttending()) continue;
 
             // Search filter
             if (!query.isEmpty() && !e.getName().toLowerCase(Locale.UK).contains(query)) continue;
