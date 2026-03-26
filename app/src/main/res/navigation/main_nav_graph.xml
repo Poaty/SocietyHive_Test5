@@ -73,4 +73,24 @@
         android:name="com.example.societyhive_test5.CreateAnnouncementFragment"
         android:label="Post Announcement" />
 
+    <fragment
+        android:id="@+id/userManagementFragment"
+        android:name="com.example.societyhive_test5.UserManagementFragment"
+        android:label="User Management" />
+
+    <fragment
+        android:id="@+id/createPollFragment"
+        android:name="com.example.societyhive_test5.CreatePollFragment"
+        android:label="Poll Creation" />
+
+    <fragment
+        android:id="@+id/createEventFragment"
+        android:name="com.example.societyhive_test5.CreateEventFragment"
+        android:label="Event Creation" />
+
+    <fragment
+        android:id="@+id/createPinFragment"
+        android:name="com.example.societyhive_test5.CreatePinFragment"
+        android:label="Pin Creation" />
+
 </navigation>

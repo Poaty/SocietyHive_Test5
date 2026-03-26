@@ -267,6 +267,78 @@
                 android:columnCount="2">
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tileUserManagement"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_person" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="User" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Management" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tileCreatePoll"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_check" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Create" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Poll" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tileCreateEvent"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_events" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Create" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Event" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/tileCreatePin"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
+                    android:layout_columnWeight="1">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
+                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_clip" app:tint="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Create" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pin" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/tilePostAnnouncement"
                     android:layout_width="0dp"
                     android:layout_height="90dp"
@@ -284,7 +356,6 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Placeholder for next admin tile -->
                 <Space
                     android:layout_width="0dp"
                     android:layout_height="90dp"

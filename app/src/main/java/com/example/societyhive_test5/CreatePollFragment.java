@@ -1,8 +1,10 @@
 package com.example.societyhive_test5;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,48 +29,74 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Admin screen for posting a new announcement.
+ * Admin screen for creating a new poll.
  *
- * If the admin belongs to a single society the societyId is picked automatically.
- * If they belong to multiple, a Spinner lets them choose which society to post to.
+ * Loads all societies from Firestore so the admin can choose which
+ * society the poll belongs to. Options can be added dynamically.
+ *
+ * Firestore structure written:
+ *   polls/{auto}
+ *     title       (String)
+ *     question    (String)
+ *     options     (Array<String>)
+ *     societyId   (String)
+ *     isActive    (boolean) = true
+ *     createdBy   (String)
+ *     createdAt   (Timestamp)
  */
-public class CreateAnnouncementFragment extends Fragment {
+public class CreatePollFragment extends Fragment {
 
     private TextInputEditText etTitle;
-    private TextInputEditText etContent;
+    private TextInputEditText etQuestion;
+    private LinearLayout optionsContainer;
     private Spinner spinnerSociety;
     private TextView tvSocietyLabel;
 
-    // Parallel lists: display names and their Firestore IDs
+    private final List<TextInputEditText> optionFields = new ArrayList<>();
     private final List<String> societyNames = new ArrayList<>();
     private final List<String> societyIds   = new ArrayList<>();
 
-    public CreateAnnouncementFragment() {
-        super(R.layout.fragment_create_announcement);
+    public CreatePollFragment() {
+        super(R.layout.fragment_create_poll);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        etTitle         = view.findViewById(R.id.etTitle);
-        etContent       = view.findViewById(R.id.etContent);
-        spinnerSociety  = view.findViewById(R.id.spinnerSociety);
-        tvSocietyLabel  = view.findViewById(R.id.tvSocietyLabel);
+        etTitle        = view.findViewById(R.id.etTitle);
+        etQuestion     = view.findViewById(R.id.etQuestion);
+        optionsContainer = view.findViewById(R.id.optionsContainer);
+        spinnerSociety = view.findViewById(R.id.spinnerSociety);
+        tvSocietyLabel = view.findViewById(R.id.tvSocietyLabel);
 
-        MaterialButton btnPost = view.findViewById(R.id.btnPostAnnouncement);
-        btnPost.setOnClickListener(v -> attemptPost());
+        MaterialButton btnAddOption  = view.findViewById(R.id.btnAddOption);
+        MaterialButton btnCreatePoll = view.findViewById(R.id.btnCreatePoll);
+
+        // Start with two blank option fields
+        addOptionField();
+        addOptionField();
+
+        btnAddOption.setOnClickListener(v -> addOptionField());
+        btnCreatePoll.setOnClickListener(v -> attemptCreate());
 
         loadSocieties();
     }
 
     // -------------------------------------------------------------------------
-    // Load the admin's societies to populate the spinner
-    // -------------------------------------------------------------------------
+
+    private void addOptionField() {
+        View optionView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.item_poll_option, optionsContainer, false);
+        TextInputLayout til = (TextInputLayout) optionView;
+        til.setHint("Option " + (optionFields.size() + 1));
+
+        TextInputEditText et = optionView.findViewById(R.id.etOption);
+        optionsContainer.addView(optionView);
+        optionFields.add(et);
+    }
 
     private void loadSocieties() {
-        // Load every society from Firestore so the admin can post to any of them,
-        // regardless of which societies they are personally a member of.
         FirebaseFirestore.getInstance()
                 .collection("societies")
                 .get()
@@ -96,64 +125,77 @@ public class CreateAnnouncementFragment extends Fragment {
                     Toast.LENGTH_LONG).show();
             return;
         }
-        // Always show the picker so the admin can choose which society to post to.
         tvSocietyLabel.setVisibility(View.VISIBLE);
         spinnerSociety.setVisibility(View.VISIBLE);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                societyNames
-        );
+                requireContext(), android.R.layout.simple_spinner_item, societyNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSociety.setAdapter(adapter);
     }
 
     // -------------------------------------------------------------------------
-    // Post
-    // -------------------------------------------------------------------------
 
-    private void attemptPost() {
-        String title   = etTitle.getText() != null ? etTitle.getText().toString().trim() : "";
-        String content = etContent.getText() != null ? etContent.getText().toString().trim() : "";
+    private void attemptCreate() {
+        String title    = text(etTitle);
+        String question = text(etQuestion);
 
         if (title.isEmpty()) {
-            etTitle.setError("Please enter a title");
+            etTitle.setError("Please enter a poll title");
             return;
         }
-        if (content.isEmpty()) {
-            etContent.setError("Please enter some content");
+        if (question.isEmpty()) {
+            etQuestion.setError("Please enter a poll question");
+            return;
+        }
+
+        List<String> options = new ArrayList<>();
+        for (TextInputEditText et : optionFields) {
+            String t = text(et);
+            if (!t.isEmpty()) options.add(t);
+        }
+        if (options.size() < 2) {
+            Toast.makeText(requireContext(),
+                    "Please enter at least 2 options.", Toast.LENGTH_SHORT).show();
             return;
         }
         if (societyIds.isEmpty()) {
-            Toast.makeText(requireContext(), "No society found to post to.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(),
+                    "No society selected.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        String selectedSocietyId = societyIds.get(spinnerSociety.getSelectedItemPosition());
+        String societyId = societyIds.get(spinnerSociety.getSelectedItemPosition());
 
         Map<String, Object> data = new HashMap<>();
         data.put("title",     title);
-        data.put("content",   content);
-        data.put("societyId", selectedSocietyId);
+        data.put("question",  question);
+        data.put("options",   options);
+        data.put("societyId", societyId);
+        data.put("isActive",  true);
         data.put("createdBy", user.getUid());
         data.put("createdAt", Timestamp.now());
 
         FirebaseFirestore.getInstance()
-                .collection("announcements")
+                .collection("polls")
                 .add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(), "Announcement posted!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Poll created!", Toast.LENGTH_SHORT).show();
                     NavHostFragment.findNavController(this).navigateUp();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
-                            "Failed to post: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            "Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
+    }
+
+    @NonNull
+    private String text(@Nullable TextInputEditText et) {
+        return (et != null && et.getText() != null) ? et.getText().toString().trim() : "";
     }
 }
