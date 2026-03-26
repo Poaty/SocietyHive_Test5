@@ -26,48 +26,45 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Admin screen for posting a new announcement.
+ * Admin screen for creating a pinned message for a society.
  *
- * If the admin belongs to a single society the societyId is picked automatically.
- * If they belong to multiple, a Spinner lets them choose which society to post to.
+ * Writes to Firestore:
+ *   pins/{auto}
+ *     content    (String)
+ *     societyId  (String)
+ *     createdBy  (String)
+ *     createdAt  (Timestamp)
  */
-public class CreateAnnouncementFragment extends Fragment {
+public class CreatePinFragment extends Fragment {
 
-    private TextInputEditText etTitle;
-    private TextInputEditText etContent;
-    private Spinner spinnerSociety;
-    private TextView tvSocietyLabel;
+    private TextInputEditText etPinContent;
+    private Spinner           spinnerSociety;
+    private TextView          tvSocietyLabel;
 
-    // Parallel lists: display names and their Firestore IDs
     private final List<String> societyNames = new ArrayList<>();
     private final List<String> societyIds   = new ArrayList<>();
 
-    public CreateAnnouncementFragment() {
-        super(R.layout.fragment_create_announcement);
+    public CreatePinFragment() {
+        super(R.layout.fragment_create_pin);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        etTitle         = view.findViewById(R.id.etTitle);
-        etContent       = view.findViewById(R.id.etContent);
-        spinnerSociety  = view.findViewById(R.id.spinnerSociety);
-        tvSocietyLabel  = view.findViewById(R.id.tvSocietyLabel);
+        etPinContent   = view.findViewById(R.id.etPinContent);
+        spinnerSociety = view.findViewById(R.id.spinnerSociety);
+        tvSocietyLabel = view.findViewById(R.id.tvSocietyLabel);
 
-        MaterialButton btnPost = view.findViewById(R.id.btnPostAnnouncement);
-        btnPost.setOnClickListener(v -> attemptPost());
+        MaterialButton btnCreatePin = view.findViewById(R.id.btnCreatePin);
+        btnCreatePin.setOnClickListener(v -> attemptCreate());
 
         loadSocieties();
     }
 
     // -------------------------------------------------------------------------
-    // Load the admin's societies to populate the spinner
-    // -------------------------------------------------------------------------
 
     private void loadSocieties() {
-        // Load every society from Firestore so the admin can post to any of them,
-        // regardless of which societies they are personally a member of.
         FirebaseFirestore.getInstance()
                 .collection("societies")
                 .get()
@@ -96,64 +93,54 @@ public class CreateAnnouncementFragment extends Fragment {
                     Toast.LENGTH_LONG).show();
             return;
         }
-        // Always show the picker so the admin can choose which society to post to.
         tvSocietyLabel.setVisibility(View.VISIBLE);
         spinnerSociety.setVisibility(View.VISIBLE);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                societyNames
-        );
+                requireContext(), android.R.layout.simple_spinner_item, societyNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSociety.setAdapter(adapter);
     }
 
     // -------------------------------------------------------------------------
-    // Post
-    // -------------------------------------------------------------------------
 
-    private void attemptPost() {
-        String title   = etTitle.getText() != null ? etTitle.getText().toString().trim() : "";
-        String content = etContent.getText() != null ? etContent.getText().toString().trim() : "";
+    private void attemptCreate() {
+        String content = etPinContent.getText() != null
+                ? etPinContent.getText().toString().trim() : "";
 
-        if (title.isEmpty()) {
-            etTitle.setError("Please enter a title");
-            return;
-        }
         if (content.isEmpty()) {
-            etContent.setError("Please enter some content");
+            etPinContent.setError("Please write a pin message");
             return;
         }
         if (societyIds.isEmpty()) {
-            Toast.makeText(requireContext(), "No society found to post to.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(),
+                    "No society selected.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        String selectedSocietyId = societyIds.get(spinnerSociety.getSelectedItemPosition());
+        String societyId = societyIds.get(spinnerSociety.getSelectedItemPosition());
 
         Map<String, Object> data = new HashMap<>();
-        data.put("title",     title);
         data.put("content",   content);
-        data.put("societyId", selectedSocietyId);
+        data.put("societyId", societyId);
         data.put("createdBy", user.getUid());
         data.put("createdAt", Timestamp.now());
 
         FirebaseFirestore.getInstance()
-                .collection("announcements")
+                .collection("pins")
                 .add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(), "Announcement posted!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Pin created!", Toast.LENGTH_SHORT).show();
                     NavHostFragment.findNavController(this).navigateUp();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
-                            "Failed to post: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            "Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 }

@@ -1,78 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.textfield.TextInputLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tilOption"
+    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/bg_poll_option"
-    android:layout_marginBottom="10dp"
-    android:clickable="true"
-    android:focusable="true">
+    android:layout_marginBottom="8dp"
+    app:boxStrokeColor="?attr/colorOnPrimary"
+    app:boxStrokeWidthFocused="2dp"
+    app:hintTextColor="?attr/colorOnPrimary"
+    app:boxStrokeWidth="1dp">
 
-    <!-- Main row: option text + checkbox -->
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etOption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp">
+        android:textColor="?attr/colorOnPrimary"
+        android:textColorHint="?attr/colorOnPrimary"
+        android:inputType="textCapSentences" />
 
-        <TextView
-            android:id="@+id/tvOptionText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Option"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/ivCheckbox"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:src="@drawable/ic_checkbox_empty" />
-
-    </LinearLayout>
-
-    <!-- Vote results row — shown only after the user has voted -->
-    <LinearLayout
-        android:id="@+id/layoutVoteResult"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="12dp"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:id="@+id/progressVotes"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="0dp"
-            android:layout_height="8dp"
-            android:layout_weight="1"
-            android:max="100"
-            android:progress="0"
-            android:progressTint="?attr/colorPrimary"
-            android:progressBackgroundTint="#E0E0E0" />
-
-        <TextView
-            android:id="@+id/tvVoteCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:minWidth="48dp"
-            android:gravity="end"
-            android:text="0 votes" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</com.google.android.material.textfield.TextInputLayout>
