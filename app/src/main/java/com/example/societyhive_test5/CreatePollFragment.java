@@ -87,7 +87,7 @@ public class CreatePollFragment extends Fragment {
 
     private void addOptionField() {
         View optionView = LayoutInflater.from(requireContext())
-                .inflate(R.layout.item_poll_option, optionsContainer, false);
+                .inflate(R.layout.item_poll_option_input, optionsContainer, false);
         TextInputLayout til = (TextInputLayout) optionView;
         til.setHint("Option " + (optionFields.size() + 1));
 
