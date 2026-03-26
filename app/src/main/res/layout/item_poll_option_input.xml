@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.textfield.TextInputLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tilOption"
+    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:boxStrokeColor="?attr/colorOnPrimary"
+    app:boxStrokeWidthFocused="2dp"
+    app:hintTextColor="?attr/colorOnPrimary"
+    app:boxStrokeWidth="1dp">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etOption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/colorOnPrimary"
+        android:textColorHint="?attr/colorOnPrimary"
+        android:inputType="textCapSentences" />
+
+</com.google.android.material.textfield.TextInputLayout>
