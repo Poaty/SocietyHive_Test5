@@ -36,6 +36,7 @@ public class HomeFragment extends Fragment {
     private AnnouncementsAdapter announcementsAdapter;
     private final List<Announcement> announcements = new ArrayList<>();
     private final Set<String> userSocietyIds = new HashSet<>();
+    private boolean isAdmin = false;
 
     public HomeFragment() {
         super(R.layout.fragment_home);
@@ -83,7 +84,7 @@ public class HomeFragment extends Fragment {
 
                     // Role
                     String role = doc.getString("role");
-                    boolean isAdmin = "admin".equalsIgnoreCase(role);
+                    isAdmin = "admin".equalsIgnoreCase(role);
                     showAdminSection(view, isAdmin);
 
                     // Society IDs
@@ -114,7 +115,7 @@ public class HomeFragment extends Fragment {
 
     private void loadAnnouncements(@NonNull View view) {
         FirebaseFirestore.getInstance()
-                .collection("announcements")
+                .collection("pins")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
@@ -122,14 +123,15 @@ public class HomeFragment extends Fragment {
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         String societyId = doc.getString("societyId");
-                        // Only show announcements for societies the user belongs to
-                        if (societyId != null && !societyId.isEmpty()
+                        // Admins see all pins; regular users see pins for their societies only
+                        if (!isAdmin && societyId != null && !societyId.isEmpty()
                                 && !userSocietyIds.contains(societyId)) continue;
 
                         Announcement a = new Announcement();
                         a.setId(doc.getId());
-                        a.setTitle(safeString(doc.getString("title"), ""));
-                        a.setContent(safeString(doc.getString("content"), ""));
+                        // Pins have no separate title — show content as the headline
+                        a.setTitle(safeString(doc.getString("content"), ""));
+                        a.setContent("");
                         a.setSocietyId(societyId != null ? societyId : "");
                         a.setCreatedBy(safeString(doc.getString("createdBy"), ""));
                         a.setCreatedAt(doc.getTimestamp("createdAt"));
@@ -139,7 +141,7 @@ public class HomeFragment extends Fragment {
                     fetchAnnouncementSocietyNames(view);
                 })
                 .addOnFailureListener(e -> {
-                    // Silent — no announcements shown
+                    // Silent — no pins shown
                 });
     }
 
