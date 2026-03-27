@@ -180,6 +180,23 @@ public class HomeFragment extends Fragment {
     }
 
     private void publishAnnouncements(@NonNull View view) {
+        // Admins can delete pins directly from the home screen
+        if (isAdmin) {
+            announcementsAdapter.setDeleteListener(pinId ->
+                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                            .collection("pins")
+                            .document(pinId)
+                            .delete()
+                            .addOnSuccessListener(unused -> {
+                                if (!isAdded()) return;
+                                announcements.removeIf(a -> a.getId().equals(pinId));
+                                announcementsAdapter.updateList(announcements);
+                                int vis = announcements.isEmpty() ? View.GONE : View.VISIBLE;
+                                view.findViewById(R.id.tvAnnouncementsLabel).setVisibility(vis);
+                                view.findViewById(R.id.rvAnnouncements).setVisibility(vis);
+                            }));
+        }
+
         announcementsAdapter.updateList(announcements);
 
         int visibility = announcements.isEmpty() ? View.GONE : View.VISIBLE;
@@ -197,7 +214,6 @@ public class HomeFragment extends Fragment {
         wire(view, R.id.tileQr,                R.id.qrFragment);
         wire(view, R.id.tileCalendar,          R.id.calendarFragment);
         wire(view, R.id.tilePolls,             R.id.pollsFragment);
-        wire(view, R.id.tilePostAnnouncement,  R.id.createAnnouncementFragment);
         wire(view, R.id.tileUserManagement,    R.id.userManagementFragment);
         wire(view, R.id.tileCreatePoll,        R.id.createPollFragment);
         wire(view, R.id.tileCreateEvent,       R.id.createEventFragment);
