@@ -288,24 +288,6 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/tilePostAnnouncement"
-                    android:layout_width="0dp"
-                    android:layout_height="90dp"
-                    android:layout_margin="10dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                    android:layout_columnWeight="1">
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="10dp">
-                        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_add" app:tint="?attr/colorOnSecondaryContainer"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="Post" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Announcement" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/tileEditSociety"
                     android:layout_width="0dp"
                     android:layout_height="90dp"
@@ -322,6 +304,12 @@
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Society" android:textStyle="bold" android:textColor="?attr/colorOnSecondaryContainer"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_margin="10dp"
+                    android:layout_columnWeight="1" />
 
             </GridLayout>
         </com.google.android.material.card.MaterialCardView>

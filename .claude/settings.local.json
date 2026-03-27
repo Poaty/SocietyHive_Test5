@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /d/Projects/SocietyHive_Test5/.claude/worktrees/blissful-hellman -type f -name *.kt)",
+      "Bash(find /d/Projects/SocietyHive_Test5/.claude/worktrees/blissful-hellman/app -type f -name *.kt)"
+    ]
+  }
+}

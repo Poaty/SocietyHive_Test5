@@ -15,40 +15,49 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Society name badge -->
-        <TextView
-            android:id="@+id/tvSocietyName"
-            android:layout_width="wrap_content"
+        <!-- Top row: society badge + delete button -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/bg_society_badge"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:textColor="?attr/colorOnPrimary"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
 
-        <!-- Title -->
+            <TextView
+                android:id="@+id/tvSocietyName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_society_badge"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:textColor="?attr/colorOnPrimary"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/btnDeletePin"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Delete pin"
+                app:tint="?attr/colorOnPrimary"
+                android:alpha="0.7"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!-- Pin content -->
         <TextView
             android:id="@+id/tvAnnouncementTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="?attr/colorOnPrimary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <!-- Content body -->
-        <TextView
-            android:id="@+id/tvAnnouncementContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:textColor="?attr/colorOnPrimary"
-            android:alpha="0.85"
-            android:textSize="14sp" />
+            android:textSize="15sp" />
 
         <!-- Timestamp -->
         <TextView

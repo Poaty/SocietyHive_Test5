@@ -69,11 +69,6 @@
         android:label="Polls" />
 
     <fragment
-        android:id="@+id/createAnnouncementFragment"
-        android:name="com.example.societyhive_test5.CreateAnnouncementFragment"
-        android:label="Post Announcement" />
-
-    <fragment
         android:id="@+id/userManagementFragment"
         android:name="com.example.societyhive_test5.UserManagementFragment"
         android:label="User Management" />
