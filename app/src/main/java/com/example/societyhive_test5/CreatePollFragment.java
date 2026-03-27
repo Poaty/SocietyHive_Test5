@@ -48,9 +48,6 @@ public class CreatePollFragment extends Fragment {
     private TextInputEditText etTitle;
     private TextInputEditText etQuestion;
     private LinearLayout optionsContainer;
-    private Spinner spinnerSociety;
-    private TextView tvSocietyLabel;
-
     private AutoCompleteTextView actvSociety;
 
     private final List<TextInputEditText> optionFields = new ArrayList<>();
