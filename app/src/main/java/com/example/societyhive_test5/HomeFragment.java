@@ -200,6 +200,7 @@ public class HomeFragment extends Fragment {
         wire(view, R.id.tileCreatePoll,        R.id.createPollFragment);
         wire(view, R.id.tileCreateEvent,       R.id.createEventFragment);
         wire(view, R.id.tileCreatePin,         R.id.createPinFragment);
+        wire(view, R.id.tileEditSociety,       R.id.editSocietyFragment);
         // tileGallery — destination not yet implemented
     }
 

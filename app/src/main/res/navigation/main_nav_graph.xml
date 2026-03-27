@@ -93,4 +93,9 @@
         android:name="com.example.societyhive_test5.CreatePinFragment"
         android:label="Pin Creation" />
 
+    <fragment
+        android:id="@+id/editSocietyFragment"
+        android:name="com.example.societyhive_test5.EditSocietyFragment"
+        android:label="Edit Society" />
+
 </navigation>
