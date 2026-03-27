@@ -1,9 +1,17 @@
 package com.example.societyhive_test5;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 import androidx.annotation.NonNull;
@@ -26,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
         ThemeHelper.apply(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        requestNotificationPermission();
+        fetchAndSaveFcmToken();
 
         MaterialToolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
@@ -122,6 +133,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         return navController.navigateUp() || super.onSupportNavigateUp();
+    }
+
+    // -------------------------------------------------------------------------
+    // FCM setup
+    // -------------------------------------------------------------------------
+
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1001);
+            }
+        }
+    }
+
+    private void fetchAndSaveFcmToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnSuccessListener(token ->
+                        MyFirebaseMessagingService.saveTokenToFirestore(token));
     }
 
 }
