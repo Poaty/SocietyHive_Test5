@@ -12,6 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -19,8 +22,6 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,8 +31,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class GalleryFragment extends Fragment {
 
+    private static final String CLOUD_NAME     = "dybgordqu";
+    private static final String UPLOAD_PRESET  = "societyhive_gallery";
+
     private boolean isAdmin = false;
-    private final List<String> tabSocietyIds = new ArrayList<>();
+    private final List<String> tabSocietyIds   = new ArrayList<>();
     private final List<String> tabSocietyNames = new ArrayList<>();
     private String pendingSocietyId;
     private ActivityResultLauncher<String> imagePickerLauncher;
@@ -43,6 +47,14 @@ public class GalleryFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Initialise Cloudinary once — throws if called again, so catch silently
+        try {
+            Map<String, String> config = new HashMap<>();
+            config.put("cloud_name", CLOUD_NAME);
+            MediaManager.init(requireContext().getApplicationContext(), config);
+        } catch (IllegalStateException ignored) {}
+
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
                 uri -> {
@@ -56,7 +68,7 @@ public class GalleryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TabLayout tabLayout = view.findViewById(R.id.tabLayoutGallery);
+        TabLayout tabLayout  = view.findViewById(R.id.tabLayoutGallery);
         ViewPager2 viewPager = view.findViewById(R.id.viewPagerGallery);
         FloatingActionButton fabUpload = view.findViewById(R.id.fabUpload);
 
@@ -68,7 +80,6 @@ public class GalleryFragment extends Fragment {
             isAdmin = "admin".equals(userDoc.getString("role"));
 
             if (isAdmin) {
-                // Admin sees all societies
                 db.collection("societies").get().addOnSuccessListener(snap -> {
                     if (!isAdded()) return;
                     tabSocietyIds.add("");
@@ -96,7 +107,6 @@ public class GalleryFragment extends Fragment {
                     return;
                 }
 
-                // Only show "All" tab when in more than one society
                 if (ids.size() > 1) {
                     tabSocietyIds.add("");
                     tabSocietyNames.add("All");
@@ -131,9 +141,8 @@ public class GalleryFragment extends Fragment {
                 (tab, pos) -> tab.setText(tabSocietyNames.get(pos))).attach();
 
         if (isAdmin) {
-            // FAB hidden on "All" tab, visible on specific society tabs
-            boolean firstTabIsAll = tabSocietyIds.get(0).isEmpty();
-            fabUpload.setVisibility(firstTabIsAll ? View.GONE : View.VISIBLE);
+            boolean firstIsAll = tabSocietyIds.get(0).isEmpty();
+            fabUpload.setVisibility(firstIsAll ? View.GONE : View.VISIBLE);
 
             tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
@@ -161,30 +170,42 @@ public class GalleryFragment extends Fragment {
         Toast.makeText(requireContext(), "Uploading…", Toast.LENGTH_SHORT).show();
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        String filename = System.currentTimeMillis() + ".jpg";
-        StorageReference ref = FirebaseStorage.getInstance()
-                .getReference("gallery/" + societyId + "/" + filename);
 
-        ref.putFile(uri)
-                .continueWithTask(task -> {
-                    if (!task.isSuccessful()) throw task.getException();
-                    return ref.getDownloadUrl();
-                })
-                .addOnSuccessListener(downloadUri -> {
-                    if (!isAdded()) return;
-                    Map<String, Object> photo = new HashMap<>();
-                    photo.put("societyId", societyId);
-                    photo.put("imageUrl", downloadUri.toString());
-                    photo.put("uploadedBy", uid);
-                    photo.put("createdAt", Timestamp.now());
+        MediaManager.get().upload(uri)
+                .unsigned(UPLOAD_PRESET)
+                .callback(new UploadCallback() {
+                    @Override public void onStart(String requestId) {}
+                    @Override public void onProgress(String requestId, long bytes, long totalBytes) {}
 
-                    FirebaseFirestore.getInstance().collection("gallery").add(photo)
-                            .addOnSuccessListener(docRef ->
-                                    Toast.makeText(requireContext(),
-                                            "Photo uploaded!", Toast.LENGTH_SHORT).show());
+                    @Override
+                    public void onSuccess(String requestId, Map resultData) {
+                        if (!isAdded()) return;
+                        String imageUrl = (String) resultData.get("secure_url");
+
+                        Map<String, Object> photo = new HashMap<>();
+                        photo.put("societyId", societyId);
+                        photo.put("imageUrl", imageUrl);
+                        photo.put("uploadedBy", uid);
+                        photo.put("createdAt", Timestamp.now());
+
+                        FirebaseFirestore.getInstance().collection("gallery").add(photo)
+                                .addOnSuccessListener(ref ->
+                                        requireActivity().runOnUiThread(() ->
+                                                Toast.makeText(requireContext(),
+                                                        "Photo uploaded!", Toast.LENGTH_SHORT).show()));
+                    }
+
+                    @Override
+                    public void onError(String requestId, ErrorInfo error) {
+                        if (!isAdded()) return;
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(requireContext(),
+                                        "Upload failed: " + error.getDescription(),
+                                        Toast.LENGTH_LONG).show());
+                    }
+
+                    @Override public void onReschedule(String requestId, ErrorInfo error) {}
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(requireContext(),
-                                "Upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                .dispatch();
     }
 }
