@@ -93,4 +93,9 @@
         android:name="com.example.societyhive_test5.EditSocietyFragment"
         android:label="Edit Society" />
 
+    <fragment
+        android:id="@+id/galleryFragment"
+        android:name="com.example.societyhive_test5.GalleryFragment"
+        android:label="Gallery" />
+
 </navigation>
