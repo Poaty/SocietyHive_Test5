@@ -20,22 +20,26 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * One page in the gallery ViewPager. societyId="" means "All societies".
- */
 public class GalleryPageFragment extends Fragment {
 
-    private static final String ARG_SOCIETY_ID = "societyId";
+    private static final String ARG_SOCIETY_ID  = "societyId";
+    private static final String ARG_CURRENT_UID = "currentUid";
+    private static final String ARG_IS_ADMIN    = "isAdmin";
 
     private String societyId;
+    private String currentUid;
+    private boolean isAdmin;
+
     private GalleryAdapter adapter;
     private final List<GalleryPhoto> photos = new ArrayList<>();
     private ListenerRegistration snapshotListener;
 
-    public static GalleryPageFragment newInstance(String societyId) {
+    public static GalleryPageFragment newInstance(String societyId, String currentUid, boolean isAdmin) {
         GalleryPageFragment f = new GalleryPageFragment();
         Bundle args = new Bundle();
         args.putString(ARG_SOCIETY_ID, societyId);
+        args.putString(ARG_CURRENT_UID, currentUid);
+        args.putBoolean(ARG_IS_ADMIN, isAdmin);
         f.setArguments(args);
         return f;
     }
@@ -43,8 +47,11 @@ public class GalleryPageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        societyId = getArguments() != null
-                ? getArguments().getString(ARG_SOCIETY_ID, "") : "";
+        if (getArguments() != null) {
+            societyId  = getArguments().getString(ARG_SOCIETY_ID, "");
+            currentUid = getArguments().getString(ARG_CURRENT_UID, "");
+            isAdmin    = getArguments().getBoolean(ARG_IS_ADMIN, false);
+        }
     }
 
     @Nullable
@@ -62,7 +69,13 @@ public class GalleryPageFragment extends Fragment {
         RecyclerView rv = view.findViewById(R.id.rvGallery);
         TextView tvEmpty = view.findViewById(R.id.tvEmptyGallery);
 
-        adapter = new GalleryAdapter(requireContext());
+        adapter = new GalleryAdapter(requireContext(), currentUid, isAdmin);
+        adapter.setDeleteListener(photo ->
+                FirebaseFirestore.getInstance()
+                        .collection("gallery")
+                        .document(photo.getId())
+                        .delete());
+
         rv.setLayoutManager(new GridLayoutManager(requireContext(), 3));
         rv.setAdapter(adapter);
 
@@ -83,7 +96,6 @@ public class GalleryPageFragment extends Fragment {
                 photo.setId(doc.getId());
                 photos.add(photo);
             }
-            // Sort newest first client-side (avoids composite index requirement)
             photos.sort((a, b) -> {
                 if (a.getCreatedAt() == null) return 1;
                 if (b.getCreatedAt() == null) return -1;

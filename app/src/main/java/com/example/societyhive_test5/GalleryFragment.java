@@ -135,34 +135,35 @@ public class GalleryFragment extends Fragment {
     }
 
     private void setupTabs(TabLayout tabLayout, ViewPager2 viewPager, FloatingActionButton fabUpload) {
-        GalleryPagerAdapter pagerAdapter = new GalleryPagerAdapter(this, tabSocietyIds);
+        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        GalleryPagerAdapter pagerAdapter =
+                new GalleryPagerAdapter(this, tabSocietyIds, currentUid, isAdmin);
         viewPager.setAdapter(pagerAdapter);
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, pos) -> tab.setText(tabSocietyNames.get(pos))).attach();
 
-        if (isAdmin) {
-            boolean firstIsAll = tabSocietyIds.get(0).isEmpty();
-            fabUpload.setVisibility(firstIsAll ? View.GONE : View.VISIBLE);
+        // FAB visible for all users on a specific society tab; hidden on "All"
+        boolean firstIsAll = tabSocietyIds.get(0).isEmpty();
+        fabUpload.setVisibility(firstIsAll ? View.GONE : View.VISIBLE);
 
-            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    String sid = tabSocietyIds.get(tab.getPosition());
-                    fabUpload.setVisibility(sid.isEmpty() ? View.GONE : View.VISIBLE);
-                }
-                @Override public void onTabUnselected(TabLayout.Tab tab) {}
-                @Override public void onTabReselected(TabLayout.Tab tab) {}
-            });
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                String sid = tabSocietyIds.get(tab.getPosition());
+                fabUpload.setVisibility(sid.isEmpty() ? View.GONE : View.VISIBLE);
+            }
+            @Override public void onTabUnselected(TabLayout.Tab tab) {}
+            @Override public void onTabReselected(TabLayout.Tab tab) {}
+        });
 
-            fabUpload.setOnClickListener(v -> {
-                int pos = viewPager.getCurrentItem();
-                String sid = tabSocietyIds.get(pos);
-                if (!sid.isEmpty()) {
-                    pendingSocietyId = sid;
-                    imagePickerLauncher.launch("image/*");
-                }
-            });
-        }
+        fabUpload.setOnClickListener(v -> {
+            int pos = viewPager.getCurrentItem();
+            String sid = tabSocietyIds.get(pos);
+            if (!sid.isEmpty()) {
+                pendingSocietyId = sid;
+                imagePickerLauncher.launch("image/*");
+            }
+        });
     }
 
     private void uploadImage(Uri uri, String societyId) {
