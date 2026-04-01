@@ -48,8 +48,8 @@
         <item name="colorOnErrorContainer">#410E0B</item>
         <item name="android:colorBackground">#4472C4</item>
         <item name="colorOnBackground">#FFFFFF</item>
-        <item name="colorSurface">#4472C4</item>
-        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#2B2B2B</item>
         <item name="colorSurfaceVariant">#FFFFFF</item>
         <item name="colorOnSurfaceVariant">#2B2B2B</item>
         <item name="colorOutline">#90B8D8</item>
@@ -76,8 +76,8 @@
         <item name="colorOnErrorContainer">#410E0B</item>
         <item name="android:colorBackground">#9B80C0</item>
         <item name="colorOnBackground">#FFFFFF</item>
-        <item name="colorSurface">#9B80C0</item>
-        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#2B2B2B</item>
         <item name="colorSurfaceVariant">#FFFFFF</item>
         <item name="colorOnSurfaceVariant">#2B2B2B</item>
         <item name="colorOutline">#C0A8E0</item>

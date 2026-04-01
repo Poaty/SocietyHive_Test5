@@ -1,7 +1,5 @@
 package com.example.societyhive_test5;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
@@ -18,8 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PreferencesFragment extends Fragment {
-
-    private static final String KEY_COMPACT = "pref_compact_events";
 
     // [themeKey, backgroundHex, displayName]
     private static final String[][] SCHEMES = {
@@ -54,15 +50,6 @@ public class PreferencesFragment extends Fragment {
 
         refreshTicks(view, savedKey, tickIds);
 
-        com.google.android.material.switchmaterial.SwitchMaterial swCompact =
-                view.findViewById(R.id.switchCompactEvents);
-        if (swCompact != null) {
-            SharedPreferences prefs = requireContext()
-                    .getSharedPreferences(ThemeHelper.PREFS, Context.MODE_PRIVATE);
-            swCompact.setChecked(prefs.getBoolean(KEY_COMPACT, false));
-            swCompact.setOnCheckedChangeListener((btn, checked) ->
-                    prefs.edit().putBoolean(KEY_COMPACT, checked).apply());
-        }
     }
 
     private void selectScheme(@NonNull View root, @NonNull String themeKey,
