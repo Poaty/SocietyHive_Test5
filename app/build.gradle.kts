@@ -56,6 +56,15 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-messaging")
 
+    // Firebase Storage (gallery uploads)
+    implementation("com.google.firebase:firebase-storage")
+
+    // ViewPager2 + TabLayout
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+
+    // Glide image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
     // ZXing QR / barcode scanning
     implementation("com.google.zxing:core:3.3.3")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
