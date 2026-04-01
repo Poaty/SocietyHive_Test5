@@ -28,116 +28,60 @@
         <item name="colorOutlineVariant">#BDBDBD</item>
     </style>
 
-    <!-- ── Midnight Blue ── seed #0061A4 -->
-    <style name="Theme.SocietyHive.Midnight" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#0061A4</item>
+    <!-- ── Ocean ── steel blue / dark navy -->
+    <style name="Theme.SocietyHive.Ocean" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#1B3A6B</item>
         <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorPrimaryContainer">#D1E4FF</item>
-        <item name="colorOnPrimaryContainer">#001D36</item>
-        <item name="colorSecondary">#535F70</item>
+        <item name="colorPrimaryContainer">#BDD7EE</item>
+        <item name="colorOnPrimaryContainer">#2B2B2B</item>
+        <item name="colorSecondary">#1B3A6B</item>
         <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="colorSecondaryContainer">#D7E3F7</item>
-        <item name="colorOnSecondaryContainer">#101C2B</item>
-        <item name="colorTertiary">#6B5778</item>
+        <item name="colorSecondaryContainer">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#2B2B2B</item>
+        <item name="colorTertiary">#1B3A6B</item>
         <item name="colorOnTertiary">#FFFFFF</item>
-        <item name="colorTertiaryContainer">#F2DAFF</item>
-        <item name="colorOnTertiaryContainer">#251431</item>
+        <item name="colorTertiaryContainer">#BDD7EE</item>
+        <item name="colorOnTertiaryContainer">#2B2B2B</item>
         <item name="colorError">#B3261E</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#F9DEDC</item>
         <item name="colorOnErrorContainer">#410E0B</item>
-        <item name="android:colorBackground">#FDFCFF</item>
-        <item name="colorOnBackground">#1A1C1E</item>
-        <item name="colorSurface">#FDFCFF</item>
-        <item name="colorOnSurface">#1A1C1E</item>
-        <item name="colorSurfaceVariant">#DFE2EB</item>
-        <item name="colorOnSurfaceVariant">#43474E</item>
-        <item name="colorOutline">#73777F</item>
-        <item name="colorOutlineVariant">#C3C7CF</item>
+        <item name="android:colorBackground">#4472C4</item>
+        <item name="colorOnBackground">#FFFFFF</item>
+        <item name="colorSurface">#4472C4</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorSurfaceVariant">#FFFFFF</item>
+        <item name="colorOnSurfaceVariant">#2B2B2B</item>
+        <item name="colorOutline">#90B8D8</item>
+        <item name="colorOutlineVariant">#90B8D8</item>
     </style>
 
-    <!-- ── Forest Green ── seed #006E21 -->
-    <style name="Theme.SocietyHive.Forest" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#006E21</item>
+    <!-- ── Violet ── medium purple / dark purple -->
+    <style name="Theme.SocietyHive.Violet" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#5C3D8F</item>
         <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorPrimaryContainer">#97F990</item>
-        <item name="colorOnPrimaryContainer">#002106</item>
-        <item name="colorSecondary">#52634F</item>
+        <item name="colorPrimaryContainer">#E2D4F0</item>
+        <item name="colorOnPrimaryContainer">#2B2B2B</item>
+        <item name="colorSecondary">#5C3D8F</item>
         <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="colorSecondaryContainer">#D5E8CF</item>
-        <item name="colorOnSecondaryContainer">#101F0F</item>
-        <item name="colorTertiary">#38656A</item>
+        <item name="colorSecondaryContainer">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#2B2B2B</item>
+        <item name="colorTertiary">#5C3D8F</item>
         <item name="colorOnTertiary">#FFFFFF</item>
-        <item name="colorTertiaryContainer">#BCEBF0</item>
-        <item name="colorOnTertiaryContainer">#002023</item>
+        <item name="colorTertiaryContainer">#E2D4F0</item>
+        <item name="colorOnTertiaryContainer">#2B2B2B</item>
         <item name="colorError">#B3261E</item>
         <item name="colorOnError">#FFFFFF</item>
         <item name="colorErrorContainer">#F9DEDC</item>
         <item name="colorOnErrorContainer">#410E0B</item>
-        <item name="android:colorBackground">#FDFDF6</item>
-        <item name="colorOnBackground">#1A1C19</item>
-        <item name="colorSurface">#FDFDF6</item>
-        <item name="colorOnSurface">#1A1C19</item>
-        <item name="colorSurfaceVariant">#DEE4D9</item>
-        <item name="colorOnSurfaceVariant">#424940</item>
-        <item name="colorOutline">#72796F</item>
-        <item name="colorOutlineVariant">#C2C8BD</item>
-    </style>
-
-    <!-- ── Slate Purple ── M3 baseline seed #6750A4 -->
-    <style name="Theme.SocietyHive.Slate" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#6750A4</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorPrimaryContainer">#EADDFF</item>
-        <item name="colorOnPrimaryContainer">#21005D</item>
-        <item name="colorSecondary">#625B71</item>
-        <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="colorSecondaryContainer">#E8DEF8</item>
-        <item name="colorOnSecondaryContainer">#1D192B</item>
-        <item name="colorTertiary">#7D5260</item>
-        <item name="colorOnTertiary">#FFFFFF</item>
-        <item name="colorTertiaryContainer">#FFD8E4</item>
-        <item name="colorOnTertiaryContainer">#31111D</item>
-        <item name="colorError">#B3261E</item>
-        <item name="colorOnError">#FFFFFF</item>
-        <item name="colorErrorContainer">#F9DEDC</item>
-        <item name="colorOnErrorContainer">#410E0B</item>
-        <item name="android:colorBackground">#FFFBFE</item>
-        <item name="colorOnBackground">#1C1B1F</item>
-        <item name="colorSurface">#FFFBFE</item>
-        <item name="colorOnSurface">#1C1B1F</item>
-        <item name="colorSurfaceVariant">#E7E0EC</item>
-        <item name="colorOnSurfaceVariant">#49454F</item>
-        <item name="colorOutline">#79747E</item>
-        <item name="colorOutlineVariant">#CAC4D0</item>
-    </style>
-
-    <!-- ── Charcoal ── seed #4A6267 (blue-grey) -->
-    <style name="Theme.SocietyHive.Charcoal" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#4A6267</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorPrimaryContainer">#CCE8ED</item>
-        <item name="colorOnPrimaryContainer">#001F23</item>
-        <item name="colorSecondary">#4A6170</item>
-        <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="colorSecondaryContainer">#CDE5F6</item>
-        <item name="colorOnSecondaryContainer">#061E29</item>
-        <item name="colorTertiary">#575E7E</item>
-        <item name="colorOnTertiary">#FFFFFF</item>
-        <item name="colorTertiaryContainer">#DEE2FF</item>
-        <item name="colorOnTertiaryContainer">#131837</item>
-        <item name="colorError">#B3261E</item>
-        <item name="colorOnError">#FFFFFF</item>
-        <item name="colorErrorContainer">#F9DEDC</item>
-        <item name="colorOnErrorContainer">#410E0B</item>
-        <item name="android:colorBackground">#FAFDFD</item>
-        <item name="colorOnBackground">#191C1D</item>
-        <item name="colorSurface">#FAFDFD</item>
-        <item name="colorOnSurface">#191C1D</item>
-        <item name="colorSurfaceVariant">#DBE4E6</item>
-        <item name="colorOnSurfaceVariant">#3F484A</item>
-        <item name="colorOutline">#6F797A</item>
-        <item name="colorOutlineVariant">#BFC8CA</item>
+        <item name="android:colorBackground">#9B80C0</item>
+        <item name="colorOnBackground">#FFFFFF</item>
+        <item name="colorSurface">#9B80C0</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorSurfaceVariant">#FFFFFF</item>
+        <item name="colorOnSurfaceVariant">#2B2B2B</item>
+        <item name="colorOutline">#C0A8E0</item>
+        <item name="colorOutlineVariant">#C0A8E0</item>
     </style>
 
     <!-- Base app theme — Crimson by default, overridden at runtime by ThemeHelper -->
