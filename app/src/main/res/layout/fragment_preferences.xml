@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -10,161 +10,135 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="18dp">
+        android:padding="20dp">
 
-        <!-- Colour Scheme card -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Appearance"
-            android:textSize="13sp"
+            android:text="Colour Scheme"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnPrimaryContainer"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="4dp"/>
+            android:layout_marginBottom="16dp" />
 
-        <com.google.android.material.card.MaterialCardView
+        <!-- 3 swatches in a row -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="?attr/colorSecondaryContainer">
+            android:orientation="horizontal">
 
+            <!-- Crimson -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/swatchCrimson"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:gravity="center"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true">
+
+                <View
+                    android:id="@+id/circCrimson"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Colour Scheme"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"/>
+                    android:layout_marginTop="8dp"
+                    android:text="Crimson"
+                    android:textSize="12sp"
+                    android:textColor="?attr/colorOnPrimaryContainer" />
 
-                <!-- 3 swatches -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:layout_marginTop="16dp">
+                <ImageView
+                    android:id="@+id/tickCrimson"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginTop="4dp"
+                    android:src="@drawable/ic_check"
+                    android:visibility="visible"
+                    app:tint="?attr/colorPrimary" />
 
-                    <!-- Crimson -->
-                    <LinearLayout
-                        android:id="@+id/swatchCrimson"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <View
-                            android:id="@+id/circCrimson"
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Crimson"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurface"/>
-
-                        <ImageView
-                            android:id="@+id/tickCrimson"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginTop="4dp"
-                            android:src="@drawable/ic_check"
-                            android:visibility="visible"
-                            app:tint="?attr/colorPrimary"/>
-                    </LinearLayout>
-
-                    <!-- Ocean -->
-                    <LinearLayout
-                        android:id="@+id/swatchOcean"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <View
-                            android:id="@+id/circOcean"
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Ocean"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurface"/>
-
-                        <ImageView
-                            android:id="@+id/tickOcean"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginTop="4dp"
-                            android:src="@drawable/ic_check"
-                            android:visibility="invisible"
-                            app:tint="?attr/colorPrimary"/>
-                    </LinearLayout>
-
-                    <!-- Violet -->
-                    <LinearLayout
-                        android:id="@+id/swatchViolet"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <View
-                            android:id="@+id/circViolet"
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Violet"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurface"/>
-
-                        <ImageView
-                            android:id="@+id/tickViolet"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:layout_marginTop="4dp"
-                            android:src="@drawable/ic_check"
-                            android:visibility="invisible"
-                            app:tint="?attr/colorPrimary"/>
-                    </LinearLayout>
-
-                </LinearLayout>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
+            <!-- Ocean -->
+            <LinearLayout
+                android:id="@+id/swatchOcean"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true">
+
+                <View
+                    android:id="@+id/circOcean"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Ocean"
+                    android:textSize="12sp"
+                    android:textColor="?attr/colorOnPrimaryContainer" />
+
+                <ImageView
+                    android:id="@+id/tickOcean"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginTop="4dp"
+                    android:src="@drawable/ic_check"
+                    android:visibility="invisible"
+                    app:tint="?attr/colorPrimary" />
+
+            </LinearLayout>
+
+            <!-- Violet -->
+            <LinearLayout
+                android:id="@+id/swatchViolet"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true">
+
+                <View
+                    android:id="@+id/circViolet"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Violet"
+                    android:textSize="12sp"
+                    android:textColor="?attr/colorOnPrimaryContainer" />
+
+                <ImageView
+                    android:id="@+id/tickViolet"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginTop="4dp"
+                    android:src="@drawable/ic_check"
+                    android:visibility="invisible"
+                    app:tint="?attr/colorPrimary" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+</ScrollView>

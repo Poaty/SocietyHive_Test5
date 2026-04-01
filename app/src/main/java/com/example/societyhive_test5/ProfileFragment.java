@@ -1,11 +1,16 @@
 package com.example.societyhive_test5;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -13,6 +18,10 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.cloudinary.android.MediaManager;
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,25 +31,22 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * Profile screen.
- *
- * Shows name, email, role and joined societies.
- * The "Manage" button on each society opens a bottom sheet with:
- *   - Open Society Chat
- *   - View Society Events
- *   - Leave Society (with confirmation + Firestore write)
- */
 public class ProfileFragment extends Fragment {
 
     private final List<Society> societies = new ArrayList<>();
     private JoinedSocietyAdapter adapter;
 
-    private TextView tvName;
-    private TextView tvEmail;
-    private TextView tvRole;
+    private TextView tvName, tvEmail, tvRole;
+    private ImageView ivProfilePicture;
+
+    private final ActivityResultLauncher<String> imagePickerLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) uploadProfilePicture(uri);
+            });
 
     public ProfileFragment() {
         super(R.layout.fragment_profile);
@@ -50,40 +56,34 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        tvName  = view.findViewById(R.id.tvProfileName);
-        tvEmail = view.findViewById(R.id.tvProfileEmail);
-        tvRole  = view.findViewById(R.id.tvProfileRole);
+        tvName          = view.findViewById(R.id.tvProfileName);
+        tvEmail         = view.findViewById(R.id.tvProfileEmail);
+        tvRole          = view.findViewById(R.id.tvProfileRole);
+        ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
 
         RecyclerView rv = view.findViewById(R.id.rvJoinedSocieties);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         rv.setHasFixedSize(false);
-
-        adapter = new JoinedSocietyAdapter(
-                new ArrayList<>(),
-                society -> showManageSheet(society)
-        );
-
+        adapter = new JoinedSocietyAdapter(new ArrayList<>(), this::showManageSheet);
         rv.setAdapter(adapter);
+
+        ivProfilePicture.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
+
+        view.findViewById(R.id.btnLogOut).setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(requireActivity(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
+
         loadProfileFromFirestore();
     }
 
-    // -------------------------------------------------------------------------
-    // Firestore loading (unchanged from before)
-    // -------------------------------------------------------------------------
-
     private void loadProfileFromFirestore() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
 
-        if (user == null) {
-            tvName.setText("No signed-in user");
-            tvEmail.setText("Please log in");
-            tvRole.setText("Guest");
-            return;
-        }
-
-        tvName.setText("SocietyHive Member");
-        tvEmail.setText(user.getEmail() != null ? user.getEmail() : "No email available");
-        tvRole.setText("Member");
+        tvEmail.setText(user.getEmail() != null ? user.getEmail() : "");
 
         FirebaseFirestore.getInstance()
                 .collection("users")
@@ -95,10 +95,21 @@ public class ProfileFragment extends Fragment {
                     String fullName = document.getString("fullName");
                     String email    = document.getString("email");
                     String role     = document.getString("role");
+                    String photoUrl = document.getString("profileImageUrl");
 
                     if (fullName != null && !fullName.isEmpty()) tvName.setText(fullName);
                     if (email    != null && !email.isEmpty())    tvEmail.setText(email);
                     if (role     != null && !role.isEmpty())     tvRole.setText(capitalize(role));
+
+                    if (photoUrl != null && !photoUrl.isEmpty()) {
+                        ivProfilePicture.clearColorFilter();
+                        ivProfilePicture.setBackground(null);
+                        Glide.with(this)
+                                .load(photoUrl)
+                                .circleCrop()
+                                .placeholder(R.drawable.ic_profile)
+                                .into(ivProfilePicture);
+                    }
 
                     List<String> societyIds = (List<String>) document.get("societyIds");
                     loadSocieties(societyIds);
@@ -106,116 +117,130 @@ public class ProfileFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
-                            "Failed to load profile: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
+                            "Failed to load profile", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void uploadProfilePicture(Uri uri) {
+        Toast.makeText(requireContext(), "Uploading…", Toast.LENGTH_SHORT).show();
+        try {
+            Map<String, String> config = new HashMap<>();
+            config.put("cloud_name", "dybgordqu");
+            MediaManager.init(requireContext().getApplicationContext(), config);
+        } catch (IllegalStateException ignored) {}
+
+        MediaManager.get().upload(uri)
+                .unsigned("societyhive_gallery")
+                .callback(new UploadCallback() {
+                    @Override public void onStart(String requestId) {}
+                    @Override public void onProgress(String requestId, long bytes, long totalBytes) {}
+
+                    @Override
+                    public void onSuccess(String requestId, Map resultData) {
+                        if (!isAdded()) return;
+                        String imageUrl = (String) resultData.get("secure_url");
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if (user == null || imageUrl == null) return;
+
+                        FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(user.getUid())
+                                .update("profileImageUrl", imageUrl)
+                                .addOnSuccessListener(unused -> {
+                                    if (!isAdded()) return;
+                                    ivProfilePicture.clearColorFilter();
+                                    ivProfilePicture.setBackground(null);
+                                    Glide.with(ProfileFragment.this)
+                                            .load(imageUrl)
+                                            .circleCrop()
+                                            .into(ivProfilePicture);
+                                    Toast.makeText(requireContext(),
+                                            "Photo updated!", Toast.LENGTH_SHORT).show();
+                                });
+                    }
+
+                    @Override
+                    public void onError(String requestId, ErrorInfo error) {
+                        if (!isAdded()) return;
+                        Toast.makeText(requireContext(),
+                                "Upload failed", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override public void onReschedule(String requestId, ErrorInfo error) {}
+                })
+                .dispatch();
     }
 
     private void loadSocieties(@Nullable List<String> societyIds) {
         societies.clear();
         adapter.updateList(societies);
-
         if (societyIds == null || societyIds.isEmpty()) return;
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        for (String societyId : societyIds) {
-            if (societyId == null || societyId.trim().isEmpty()) continue;
-
-            db.collection("societies")
-                    .document(societyId)
-                    .get()
-                    .addOnSuccessListener(this::addSocietyIfValid)
-                    .addOnFailureListener(e -> {
-                        if (!isAdded()) return;
-                        Toast.makeText(requireContext(),
-                                "Failed to load a society: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show();
-                    });
+        for (String id : societyIds) {
+            if (id == null || id.trim().isEmpty()) continue;
+            FirebaseFirestore.getInstance()
+                    .collection("societies").document(id).get()
+                    .addOnSuccessListener(this::addSocietyIfValid);
         }
     }
 
     private void addSocietyIfValid(@NonNull DocumentSnapshot doc) {
         if (!isAdded() || !doc.exists()) return;
-
-        String name        = doc.getString("name");
-        String colorHex    = doc.getString("hexColor");
-        String description = doc.getString("description");
-
-        if (name        == null || name.trim().isEmpty())        name        = "Unnamed Society";
-        if (colorHex    == null || colorHex.trim().isEmpty())    colorHex    = "#8D2E3A";
-        if (description == null || description.trim().isEmpty()) description = "Joined society";
-
-        societies.add(new Society(doc.getId(), name, description, colorHex));
+        String name     = doc.getString("name");
+        String colorHex = doc.getString("hexColor");
+        String desc     = doc.getString("description");
+        if (name     == null || name.trim().isEmpty())     name     = "Unnamed Society";
+        if (colorHex == null || colorHex.trim().isEmpty()) colorHex = "#8D2E3A";
+        if (desc     == null || desc.trim().isEmpty())     desc     = "";
+        societies.add(new Society(doc.getId(), name, desc, colorHex));
         adapter.updateList(societies);
     }
-
-    // -------------------------------------------------------------------------
-    // Manage bottom sheet
-    // -------------------------------------------------------------------------
 
     private void showManageSheet(@NonNull Society society) {
         BottomSheetDialog sheet = new BottomSheetDialog(requireContext());
         View sheetView = getLayoutInflater().inflate(R.layout.dialog_manage_society, null);
         sheet.setContentView(sheetView);
 
-        // Populate header
-        TextView tvName = sheetView.findViewById(R.id.tvSheetSocietyName);
-        TextView tvDesc = sheetView.findViewById(R.id.tvSheetSocietyDesc);
-        View accent     = sheetView.findViewById(R.id.viewSheetAccent);
+        TextView tvSheetName = sheetView.findViewById(R.id.tvSheetSocietyName);
+        TextView tvSheetDesc = sheetView.findViewById(R.id.tvSheetSocietyDesc);
+        View accent          = sheetView.findViewById(R.id.viewSheetAccent);
 
-        if (tvName != null) tvName.setText(society.getName());
-        if (tvDesc != null) tvDesc.setText(society.getSubtitle());
+        if (tvSheetName != null) tvSheetName.setText(society.getName());
+        if (tvSheetDesc != null) tvSheetDesc.setText(society.getSubtitle());
         if (accent != null) {
             try { accent.setBackgroundColor(Color.parseColor(society.getColorHex())); }
             catch (IllegalArgumentException ignored) {}
         }
 
-        // Open chat
         View rowChat = sheetView.findViewById(R.id.rowOpenChat);
-        if (rowChat != null) {
-            rowChat.setOnClickListener(v -> {
-                sheet.dismiss();
-                Bundle b = new Bundle();
-                b.putString("societyId",  society.getId());
-                b.putString("chatTitle",  society.getName());
-                b.putString("chatColor",  society.getColorHex());
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.chatConversationFragment, b);
-            });
-        }
+        if (rowChat != null) rowChat.setOnClickListener(v -> {
+            sheet.dismiss();
+            Bundle b = new Bundle();
+            b.putString("societyId", society.getId());
+            b.putString("chatTitle", society.getName());
+            b.putString("chatColor", society.getColorHex());
+            NavHostFragment.findNavController(this).navigate(R.id.chatConversationFragment, b);
+        });
 
-        // View events (navigate to events tab — filter can be added later)
         View rowEvents = sheetView.findViewById(R.id.rowViewEvents);
-        if (rowEvents != null) {
-            rowEvents.setOnClickListener(v -> {
-                sheet.dismiss();
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.eventsFragment);
-            });
-        }
+        if (rowEvents != null) rowEvents.setOnClickListener(v -> {
+            sheet.dismiss();
+            NavHostFragment.findNavController(this).navigate(R.id.eventsFragment);
+        });
 
-        // Leave society
         View rowLeave = sheetView.findViewById(R.id.rowLeaveSociety);
-        if (rowLeave != null) {
-            rowLeave.setOnClickListener(v -> {
-                sheet.dismiss();
-                confirmLeaveSociety(society);
-            });
-        }
+        if (rowLeave != null) rowLeave.setOnClickListener(v -> {
+            sheet.dismiss();
+            confirmLeaveSociety(society);
+        });
 
         sheet.show();
     }
 
-    // -------------------------------------------------------------------------
-    // Leave society
-    // -------------------------------------------------------------------------
-
     private void confirmLeaveSociety(@NonNull Society society) {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Leave " + society.getName() + "?")
-                .setMessage("You will no longer see this society's chat or events. You can re-join by scanning the society's QR code.")
-                .setPositiveButton("Leave", (dialog, which) -> leaveSociety(society))
+                .setMessage("You will no longer see this society's chat or events.")
+                .setPositiveButton("Leave", (d, w) -> leaveSociety(society))
                 .setNegativeButton("Cancel", null)
                 .show();
     }
@@ -223,32 +248,19 @@ public class ProfileFragment extends Fragment {
     private void leaveSociety(@NonNull Society society) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
-
         FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
+                .collection("users").document(user.getUid())
                 .update("societyIds", FieldValue.arrayRemove(society.getId()))
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
                             "Left " + society.getName(), Toast.LENGTH_SHORT).show();
-
-                    // Remove from local list and refresh
                     societies.removeIf(s -> s.getId().equals(society.getId()));
                     adapter.updateList(societies);
-                })
-                .addOnFailureListener(e -> {
-                    if (!isAdded()) return;
-                    Toast.makeText(requireContext(),
-                            "Failed to leave society: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
                 });
     }
 
-    // -------------------------------------------------------------------------
-
-    private String capitalize(@NonNull String input) {
-        if (input.isEmpty()) return input;
-        return input.substring(0, 1).toUpperCase() + input.substring(1);
+    private String capitalize(@NonNull String s) {
+        return s.isEmpty() ? s : s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 }
