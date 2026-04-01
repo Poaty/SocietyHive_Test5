@@ -4,11 +4,13 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
@@ -58,6 +60,7 @@ public class JoinedSocietyAdapter extends RecyclerView.Adapter<JoinedSocietyAdap
         private final TextView tvName;
         private final TextView tvSubtitle;
         private final MaterialButton btnManage;
+        private final ImageView ivIcon;
 
         SocietyVH(@NonNull View itemView) {
             super(itemView);
@@ -65,6 +68,7 @@ public class JoinedSocietyAdapter extends RecyclerView.Adapter<JoinedSocietyAdap
             tvName = itemView.findViewById(R.id.tvSocietyName);
             tvSubtitle = itemView.findViewById(R.id.tvSocietySubtitle);
             btnManage = itemView.findViewById(R.id.btnManageSociety);
+            ivIcon = itemView.findViewById(R.id.ivSocietyIcon);
         }
 
         void bind(@NonNull Society society) {
@@ -75,6 +79,23 @@ public class JoinedSocietyAdapter extends RecyclerView.Adapter<JoinedSocietyAdap
                 accent.setBackgroundColor(Color.parseColor(society.getColorHex()));
             } catch (IllegalArgumentException e) {
                 accent.setBackgroundColor(Color.parseColor("#8D2E3A"));
+            }
+
+            if (ivIcon != null) {
+                String iconUrl = society.getIconUrl();
+                if (iconUrl != null && !iconUrl.isEmpty()) {
+                    ivIcon.setPadding(0, 0, 0, 0);
+                    ivIcon.setBackground(null);
+                    Glide.with(ivIcon.getContext())
+                            .load(iconUrl)
+                            .circleCrop()
+                            .placeholder(R.drawable.ic_profile)
+                            .into(ivIcon);
+                } else {
+                    ivIcon.setPadding(4, 4, 4, 4);
+                    ivIcon.setBackgroundResource(R.drawable.bg_circle_neutral);
+                    ivIcon.setImageResource(R.drawable.ic_profile);
+                }
             }
 
             btnManage.setOnClickListener(v -> listener.onManageClick(society));

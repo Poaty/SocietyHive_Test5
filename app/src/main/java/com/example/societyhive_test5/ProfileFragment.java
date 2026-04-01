@@ -191,10 +191,12 @@ public class ProfileFragment extends Fragment {
         String name     = doc.getString("name");
         String colorHex = doc.getString("hexColor");
         String desc     = doc.getString("description");
+        String iconUrl  = doc.getString("iconUrl");
         if (name     == null || name.trim().isEmpty())     name     = "Unnamed Society";
         if (colorHex == null || colorHex.trim().isEmpty()) colorHex = "#8D2E3A";
         if (desc     == null || desc.trim().isEmpty())     desc     = "";
-        societies.add(new Society(doc.getId(), name, desc, colorHex));
+        if (iconUrl  == null) iconUrl = "";
+        societies.add(new Society(doc.getId(), name, desc, colorHex, iconUrl));
         adapter.updateList(societies);
     }
 

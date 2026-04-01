@@ -23,20 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Home screen.
- *
- * - Loads the signed-in user's name, role and society IDs from Firestore in one read.
- * - Shows the Admin Items section only when role == "admin".
- * - Loads and displays announcements for the user's societies inline (above Quick Access).
- * - Wires all dashboard tiles to their nav destinations.
- */
 public class HomeFragment extends Fragment {
 
     private AnnouncementsAdapter announcementsAdapter;
     private final List<Announcement> announcements = new ArrayList<>();
     private final Set<String> userSocietyIds = new HashSet<>();
     private boolean isAdmin = false;
+    private String adminOfSocietyId = null; // first society this user is admin of
 
     public HomeFragment() {
         super(R.layout.fragment_home);
@@ -54,10 +47,6 @@ public class HomeFragment extends Fragment {
         wireTiles(view);
         loadUserData(view);
     }
-
-    // -------------------------------------------------------------------------
-    // Single Firestore read: name + role + societyIds
-    // -------------------------------------------------------------------------
 
     private void loadUserData(@NonNull View view) {
         TextView tvWelcome = view.findViewById(R.id.tvWelcome);
@@ -82,10 +71,20 @@ public class HomeFragment extends Fragment {
                         tvWelcome.setText("Welcome");
                     }
 
-                    // Role
+                    // Role — super admin
                     String role = doc.getString("role");
                     isAdmin = "admin".equalsIgnoreCase(role);
                     showAdminSection(view, isAdmin);
+
+                    // Society admin — adminOf array
+                    List<?> adminOf = (List<?>) doc.get("adminOf");
+                    if (!isAdmin && adminOf != null && !adminOf.isEmpty()) {
+                        adminOfSocietyId = (String) adminOf.get(0);
+                        showSocietyAdminSection(view, true);
+                        wireSocietyAdminTiles(view, adminOfSocietyId);
+                    } else {
+                        showSocietyAdminSection(view, false);
+                    }
 
                     // Society IDs
                     userSocietyIds.clear();
@@ -97,20 +96,57 @@ public class HomeFragment extends Fragment {
                     }
 
                     loadAnnouncements(view);
-                })
-                .addOnFailureListener(e -> {
-                    // Silent — placeholder text stays
                 });
     }
 
     private void showAdminSection(@NonNull View view, boolean visible) {
-        int visibility = visible ? View.VISIBLE : View.GONE;
-        view.findViewById(R.id.tvAdminItems).setVisibility(visibility);
-        view.findViewById(R.id.cardAdminDashboard).setVisibility(visibility);
+        int v = visible ? View.VISIBLE : View.GONE;
+        view.findViewById(R.id.tvAdminItems).setVisibility(v);
+        view.findViewById(R.id.cardAdminDashboard).setVisibility(v);
+    }
+
+    private void showSocietyAdminSection(@NonNull View view, boolean visible) {
+        int v = visible ? View.VISIBLE : View.GONE;
+        view.findViewById(R.id.tvSocietyAdminItems).setVisibility(v);
+        view.findViewById(R.id.cardSocietyAdminDashboard).setVisibility(v);
+    }
+
+    private void wireSocietyAdminTiles(@NonNull View view, @NonNull String societyId) {
+        // Post Pin — pre-fill societyId
+        View tilePin = view.findViewById(R.id.tileSAPostPin);
+        if (tilePin != null) tilePin.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("preSelectedSocietyId", societyId);
+            NavHostFragment.findNavController(this).navigate(R.id.createPinFragment, args);
+        });
+
+        // Create Event
+        View tileEvent = view.findViewById(R.id.tileSACreateEvent);
+        if (tileEvent != null) tileEvent.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("preSelectedSocietyId", societyId);
+            NavHostFragment.findNavController(this).navigate(R.id.createEventFragment, args);
+        });
+
+        // Create Poll
+        View tilePoll = view.findViewById(R.id.tileSACreatePoll);
+        if (tilePoll != null) tilePoll.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("preSelectedSocietyId", societyId);
+            NavHostFragment.findNavController(this).navigate(R.id.createPollFragment, args);
+        });
+
+        // Manage Members — pass societyFilter so UserManagementFragment filters to this society
+        View tileMembers = view.findViewById(R.id.tileSAManageMembers);
+        if (tileMembers != null) tileMembers.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("societyFilter", societyId);
+            NavHostFragment.findNavController(this).navigate(R.id.userManagementFragment, args);
+        });
     }
 
     // -------------------------------------------------------------------------
-    // Announcements
+    // Announcements (Pins)
     // -------------------------------------------------------------------------
 
     private void loadAnnouncements(@NonNull View view) {
@@ -123,13 +159,11 @@ public class HomeFragment extends Fragment {
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         String societyId = doc.getString("societyId");
-                        // Admins see all pins; regular users see pins for their societies only
                         if (!isAdmin && societyId != null && !societyId.isEmpty()
                                 && !userSocietyIds.contains(societyId)) continue;
 
                         Announcement a = new Announcement();
                         a.setId(doc.getId());
-                        // Pins have no separate title — show content as the headline
                         a.setTitle(safeString(doc.getString("content"), ""));
                         a.setContent("");
                         a.setSocietyId(societyId != null ? societyId : "");
@@ -139,9 +173,6 @@ public class HomeFragment extends Fragment {
                     }
 
                     fetchAnnouncementSocietyNames(view);
-                })
-                .addOnFailureListener(e -> {
-                    // Silent — no pins shown
                 });
     }
 
@@ -151,17 +182,13 @@ public class HomeFragment extends Fragment {
             if (!a.getSocietyId().isEmpty()) ids.add(a.getSocietyId());
         }
 
-        if (ids.isEmpty()) {
-            publishAnnouncements(view);
-            return;
-        }
+        if (ids.isEmpty()) { publishAnnouncements(view); return; }
 
         final int[] remaining = {ids.size()};
         final Map<String, String> nameMap = new HashMap<>();
 
         for (String sid : ids) {
-            FirebaseFirestore.getInstance()
-                    .collection("societies").document(sid).get()
+            FirebaseFirestore.getInstance().collection("societies").document(sid).get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             String name = task.getResult().getString("name");
@@ -180,13 +207,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void publishAnnouncements(@NonNull View view) {
-        // Admins can delete pins directly from the home screen
         if (isAdmin) {
             announcementsAdapter.setDeleteListener(pinId ->
-                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                            .collection("pins")
-                            .document(pinId)
-                            .delete()
+                    FirebaseFirestore.getInstance()
+                            .collection("pins").document(pinId).delete()
                             .addOnSuccessListener(unused -> {
                                 if (!isAdded()) return;
                                 announcements.removeIf(a -> a.getId().equals(pinId));
@@ -198,7 +222,6 @@ public class HomeFragment extends Fragment {
         }
 
         announcementsAdapter.updateList(announcements);
-
         int visibility = announcements.isEmpty() ? View.GONE : View.VISIBLE;
         view.findViewById(R.id.tvAnnouncementsLabel).setVisibility(visibility);
         view.findViewById(R.id.rvAnnouncements).setVisibility(visibility);
@@ -209,28 +232,24 @@ public class HomeFragment extends Fragment {
     // -------------------------------------------------------------------------
 
     private void wireTiles(@NonNull View view) {
-        wire(view, R.id.tileEvents,            R.id.eventsFragment);
-        wire(view, R.id.tileChats,             R.id.chatsFragment);
-        wire(view, R.id.tileQr,                R.id.qrFragment);
-        wire(view, R.id.tileCalendar,          R.id.calendarFragment);
-        wire(view, R.id.tilePolls,             R.id.pollsFragment);
-        wire(view, R.id.tileUserManagement,    R.id.userManagementFragment);
-        wire(view, R.id.tileCreatePoll,        R.id.createPollFragment);
-        wire(view, R.id.tileCreateEvent,       R.id.createEventFragment);
-        wire(view, R.id.tileCreatePin,         R.id.createPinFragment);
-        wire(view, R.id.tileEditSociety,       R.id.editSocietyFragment);
-        wire(view, R.id.tileGallery,           R.id.galleryFragment);
+        wire(view, R.id.tileEvents,         R.id.eventsFragment);
+        wire(view, R.id.tileChats,          R.id.chatsFragment);
+        wire(view, R.id.tileQr,             R.id.qrFragment);
+        wire(view, R.id.tileCalendar,       R.id.calendarFragment);
+        wire(view, R.id.tilePolls,          R.id.pollsFragment);
+        wire(view, R.id.tileGallery,        R.id.galleryFragment);
+        wire(view, R.id.tileUserManagement, R.id.userManagementFragment);
+        wire(view, R.id.tileCreatePoll,     R.id.createPollFragment);
+        wire(view, R.id.tileCreateEvent,    R.id.createEventFragment);
+        wire(view, R.id.tileCreatePin,      R.id.createPinFragment);
+        wire(view, R.id.tileEditSociety,    R.id.editSocietyFragment);
     }
 
     private void wire(@NonNull View root, int tileId, int destId) {
         View tile = root.findViewById(tileId);
-        if (tile != null) {
-            tile.setOnClickListener(v ->
-                    NavHostFragment.findNavController(this).navigate(destId));
-        }
+        if (tile != null) tile.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(destId));
     }
-
-    // -------------------------------------------------------------------------
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {

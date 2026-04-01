@@ -167,15 +167,18 @@ public class ChatsFragment extends Fragment {
         String societyId = societyDoc.getId();
         String name = societyDoc.getString("name");
         String colorHex = societyDoc.getString("hexColor");
+        String iconUrl = societyDoc.getString("iconUrl");
+        if (iconUrl == null) iconUrl = "";
 
         if (name == null || name.trim().isEmpty()) name = "Society Chat";
         if (colorHex == null || colorHex.trim().isEmpty()) colorHex = "#8D2E3A";
 
         final String finalName = name;
         final String finalColor = colorHex;
+        final String finalIconUrl = iconUrl;
 
         // Add a placeholder row immediately so the list isn't blank while loading
-        Chat placeholder = new Chat(societyId, finalName, "Loading…", "", finalColor);
+        Chat placeholder = new Chat(societyId, finalName, "Loading…", "", finalColor, finalIconUrl);
         allChats.add(placeholder);
         checkAllLoaded(remaining); // may trigger initial render
 
@@ -189,7 +192,7 @@ public class ChatsFragment extends Fragment {
                         .addSnapshotListener((snapshots, error) -> {
                             if (!isAdded()) return;
                             if (error != null || snapshots == null || snapshots.isEmpty()) {
-                                updateChatPreview(societyId, finalName, "No messages yet", "", finalColor);
+                                updateChatPreview(societyId, finalName, "No messages yet", "", finalColor, finalIconUrl);
                                 return;
                             }
 
@@ -214,7 +217,7 @@ public class ChatsFragment extends Fragment {
                             com.google.firebase.Timestamp ts = lastMsg.getTimestamp("timestamp");
                             String timeLabel = formatTimestamp(ts);
 
-                            updateChatPreview(societyId, finalName, preview, timeLabel, finalColor);
+                            updateChatPreview(societyId, finalName, preview, timeLabel, finalColor, finalIconUrl);
                         });
 
         listeners.add(reg);
@@ -222,16 +225,16 @@ public class ChatsFragment extends Fragment {
 
     /** Replaces or inserts the Chat entry for the given society. */
     private void updateChatPreview(String societyId, String name,
-                                   String preview, String time, String color) {
+                                   String preview, String time, String color, String iconUrl) {
         for (int i = 0; i < allChats.size(); i++) {
             if (allChats.get(i).getId().equals(societyId)) {
-                allChats.set(i, new Chat(societyId, name, preview, time, color));
+                allChats.set(i, new Chat(societyId, name, preview, time, color, iconUrl));
                 applySearch();
                 return;
             }
         }
         // Not in list yet — add it
-        allChats.add(new Chat(societyId, name, preview, time, color));
+        allChats.add(new Chat(societyId, name, preview, time, color, iconUrl));
         applySearch();
     }
 

@@ -71,7 +71,9 @@
     <fragment
         android:id="@+id/userManagementFragment"
         android:name="com.example.societyhive_test5.UserManagementFragment"
-        android:label="User Management" />
+        android:label="User Management">
+        <argument android:name="societyFilter" app:argType="string" android:defaultValue="" />
+    </fragment>
 
     <fragment
         android:id="@+id/createPollFragment"

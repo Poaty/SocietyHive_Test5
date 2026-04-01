@@ -64,6 +64,7 @@ public class CreateEventFragment extends Fragment {
     private final List<String> societyNames = new ArrayList<>();
     private final List<String> societyIds   = new ArrayList<>();
     private int selectedSocietyIndex = 0;
+    private String preSelectedSocietyId = "";
 
     public CreateEventFragment() {
         super(R.layout.fragment_create_event);
@@ -86,6 +87,10 @@ public class CreateEventFragment extends Fragment {
         etDateTime.setOnClickListener(v -> showDatePicker());
 
         btnCreate.setOnClickListener(v -> attemptCreate());
+
+        if (getArguments() != null) {
+            preSelectedSocietyId = getArguments().getString("preSelectedSocietyId", "");
+        }
 
         loadSocieties();
     }
@@ -158,6 +163,15 @@ public class CreateEventFragment extends Fragment {
         actvSociety.setText(societyNames.get(0), false);
         actvSociety.setOnItemClickListener(
                 (parent, v, position, id) -> selectedSocietyIndex = position);
+
+        if (!preSelectedSocietyId.isEmpty()) {
+            int idx = societyIds.indexOf(preSelectedSocietyId);
+            if (idx >= 0) {
+                selectedSocietyIndex = idx;
+                actvSociety.setText(societyNames.get(idx), false);
+            }
+            actvSociety.setEnabled(false);
+        }
     }
 
     // -------------------------------------------------------------------------
