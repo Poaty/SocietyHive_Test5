@@ -49,11 +49,9 @@ public final class ThemeHelper {
 
     static int themeResId(String key) {
         switch (key) {
-            case "midnight": return R.style.Theme_SocietyHive_Midnight;
-            case "forest":   return R.style.Theme_SocietyHive_Forest;
-            case "slate":    return R.style.Theme_SocietyHive_Slate;
-            case "charcoal": return R.style.Theme_SocietyHive_Charcoal;
-            default:         return R.style.Theme_SocietyHive_Crimson;
+            case "ocean":  return R.style.Theme_SocietyHive_Ocean;
+            case "violet": return R.style.Theme_SocietyHive_Violet;
+            default:       return R.style.Theme_SocietyHive_Crimson;
         }
     }
 }

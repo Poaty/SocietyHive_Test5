@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:padding="18dp">
 
-        <!-- Section header -->
+        <!-- Colour Scheme card -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,21 +45,13 @@
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnSurface"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="Choose the accent colour used across the app."
-                    android:textSize="13sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"/>
-
-                <!-- Colour swatches grid -->
+                <!-- 3 swatches -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_marginTop="16dp">
 
                     <!-- Crimson -->
                     <LinearLayout
@@ -69,191 +61,107 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:padding="6dp"
+                        android:padding="8dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true">
 
                         <View
                             android:id="@+id/circCrimson"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"/>
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="8dp"
                             android:text="Crimson"
-                            android:textSize="11sp"
+                            android:textSize="12sp"
                             android:textColor="?attr/colorOnSurface"/>
 
                         <ImageView
                             android:id="@+id/tickCrimson"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_marginTop="2dp"
-                            android:src="@drawable/ic_search"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_marginTop="4dp"
+                            android:src="@drawable/ic_check"
                             android:visibility="visible"
                             app:tint="?attr/colorPrimary"/>
                     </LinearLayout>
 
-                    <!-- Midnight Blue -->
+                    <!-- Ocean -->
                     <LinearLayout
-                        android:id="@+id/swatchBlue"
+                        android:id="@+id/swatchOcean"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:padding="6dp"
+                        android:padding="8dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true">
 
                         <View
-                            android:id="@+id/circBlue"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"/>
+                            android:id="@+id/circOcean"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Midnight"
-                            android:textSize="11sp"
+                            android:layout_marginTop="8dp"
+                            android:text="Ocean"
+                            android:textSize="12sp"
                             android:textColor="?attr/colorOnSurface"/>
 
                         <ImageView
-                            android:id="@+id/tickBlue"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_marginTop="2dp"
-                            android:src="@drawable/ic_search"
+                            android:id="@+id/tickOcean"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_marginTop="4dp"
+                            android:src="@drawable/ic_check"
                             android:visibility="invisible"
                             app:tint="?attr/colorPrimary"/>
                     </LinearLayout>
 
-                    <!-- Forest Green -->
+                    <!-- Violet -->
                     <LinearLayout
-                        android:id="@+id/swatchGreen"
+                        android:id="@+id/swatchViolet"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:padding="6dp"
+                        android:padding="8dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true">
 
                         <View
-                            android:id="@+id/circGreen"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"/>
+                            android:id="@+id/circViolet"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Forest"
-                            android:textSize="11sp"
+                            android:layout_marginTop="8dp"
+                            android:text="Violet"
+                            android:textSize="12sp"
                             android:textColor="?attr/colorOnSurface"/>
 
                         <ImageView
-                            android:id="@+id/tickGreen"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_marginTop="2dp"
-                            android:src="@drawable/ic_search"
-                            android:visibility="invisible"
-                            app:tint="?attr/colorPrimary"/>
-                    </LinearLayout>
-
-                    <!-- Slate Purple -->
-                    <LinearLayout
-                        android:id="@+id/swatchPurple"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="6dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <View
-                            android:id="@+id/circPurple"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Slate"
-                            android:textSize="11sp"
-                            android:textColor="?attr/colorOnSurface"/>
-
-                        <ImageView
-                            android:id="@+id/tickPurple"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_marginTop="2dp"
-                            android:src="@drawable/ic_search"
-                            android:visibility="invisible"
-                            app:tint="?attr/colorPrimary"/>
-                    </LinearLayout>
-
-                    <!-- Charcoal -->
-                    <LinearLayout
-                        android:id="@+id/swatchCharcoal"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="6dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <View
-                            android:id="@+id/circCharcoal"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Charcoal"
-                            android:textSize="11sp"
-                            android:textColor="?attr/colorOnSurface"/>
-
-                        <ImageView
-                            android:id="@+id/tickCharcoal"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_marginTop="2dp"
-                            android:src="@drawable/ic_search"
+                            android:id="@+id/tickViolet"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_marginTop="4dp"
+                            android:src="@drawable/ic_check"
                             android:visibility="invisible"
                             app:tint="?attr/colorPrimary"/>
                     </LinearLayout>
 
                 </LinearLayout>
-
-                <!-- Selected scheme label -->
-                <TextView
-                    android:id="@+id/tvSelectedScheme"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Selected: Crimson"
-                    android:textSize="13sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"/>
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -280,54 +188,46 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="60dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp">
 
-                <!-- Compact events -->
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_events"
+                    app:tint="?attr/colorPrimary"/>
+
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp">
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
 
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_events"
-                        app:tint="?attr/colorPrimary"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Compact Event Cards"
-                            android:textSize="15sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Show less detail in the events list"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurfaceVariant"/>
-                    </LinearLayout>
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchCompactEvents"
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"/>
+                        android:text="Compact Event Cards"
+                        android:textSize="15sp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Show less detail in the events list"
+                        android:textSize="12sp"
+                        android:textColor="?attr/colorOnSurfaceVariant"/>
                 </LinearLayout>
 
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchCompactEvents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

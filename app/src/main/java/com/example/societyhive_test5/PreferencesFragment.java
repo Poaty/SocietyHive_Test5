@@ -1,9 +1,10 @@
 package com.example.societyhive_test5;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,25 +17,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Preferences screen — colour scheme selection.
- *
- * Selecting a scheme:
- *   1. Saves the theme key to SharedPreferences (instant, local).
- *   2. Saves it to Firestore users/{uid}.themeKey (multi-device sync).
- *   3. Calls Activity.recreate() so the new theme is applied immediately.
- */
 public class PreferencesFragment extends Fragment {
 
     private static final String KEY_COMPACT = "pref_compact_events";
 
-    // [themeKey, swatchHex, displayName]
+    // [themeKey, backgroundHex, displayName]
     private static final String[][] SCHEMES = {
-            {"crimson",  "#B91C1C", "Crimson"},
-            {"midnight", "#0061A4", "Midnight"},
-            {"forest",   "#006E21", "Forest"},
-            {"slate",    "#6750A4", "Slate"},
-            {"charcoal", "#4A6267", "Charcoal"},
+            {"crimson", "#F6BFC6", "Crimson"},
+            {"ocean",   "#4472C4", "Ocean"},
+            {"violet",  "#9B80C0", "Violet"},
     };
 
     public PreferencesFragment() {
@@ -47,49 +38,38 @@ public class PreferencesFragment extends Fragment {
 
         String savedKey = ThemeHelper.current(requireContext());
 
-        makeCircle(view, R.id.circCrimson,  "#B91C1C");
-        makeCircle(view, R.id.circBlue,     "#0061A4");
-        makeCircle(view, R.id.circGreen,    "#006E21");
-        makeCircle(view, R.id.circPurple,   "#6750A4");
-        makeCircle(view, R.id.circCharcoal, "#4A6267");
+        int[] circIds  = {R.id.circCrimson, R.id.circOcean, R.id.circViolet};
+        int[] swatchIds = {R.id.swatchCrimson, R.id.swatchOcean, R.id.swatchViolet};
+        int[] tickIds  = {R.id.tickCrimson, R.id.tickOcean, R.id.tickViolet};
 
-        int[] swatchIds = {
-                R.id.swatchCrimson, R.id.swatchBlue, R.id.swatchGreen,
-                R.id.swatchPurple, R.id.swatchCharcoal
-        };
+        for (int i = 0; i < SCHEMES.length; i++) {
+            makeCircle(view, circIds[i], SCHEMES[i][1]);
+        }
 
         for (int i = 0; i < SCHEMES.length; i++) {
             final String[] scheme = SCHEMES[i];
-            View swatch = view.findViewById(swatchIds[i]);
-            if (swatch != null) {
-                swatch.setOnClickListener(v -> selectScheme(view, scheme[0], scheme[2]));
-            }
+            view.findViewById(swatchIds[i])
+                    .setOnClickListener(v -> selectScheme(view, scheme[0], tickIds, swatchIds));
         }
 
-        refreshTicks(view, savedKey);
+        refreshTicks(view, savedKey, tickIds);
 
         com.google.android.material.switchmaterial.SwitchMaterial swCompact =
                 view.findViewById(R.id.switchCompactEvents);
         if (swCompact != null) {
-            android.content.SharedPreferences prefs = requireContext()
-                    .getSharedPreferences(ThemeHelper.PREFS, android.content.Context.MODE_PRIVATE);
+            SharedPreferences prefs = requireContext()
+                    .getSharedPreferences(ThemeHelper.PREFS, Context.MODE_PRIVATE);
             swCompact.setChecked(prefs.getBoolean(KEY_COMPACT, false));
             swCompact.setOnCheckedChangeListener((btn, checked) ->
                     prefs.edit().putBoolean(KEY_COMPACT, checked).apply());
         }
     }
 
-    private void selectScheme(@NonNull View root,
-                               @NonNull String themeKey,
-                               @NonNull String displayName) {
-        // 1 — save locally
+    private void selectScheme(@NonNull View root, @NonNull String themeKey,
+                               int[] tickIds, int[] swatchIds) {
         ThemeHelper.save(requireContext(), themeKey);
-        refreshTicks(root, themeKey);
+        refreshTicks(root, themeKey, tickIds);
 
-        TextView tvSelected = root.findViewById(R.id.tvSelectedScheme);
-        if (tvSelected != null) tvSelected.setText("Selected: " + displayName);
-
-        // 2 — save to Firestore so other devices pick it up
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             Map<String, Object> update = new HashMap<>();
@@ -100,32 +80,15 @@ public class PreferencesFragment extends Fragment {
                     .update(update);
         }
 
-        // 3 — recreate so the new theme takes effect immediately
         requireActivity().recreate();
     }
 
-    private void refreshTicks(@NonNull View root, @NonNull String selectedKey) {
-        int[] tickIds = {
-                R.id.tickCrimson, R.id.tickBlue, R.id.tickGreen,
-                R.id.tickPurple, R.id.tickCharcoal
-        };
-
+    private void refreshTicks(@NonNull View root, @NonNull String selectedKey, int[] tickIds) {
         for (int i = 0; i < SCHEMES.length; i++) {
             View tick = root.findViewById(tickIds[i]);
             if (tick != null) {
                 tick.setVisibility(
-                        SCHEMES[i][0].equals(selectedKey)
-                                ? View.VISIBLE : View.INVISIBLE);
-            }
-        }
-
-        TextView tvSelected = root.findViewById(R.id.tvSelectedScheme);
-        if (tvSelected != null) {
-            for (String[] scheme : SCHEMES) {
-                if (scheme[0].equals(selectedKey)) {
-                    tvSelected.setText("Selected: " + scheme[2]);
-                    break;
-                }
+                        SCHEMES[i][0].equals(selectedKey) ? View.VISIBLE : View.INVISIBLE);
             }
         }
     }
