@@ -3,111 +3,73 @@ package com.example.societyhive_test5;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserManagementAdapter
-        extends RecyclerView.Adapter<UserManagementAdapter.ViewHolder> {
+public class UserManagementAdapter extends RecyclerView.Adapter<UserManagementAdapter.UserVH> {
 
-    public interface OnRoleToggleListener {
-        void onRoleToggled(String uid, boolean makeAdmin);
+    public interface OnUserClickListener {
+        void onUserClick(UserItem user);
     }
 
-    // -------------------------------------------------------------------------
+    private final List<UserItem> users = new ArrayList<>();
+    private OnUserClickListener clickListener;
 
-    public static class UserItem {
-        final String uid;
-        final String fullName;
-        boolean isAdmin;
-
-        public UserItem(String uid, String fullName, boolean isAdmin) {
-            this.uid      = uid;
-            this.fullName = fullName;
-            this.isAdmin  = isAdmin;
-        }
+    public void setClickListener(OnUserClickListener listener) {
+        this.clickListener = listener;
     }
 
-    // -------------------------------------------------------------------------
-
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        final TextView     tvUserName;
-        final SwitchMaterial switchAdmin;
-
-        ViewHolder(View v) {
-            super(v);
-            tvUserName  = v.findViewById(R.id.tvUserName);
-            switchAdmin = v.findViewById(R.id.switchAdmin);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-
-    private final List<UserItem>       allItems     = new ArrayList<>();
-    private final List<UserItem>       displayItems = new ArrayList<>();
-    private final OnRoleToggleListener listener;
-
-    public UserManagementAdapter(OnRoleToggleListener listener) {
-        this.listener = listener;
-    }
-
-    public void setUsers(List<UserItem> users) {
-        allItems.clear();
-        allItems.addAll(users);
-        displayItems.clear();
-        displayItems.addAll(users);
+    public void updateList(List<UserItem> newList) {
+        users.clear();
+        users.addAll(newList);
         notifyDataSetChanged();
     }
-
-    /** Filters the displayed list by the given query (case-insensitive name match). */
-    public void filter(String query) {
-        displayItems.clear();
-        if (query == null || query.trim().isEmpty()) {
-            displayItems.addAll(allItems);
-        } else {
-            String lower = query.toLowerCase();
-            for (UserItem item : allItems) {
-                if (item.fullName.toLowerCase().contains(lower)) {
-                    displayItems.add(item);
-                }
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    // -------------------------------------------------------------------------
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public UserVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_user_management, parent, false);
-        return new ViewHolder(v);
+        return new UserVH(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        UserItem item = displayItems.get(position);
-        holder.tvUserName.setText(item.fullName);
+    public void onBindViewHolder(@NonNull UserVH holder, int position) {
+        UserItem user = users.get(position);
+        holder.tvName.setText(user.getFullName().isEmpty() ? "No name" : user.getFullName());
+        holder.tvEmail.setText(user.getEmail());
+        holder.tvRole.setText(user.getRole());
 
-        // Update switch without firing the listener
-        holder.switchAdmin.setOnCheckedChangeListener(null);
-        holder.switchAdmin.setChecked(item.isAdmin);
+        // Load profile picture if available - we reuse bg_circle_neutral as placeholder
+        holder.ivAvatar.setPadding(6, 6, 6, 6);
+        holder.ivAvatar.setBackgroundResource(R.drawable.bg_circle_neutral);
+        holder.ivAvatar.setImageResource(R.drawable.ic_profile);
 
-        holder.switchAdmin.setOnCheckedChangeListener((btn, isChecked) -> {
-            item.isAdmin = isChecked;
-            listener.onRoleToggled(item.uid, isChecked);
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) clickListener.onUserClick(user);
         });
     }
 
     @Override
-    public int getItemCount() {
-        return displayItems.size();
+    public int getItemCount() { return users.size(); }
+
+    static class UserVH extends RecyclerView.ViewHolder {
+        final ImageView ivAvatar;
+        final TextView tvName, tvEmail, tvRole;
+        UserVH(@NonNull View v) {
+            super(v);
+            ivAvatar = v.findViewById(R.id.ivUserAvatar);
+            tvName   = v.findViewById(R.id.tvUserName);
+            tvEmail  = v.findViewById(R.id.tvUserEmail);
+            tvRole   = v.findViewById(R.id.tvUserRole);
+        }
     }
 }

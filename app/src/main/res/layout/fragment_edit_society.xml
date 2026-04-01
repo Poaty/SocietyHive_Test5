@@ -38,6 +38,38 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="20dp" />
 
+                <!-- Society icon -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="20dp">
+
+                    <ImageView
+                        android:id="@+id/ivSocietyIcon"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:src="@drawable/ic_gallery"
+                        android:background="@drawable/bg_circle_neutral"
+                        android:padding="14dp"
+                        android:scaleType="centerInside"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:contentDescription="Society icon" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:text="Tap the circle to set a society icon"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:alpha="0.8"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
                 <!-- Society picker -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilSociety"
