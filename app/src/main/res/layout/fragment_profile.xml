@@ -19,10 +19,9 @@
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:src="@drawable/ic_profile"
-            android:background="@drawable/bg_profile_role_chip"
-            android:padding="12dp"
-            android:scaleType="centerCrop"
-            app:tint="?attr/colorPrimary"
+            android:background="@drawable/bg_circle_neutral"
+            android:padding="16dp"
+            android:scaleType="centerInside"
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="Profile picture" />

@@ -21,8 +21,9 @@ public class Message {
     private String senderName;
     private com.google.firebase.Timestamp timestamp;
 
-    // Local-only flag: is this message from the currently signed-in user?
+    // Local-only fields — not stored in Firestore
     private boolean sentByMe;
+    private String senderPhotoUrl;
 
     /** Required for Firestore toObject(). */
     public Message() {}
@@ -53,7 +54,9 @@ public class Message {
     public com.google.firebase.Timestamp getTimestamp() { return timestamp; }
     public void setTimestamp(com.google.firebase.Timestamp timestamp) { this.timestamp = timestamp; }
 
-    // Local UI flag — not stored in Firestore
     public boolean isSentByMe() { return sentByMe; }
     public void setSentByMe(boolean sentByMe) { this.sentByMe = sentByMe; }
+
+    public String getSenderPhotoUrl() { return senderPhotoUrl != null ? senderPhotoUrl : ""; }
+    public void setSenderPhotoUrl(String url) { this.senderPhotoUrl = url; }
 }

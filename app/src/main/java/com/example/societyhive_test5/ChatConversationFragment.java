@@ -43,11 +43,12 @@ import java.util.Map;
 public class ChatConversationFragment extends Fragment {
 
     private final List<Message> messages = new ArrayList<>();
+    private final Map<String, String> photoCache = new HashMap<>();
     private MessageAdapter adapter;
     private RecyclerView rv;
 
     private String societyId;
-    private String currentUserName = "Member"; // resolved from Firestore
+    private String currentUserName = "Member";
 
     private ListenerRegistration messageListener;
 
@@ -154,18 +155,56 @@ public class ChatConversationFragment extends Fragment {
                         messages.add(msg);
                     }
 
-                    adapter.updateList(messages);
-
-                    // Scroll to the bottom
-                    if (!messages.isEmpty()) {
-                        rv.scrollToPosition(messages.size() - 1);
-                    }
+                    enrichWithPhotos(messages);
                 });
     }
 
     // -------------------------------------------------------------------------
     // Sending a message
     // -------------------------------------------------------------------------
+
+    private void enrichWithPhotos(@NonNull List<Message> msgs) {
+        java.util.Set<String> toFetch = new java.util.HashSet<>();
+        for (Message m : msgs) {
+            if (!m.isSentByMe() && !photoCache.containsKey(m.getSenderId())) {
+                toFetch.add(m.getSenderId());
+            }
+        }
+
+        if (toFetch.isEmpty()) {
+            applyPhotosAndShow(msgs);
+            return;
+        }
+
+        java.util.concurrent.atomic.AtomicInteger remaining =
+                new java.util.concurrent.atomic.AtomicInteger(toFetch.size());
+
+        for (String uid : toFetch) {
+            FirebaseFirestore.getInstance().collection("users").document(uid).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null
+                                && task.getResult().exists()) {
+                            String url = task.getResult().getString("profileImageUrl");
+                            photoCache.put(uid, url != null ? url : "");
+                        } else {
+                            photoCache.put(uid, "");
+                        }
+                        if (remaining.decrementAndGet() == 0 && isAdded()) {
+                            applyPhotosAndShow(msgs);
+                        }
+                    });
+        }
+    }
+
+    private void applyPhotosAndShow(@NonNull List<Message> msgs) {
+        for (Message m : msgs) {
+            if (!m.isSentByMe()) {
+                m.setSenderPhotoUrl(photoCache.getOrDefault(m.getSenderId(), ""));
+            }
+        }
+        adapter.updateList(msgs);
+        if (!msgs.isEmpty()) rv.scrollToPosition(msgs.size() - 1);
+    }
 
     private void sendMessage(@NonNull String text) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
