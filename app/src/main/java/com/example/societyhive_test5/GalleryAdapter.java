@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -16,11 +17,24 @@ import java.util.List;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoViewHolder> {
 
-    private final Context context;
-    private final List<GalleryPhoto> photos = new ArrayList<>();
+    public interface OnDeleteListener {
+        void onDelete(GalleryPhoto photo);
+    }
 
-    public GalleryAdapter(Context context) {
+    private final Context context;
+    private final String currentUid;
+    private final boolean isAdmin;
+    private final List<GalleryPhoto> photos = new ArrayList<>();
+    private OnDeleteListener deleteListener;
+
+    public GalleryAdapter(Context context, String currentUid, boolean isAdmin) {
         this.context = context;
+        this.currentUid = currentUid;
+        this.isAdmin = isAdmin;
+    }
+
+    public void setDeleteListener(OnDeleteListener listener) {
+        this.deleteListener = listener;
     }
 
     public void updatePhotos(List<GalleryPhoto> newPhotos) {
@@ -39,11 +53,20 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoVie
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         GalleryPhoto photo = photos.get(position);
+
         Glide.with(context)
                 .load(photo.getImageUrl())
                 .centerCrop()
-                .placeholder(R.color.white)
                 .into(holder.ivPhoto);
+
+        boolean canDelete = isAdmin || currentUid.equals(photo.getUploadedBy());
+        holder.btnDelete.setVisibility(canDelete ? View.VISIBLE : View.GONE);
+
+        if (canDelete) {
+            holder.btnDelete.setOnClickListener(v -> {
+                if (deleteListener != null) deleteListener.onDelete(photo);
+            });
+        }
     }
 
     @Override
@@ -51,9 +74,12 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoVie
 
     static class PhotoViewHolder extends RecyclerView.ViewHolder {
         final ImageView ivPhoto;
+        final ImageButton btnDelete;
+
         PhotoViewHolder(@NonNull View v) {
             super(v);
             ivPhoto = v.findViewById(R.id.ivPhoto);
+            btnDelete = v.findViewById(R.id.btnDeletePhoto);
         }
     }
 }
