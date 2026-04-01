@@ -3,7 +3,10 @@ package com.example.societyhive_test5;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,7 +53,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ReceivedVH vh = (ReceivedVH) holder;
             vh.tvMessage.setText(message.getText());
 
-            // Show sender name above received messages
             if (vh.tvSenderName != null) {
                 String name = message.getSenderName();
                 if (name != null && !name.isEmpty()) {
@@ -58,6 +60,23 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     vh.tvSenderName.setText(name);
                 } else {
                     vh.tvSenderName.setVisibility(View.GONE);
+                }
+            }
+
+            if (vh.ivAvatar != null) {
+                String photoUrl = message.getSenderPhotoUrl();
+                if (photoUrl != null && !photoUrl.isEmpty()) {
+                    vh.ivAvatar.setPadding(0, 0, 0, 0);
+                    vh.ivAvatar.setBackground(null);
+                    Glide.with(vh.ivAvatar.getContext())
+                            .load(photoUrl)
+                            .circleCrop()
+                            .placeholder(R.drawable.ic_profile)
+                            .into(vh.ivAvatar);
+                } else {
+                    vh.ivAvatar.setPadding(4, 4, 4, 4);
+                    vh.ivAvatar.setBackgroundResource(R.drawable.bg_circle_neutral);
+                    vh.ivAvatar.setImageResource(R.drawable.ic_profile);
                 }
             }
         }
@@ -88,11 +107,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     static class ReceivedVH extends RecyclerView.ViewHolder {
         final TextView tvMessage;
-        final TextView tvSenderName; // may be null if layout doesn't have it yet
+        final TextView tvSenderName;
+        final ImageView ivAvatar;
         ReceivedVH(@NonNull View itemView) {
             super(itemView);
-            tvMessage = itemView.findViewById(R.id.tvMessageReceived);
+            tvMessage    = itemView.findViewById(R.id.tvMessageReceived);
             tvSenderName = itemView.findViewById(R.id.tvMessageSenderName);
+            ivAvatar     = itemView.findViewById(R.id.ivSenderAvatar);
         }
     }
 }

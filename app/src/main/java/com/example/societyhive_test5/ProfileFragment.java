@@ -102,13 +102,7 @@ public class ProfileFragment extends Fragment {
                     if (role     != null && !role.isEmpty())     tvRole.setText(capitalize(role));
 
                     if (photoUrl != null && !photoUrl.isEmpty()) {
-                        ivProfilePicture.clearColorFilter();
-                        ivProfilePicture.setBackground(null);
-                        Glide.with(this)
-                                .load(photoUrl)
-                                .circleCrop()
-                                .placeholder(R.drawable.ic_profile)
-                                .into(ivProfilePicture);
+                        loadAvatar(photoUrl);
                     }
 
                     List<String> societyIds = (List<String>) document.get("societyIds");
@@ -148,14 +142,15 @@ public class ProfileFragment extends Fragment {
                                 .update("profileImageUrl", imageUrl)
                                 .addOnSuccessListener(unused -> {
                                     if (!isAdded()) return;
-                                    ivProfilePicture.clearColorFilter();
-                                    ivProfilePicture.setBackground(null);
-                                    Glide.with(ProfileFragment.this)
-                                            .load(imageUrl)
-                                            .circleCrop()
-                                            .into(ivProfilePicture);
+                                    loadAvatar(imageUrl);
                                     Toast.makeText(requireContext(),
-                                            "Photo updated!", Toast.LENGTH_SHORT).show();
+                                            "Photo saved!", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> {
+                                    if (!isAdded()) return;
+                                    Toast.makeText(requireContext(),
+                                            "Uploaded but failed to save: " + e.getMessage(),
+                                            Toast.LENGTH_LONG).show();
                                 });
                     }
 
@@ -163,12 +158,20 @@ public class ProfileFragment extends Fragment {
                     public void onError(String requestId, ErrorInfo error) {
                         if (!isAdded()) return;
                         Toast.makeText(requireContext(),
-                                "Upload failed", Toast.LENGTH_SHORT).show();
+                                "Upload failed: " + error.getDescription(),
+                                Toast.LENGTH_LONG).show();
                     }
 
                     @Override public void onReschedule(String requestId, ErrorInfo error) {}
                 })
                 .dispatch();
+    }
+
+    private void loadAvatar(String url) {
+        ivProfilePicture.setPadding(0, 0, 0, 0);
+        ivProfilePicture.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
+        ivProfilePicture.setBackground(null);
+        Glide.with(this).load(url).circleCrop().into(ivProfilePicture);
     }
 
     private void loadSocieties(@Nullable List<String> societyIds) {
