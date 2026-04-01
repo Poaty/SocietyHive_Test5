@@ -4,10 +4,13 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -53,6 +56,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatVH> {
         private final TextView tvTitle;
         private final TextView tvPreview;
         private final TextView tvTime;
+        private final ImageView ivIcon;
 
         ChatVH(@NonNull View itemView) {
             super(itemView);
@@ -60,6 +64,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatVH> {
             tvTitle = itemView.findViewById(R.id.tvChatTitle);
             tvPreview = itemView.findViewById(R.id.tvChatPreview);
             tvTime = itemView.findViewById(R.id.tvChatTime);
+            ivIcon = itemView.findViewById(R.id.ivSocietyIcon);
         }
 
         void bind(@NonNull Chat chat) {
@@ -71,6 +76,23 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatVH> {
                 accentBar.setBackgroundColor(Color.parseColor(chat.getSocietyColor()));
             } catch (IllegalArgumentException e) {
                 accentBar.setBackgroundColor(Color.parseColor("#8D2E3A"));
+            }
+
+            if (ivIcon != null) {
+                String iconUrl = chat.getIconUrl();
+                if (iconUrl != null && !iconUrl.isEmpty()) {
+                    ivIcon.setPadding(0, 0, 0, 0);
+                    ivIcon.setBackground(null);
+                    Glide.with(ivIcon.getContext())
+                            .load(iconUrl)
+                            .circleCrop()
+                            .placeholder(R.drawable.ic_profile)
+                            .into(ivIcon);
+                } else {
+                    ivIcon.setPadding(4, 4, 4, 4);
+                    ivIcon.setBackgroundResource(R.drawable.bg_circle_neutral);
+                    ivIcon.setImageResource(R.drawable.ic_profile);
+                }
             }
 
             itemView.setOnClickListener(v -> listener.onChatClick(chat));
