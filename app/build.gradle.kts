@@ -56,8 +56,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-messaging")
 
-    // Firebase Storage (gallery uploads)
-    implementation("com.google.firebase:firebase-storage")
+    // Cloudinary (gallery uploads — free, no billing required)
+    implementation("com.cloudinary:cloudinary-android:2.5.0")
 
     // ViewPager2 + TabLayout
     implementation("androidx.viewpager2:viewpager2:1.0.0")
