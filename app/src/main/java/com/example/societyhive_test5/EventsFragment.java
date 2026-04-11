@@ -364,8 +364,11 @@ public class EventsFragment extends Fragment {
         Calendar nextWeekEnd   = getWeekStart(2);
 
         for (Event e : allEvents) {
-            // Visibility: admins see all events; others see their society's events or ones they attend
-            if (!isAdmin && !userSocietyIds.contains(e.getSocietyId()) && !e.isAttending()) continue;
+            // Visibility: admins see all; public events visible to everyone;
+            // private events only visible to society members or attendees
+            if (!isAdmin && !e.isPublic()
+                    && !userSocietyIds.contains(e.getSocietyId())
+                    && !e.isAttending()) continue;
 
             // Search filter
             if (!query.isEmpty() && !e.getName().toLowerCase(Locale.UK).contains(query)) continue;
