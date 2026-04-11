@@ -107,6 +107,16 @@
             android:background="?attr/colorPrimary"
             android:alpha="0.2" />
 
+        <!-- Browse societies button -->
+        <Button
+            android:id="@+id/btnBrowseSocieties"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Browse Societies"
+            android:backgroundTint="?attr/colorSecondaryContainer"
+            android:textColor="?attr/colorOnSecondaryContainer" />
+
         <!-- Log out button -->
         <Button
             android:id="@+id/btnLogOut"
