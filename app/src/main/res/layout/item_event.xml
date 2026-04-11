@@ -44,6 +44,16 @@
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="13sp" />
 
+        <ImageView
+            android:id="@+id/ivExpandChevron"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_chevron_down"
+            android:scaleType="center"
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:contentDescription="Expand" />
+
         <TextView
             android:id="@+id/tvAttendingIndicator"
             android:layout_width="wrap_content"

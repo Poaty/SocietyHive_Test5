@@ -108,6 +108,17 @@
 
     </com.google.android.material.chip.ChipGroup>
 
+    <!-- Loading spinner -->
+    <ProgressBar
+        android:id="@+id/progressEvents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/chipGroupFilters"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- Events list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEvents"

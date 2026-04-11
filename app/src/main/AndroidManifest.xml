@@ -17,12 +17,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SocietyHive_Test5">
 
-        <activity android:name=".LoginActivity" android:exported="true">
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@style/Theme.SocietyHive_Test5"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".LoginActivity" android:exported="true" />
 
         <activity android:name=".SignUpActivity" android:exported="false"/>
         <activity android:name=".MainActivity" android:exported="false"/>

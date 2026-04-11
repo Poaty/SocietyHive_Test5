@@ -117,6 +117,18 @@ public class CreateEventFragment extends Fragment {
             pickedHour   = hour;
             pickedMinute = minute;
             dateTimePicked = true;
+
+            // Check if selected datetime is in the past
+            java.util.Calendar selected = java.util.Calendar.getInstance();
+            selected.set(pickedYear, pickedMonth, pickedDay, hour, minute, 0);
+            if (selected.before(java.util.Calendar.getInstance())) {
+                dateTimePicked = false;
+                etDateTime.setText("");
+                Toast.makeText(requireContext(),
+                        "Please select a future date and time.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             String formatted = String.format(Locale.getDefault(),
                     "%d-%s-%d • %02d:%02d",
                     pickedDay, MONTH_NAMES[pickedMonth], pickedYear, hour, minute);
