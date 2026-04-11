@@ -150,11 +150,15 @@ public class HomeFragment extends Fragment {
     // -------------------------------------------------------------------------
 
     private void loadAnnouncements(@NonNull View view) {
+        View progress = view.findViewById(R.id.progressPins);
+        if (progress != null) progress.setVisibility(View.VISIBLE);
+
         FirebaseFirestore.getInstance()
                 .collection("pins")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
+                    if (progress != null) progress.setVisibility(View.GONE);
                     announcements.clear();
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
@@ -173,6 +177,10 @@ public class HomeFragment extends Fragment {
                     }
 
                     fetchAnnouncementSocietyNames(view);
+                })
+                .addOnFailureListener(e -> {
+                    if (!isAdded()) return;
+                    if (progress != null) progress.setVisibility(View.GONE);
                 });
     }
 
