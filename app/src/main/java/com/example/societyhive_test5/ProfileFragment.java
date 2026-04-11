@@ -69,6 +69,9 @@ public class ProfileFragment extends Fragment {
 
         ivProfilePicture.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
+        view.findViewById(R.id.btnBrowseSocieties).setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.browseSocietiesFragment));
+
         view.findViewById(R.id.btnLogOut).setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(requireActivity(), LoginActivity.class);

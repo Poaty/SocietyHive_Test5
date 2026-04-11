@@ -100,4 +100,9 @@
         android:name="com.example.societyhive_test5.GalleryFragment"
         android:label="Gallery" />
 
+    <fragment
+        android:id="@+id/browseSocietiesFragment"
+        android:name="com.example.societyhive_test5.BrowseSocietiesFragment"
+        android:label="Browse Societies" />
+
 </navigation>
