@@ -3,6 +3,7 @@ package com.example.societyhive_test5;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -75,6 +76,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventVH> {
         private final TextView tvExpandedOrganiser;
         private final MaterialButton btnAttend;
         private final MaterialButton btnViewDetails;
+        ImageView ivExpandChevron;
 
         EventVH(@NonNull View itemView) {
             super(itemView);
@@ -88,6 +90,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventVH> {
             tvExpandedOrganiser = itemView.findViewById(R.id.tvExpandedOrganiser);
             btnAttend = itemView.findViewById(R.id.btnAttendEvent);
             btnViewDetails = itemView.findViewById(R.id.btnViewDetails);
+            ivExpandChevron = itemView.findViewById(R.id.ivExpandChevron);
         }
 
         void bind(@NonNull Event event) {
@@ -112,6 +115,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventVH> {
                 event.setExpanded(!event.isExpanded());
                 notifyItemChanged(getBindingAdapterPosition());
             });
+
+            if (ivExpandChevron != null) {
+                ivExpandChevron.setRotation(event.isExpanded() ? 180f : 0f);
+            }
 
             btnAttend.setOnClickListener(v -> {
                 boolean newState = !event.isAttending();

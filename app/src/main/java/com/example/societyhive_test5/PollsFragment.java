@@ -2,6 +2,7 @@ package com.example.societyhive_test5;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,6 +42,8 @@ public class PollsFragment extends Fragment {
     private final List<Poll> polls = new ArrayList<>();
     private PollsAdapter adapter;
     private final Set<String> userSocietyIds = new HashSet<>();
+    private View progressPolls;
+    private TextView tvEmptyPolls;
 
     public PollsFragment() {
         super(R.layout.fragment_polls);
@@ -49,6 +52,9 @@ public class PollsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        progressPolls = view.findViewById(R.id.progressPolls);
+        tvEmptyPolls = view.findViewById(R.id.tvEmptyPolls);
 
         RecyclerView rv = view.findViewById(R.id.rvPolls);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -63,6 +69,8 @@ public class PollsFragment extends Fragment {
     // -------------------------------------------------------------------------
 
     private void loadUserSocietiesThenPolls() {
+        if (progressPolls != null) progressPolls.setVisibility(View.VISIBLE);
+        if (tvEmptyPolls != null) tvEmptyPolls.setVisibility(View.GONE);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) { loadPolls(); return; }
 
@@ -90,6 +98,7 @@ public class PollsFragment extends Fragment {
         FirebaseFirestore.getInstance()
                 .collection("polls")
                 .whereEqualTo("isActive", true)
+                .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
@@ -122,6 +131,11 @@ public class PollsFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
+                    if (progressPolls != null) progressPolls.setVisibility(View.GONE);
+                    if (tvEmptyPolls != null) {
+                        tvEmptyPolls.setText("Could not load polls.");
+                        tvEmptyPolls.setVisibility(View.VISIBLE);
+                    }
                     Toast.makeText(requireContext(), "Could not load polls.", Toast.LENGTH_SHORT).show();
                 });
     }
@@ -167,7 +181,15 @@ public class PollsFragment extends Fragment {
 
     private void loadAllVotes() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (polls.isEmpty()) { adapter.updateList(polls); return; }
+        if (polls.isEmpty()) {
+            if (progressPolls != null) progressPolls.setVisibility(View.GONE);
+            if (tvEmptyPolls != null) {
+                tvEmptyPolls.setText("No polls available yet.");
+                tvEmptyPolls.setVisibility(View.VISIBLE);
+            }
+            adapter.updateList(polls);
+            return;
+        }
 
         final int[] remaining = {polls.size()};
 
@@ -231,7 +253,18 @@ public class PollsFragment extends Fragment {
 
     private void finishOne(int[] remaining) {
         remaining[0]--;
-        if (remaining[0] == 0 && isAdded()) adapter.updateList(polls);
+        if (remaining[0] == 0 && isAdded()) {
+            if (progressPolls != null) progressPolls.setVisibility(View.GONE);
+            if (polls.isEmpty()) {
+                if (tvEmptyPolls != null) {
+                    tvEmptyPolls.setText("No polls available yet.");
+                    tvEmptyPolls.setVisibility(View.VISIBLE);
+                }
+            } else {
+                if (tvEmptyPolls != null) tvEmptyPolls.setVisibility(View.GONE);
+            }
+            adapter.updateList(polls);
+        }
     }
 
     // -------------------------------------------------------------------------

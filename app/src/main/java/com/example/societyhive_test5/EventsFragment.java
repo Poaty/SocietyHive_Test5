@@ -57,6 +57,7 @@ public class EventsFragment extends Fragment {
     private final List<Event> filteredEvents = new ArrayList<>();
     private EventsAdapter adapter;
     private View rootView;
+    private android.widget.ProgressBar progressEvents;
 
     // The societies this user belongs to — used for visibility filtering
     private final Set<String> userSocietyIds = new HashSet<>();
@@ -70,6 +71,7 @@ public class EventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable android.os.Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rootView = view;
+        progressEvents = view.findViewById(R.id.progressEvents);
 
         RecyclerView rv = view.findViewById(R.id.rvEvents);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -101,11 +103,13 @@ public class EventsFragment extends Fragment {
     // -------------------------------------------------------------------------
 
     private void loadEventsFromFirestore() {
+        if (progressEvents != null) progressEvents.setVisibility(View.VISIBLE);
         FirebaseFirestore.getInstance()
                 .collection("events")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
+                    if (progressEvents != null) progressEvents.setVisibility(View.GONE);
 
                     allEvents.clear();
                     for (QueryDocumentSnapshot doc : querySnapshot) {
@@ -129,6 +133,7 @@ public class EventsFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
+                    if (progressEvents != null) progressEvents.setVisibility(View.GONE);
                     if (allEvents.isEmpty()) seedDummyEvents();
                     Toast.makeText(requireContext(),
                             "Could not load events: " + e.getMessage(),
