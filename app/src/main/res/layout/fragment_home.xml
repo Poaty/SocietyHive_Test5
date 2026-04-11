@@ -25,6 +25,15 @@
             android:layout_marginTop="70dp"
             android:layout_marginBottom="18dp" />
 
+        <!-- Pins loading spinner -->
+        <ProgressBar
+            android:id="@+id/progressPins"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:visibility="visible" />
+
         <!-- Pins section (hidden when empty) -->
         <TextView
             android:id="@+id/tvAnnouncementsLabel"
