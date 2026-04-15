@@ -93,7 +93,9 @@
     <fragment
         android:id="@+id/editSocietyFragment"
         android:name="com.example.societyhive_test5.EditSocietyFragment"
-        android:label="Edit Society" />
+        android:label="Edit Society">
+        <argument android:name="preSelectedSocietyId" app:argType="string" android:defaultValue="" />
+    </fragment>
 
     <fragment
         android:id="@+id/galleryFragment"

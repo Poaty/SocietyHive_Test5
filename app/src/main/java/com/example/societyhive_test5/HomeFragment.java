@@ -143,6 +143,14 @@ public class HomeFragment extends Fragment {
             args.putString("societyFilter", societyId);
             NavHostFragment.findNavController(this).navigate(R.id.userManagementFragment, args);
         });
+
+        // Edit Society — pre-select the society admin's own society
+        View tileEditSociety = view.findViewById(R.id.tileSAEditSociety);
+        if (tileEditSociety != null) tileEditSociety.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("preSelectedSocietyId", societyId);
+            NavHostFragment.findNavController(this).navigate(R.id.editSocietyFragment, args);
+        });
     }
 
     // -------------------------------------------------------------------------
