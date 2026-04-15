@@ -1,5 +1,6 @@
 package com.example.societyhive_test5;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
@@ -52,7 +54,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatVH> {
     }
 
     class ChatVH extends RecyclerView.ViewHolder {
-        private final View accentBar;
+        private final MaterialCardView card;
         private final TextView tvTitle;
         private final TextView tvPreview;
         private final TextView tvTime;
@@ -60,7 +62,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatVH> {
 
         ChatVH(@NonNull View itemView) {
             super(itemView);
-            accentBar = itemView.findViewById(R.id.viewAccent);
+            card = itemView.findViewById(R.id.cardChat);
             tvTitle = itemView.findViewById(R.id.tvChatTitle);
             tvPreview = itemView.findViewById(R.id.tvChatPreview);
             tvTime = itemView.findViewById(R.id.tvChatTime);
@@ -73,9 +75,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatVH> {
             tvTime.setText(chat.getTime());
 
             try {
-                accentBar.setBackgroundColor(Color.parseColor(chat.getSocietyColor()));
+                int colour = Color.parseColor(chat.getSocietyColor());
+                card.setStrokeColor(ColorStateList.valueOf(colour));
             } catch (IllegalArgumentException e) {
-                accentBar.setBackgroundColor(Color.parseColor("#8D2E3A"));
+                card.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#8D2E3A")));
             }
 
             if (ivIcon != null) {
