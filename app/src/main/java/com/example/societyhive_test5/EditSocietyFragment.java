@@ -24,6 +24,7 @@ import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -34,6 +35,7 @@ import java.util.Map;
 
 public class EditSocietyFragment extends Fragment {
 
+    private TextInputLayout      tilSociety;
     private AutoCompleteTextView actvSociety;
     private TextInputEditText    etName;
     private TextInputEditText    etDescription;
@@ -65,6 +67,7 @@ public class EditSocietyFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        tilSociety    = view.findViewById(R.id.tilSociety);
         actvSociety   = view.findViewById(R.id.actvSociety);
         etName        = view.findViewById(R.id.etName);
         etDescription = view.findViewById(R.id.etDescription);
@@ -137,7 +140,8 @@ public class EditSocietyFragment extends Fragment {
             fillFields(position);
         });
 
-        // Pre-select for society admins — lock dropdown completely
+        // Pre-select for society admins — lock the entire TextInputLayout so the
+        // ExposedDropdownMenu cannot be opened (disabling only the inner ACTV is not enough).
         if (!preSelectedSocietyId.isEmpty()) {
             int idx = societyIds.indexOf(preSelectedSocietyId);
             if (idx >= 0) {
@@ -145,9 +149,7 @@ public class EditSocietyFragment extends Fragment {
                 actvSociety.setText(societyNames.get(idx), false);
                 fillFields(idx);
             }
-            actvSociety.setEnabled(false);
-            actvSociety.setFocusable(false);
-            actvSociety.setClickable(false);
+            tilSociety.setEnabled(false);
         }
     }
 
