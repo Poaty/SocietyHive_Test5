@@ -9,7 +9,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,11 +25,17 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
         void onVote(Poll poll, int optionIndex);
     }
 
+    public interface DeleteListener {
+        void onDelete(Poll poll);
+    }
+
     private final List<Poll> polls = new ArrayList<>();
     private final VoteListener voteListener;
+    @Nullable private final DeleteListener deleteListener; // null = no delete button shown
 
-    public PollsAdapter(VoteListener voteListener) {
+    public PollsAdapter(@NonNull VoteListener voteListener, @Nullable DeleteListener deleteListener) {
         this.voteListener = voteListener;
+        this.deleteListener = deleteListener;
     }
 
     @NonNull
@@ -40,6 +49,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Poll poll = polls.get(position);
+        boolean closed = poll.isClosed();
 
         // Society name badge
         String societyName = poll.getSocietyName();
@@ -50,6 +60,9 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             holder.tvSocietyName.setVisibility(View.GONE);
         }
 
+        // CLOSED badge — only on expired polls
+        holder.tvClosedBadge.setVisibility(closed ? View.VISIBLE : View.GONE);
+
         holder.tvTitle.setText(poll.getTitle());
 
         // Closing date label
@@ -57,7 +70,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             String formatted = new SimpleDateFormat("d MMM yyyy", Locale.UK)
                     .format(poll.getEndsAt().toDate());
             holder.tvClosesOn.setVisibility(View.VISIBLE);
-            holder.tvClosesOn.setText("Closes " + formatted);
+            holder.tvClosesOn.setText(closed ? "Closed " + formatted : "Closes " + formatted);
         } else {
             holder.tvClosesOn.setVisibility(View.GONE);
         }
@@ -77,16 +90,16 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             final int index = i;
             View optionView = inflater.inflate(R.layout.item_poll_option, holder.optionsContainer, false);
 
-            TextView tvText        = optionView.findViewById(R.id.tvOptionText);
-            ImageView ivCheckbox   = optionView.findViewById(R.id.ivCheckbox);
-            View layoutResult      = optionView.findViewById(R.id.layoutVoteResult);
-            ProgressBar progress   = optionView.findViewById(R.id.progressVotes);
-            TextView tvCount       = optionView.findViewById(R.id.tvVoteCount);
+            TextView tvText      = optionView.findViewById(R.id.tvOptionText);
+            ImageView ivCheckbox = optionView.findViewById(R.id.ivCheckbox);
+            View layoutResult    = optionView.findViewById(R.id.layoutVoteResult);
+            ProgressBar progress = optionView.findViewById(R.id.progressVotes);
+            TextView tvCount     = optionView.findViewById(R.id.tvVoteCount);
 
             tvText.setText(options.get(i));
 
             boolean isVotedOption    = hasVoted && poll.getVotedOptionIndex() == i;
-            boolean isSelectedOption = !hasVoted && poll.getSelectedOptionIndex() == i;
+            boolean isSelectedOption = !hasVoted && !closed && poll.getSelectedOptionIndex() == i;
 
             if (isVotedOption || isSelectedOption) {
                 ivCheckbox.setImageResource(R.drawable.ic_check);
@@ -97,8 +110,8 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
                 ivCheckbox.clearColorFilter();
             }
 
-            if (hasVoted && !counts.isEmpty() && i < counts.size()) {
-                // Show results row
+            // Show results if user has voted OR the poll is closed (admins see final counts)
+            if ((hasVoted || closed) && !counts.isEmpty() && i < counts.size()) {
                 layoutResult.setVisibility(View.VISIBLE);
                 int voteCount = counts.get(i);
                 int pct = total > 0 ? (int) Math.round((voteCount * 100.0) / total) : 0;
@@ -107,18 +120,19 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
                         voteCount, voteCount == 1 ? "" : "s", pct));
             } else {
                 layoutResult.setVisibility(View.GONE);
-                // Allow tapping if user hasn't voted yet
-                optionView.setOnClickListener(v -> {
-                    poll.setSelectedOptionIndex(index);
-                    notifyItemChanged(holder.getAdapterPosition());
-                });
+                if (!closed) {
+                    optionView.setOnClickListener(v -> {
+                        poll.setSelectedOptionIndex(index);
+                        notifyItemChanged(holder.getAdapterPosition());
+                    });
+                }
             }
 
             holder.optionsContainer.addView(optionView);
         }
 
-        // Footer: total votes label or Vote button
-        if (hasVoted) {
+        // Footer: vote counts + buttons
+        if (hasVoted || closed) {
             holder.tvTotalVotes.setVisibility(View.VISIBLE);
             holder.tvTotalVotes.setText(
                     String.format(Locale.UK, "%d total vote%s", total, total == 1 ? "" : "s"));
@@ -130,6 +144,14 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
                 int selected = poll.getSelectedOptionIndex();
                 if (selected >= 0) voteListener.onVote(poll, selected);
             });
+        }
+
+        // Delete button — only shown when a delete listener is provided (admins)
+        if (deleteListener != null) {
+            holder.btnDelete.setVisibility(View.VISIBLE);
+            holder.btnDelete.setOnClickListener(v -> deleteListener.onDelete(poll));
+        } else {
+            holder.btnDelete.setVisibility(View.GONE);
         }
     }
 
@@ -144,22 +166,26 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         final TextView tvSocietyName;
+        final TextView tvClosedBadge;
         final TextView tvTitle;
         final TextView tvClosesOn;
         final TextView tvQuestion;
         final LinearLayout optionsContainer;
         final TextView tvTotalVotes;
-        final com.google.android.material.button.MaterialButton btnVote;
+        final MaterialButton btnVote;
+        final MaterialButton btnDelete;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvSocietyName  = itemView.findViewById(R.id.tvSocietyName);
-            tvTitle        = itemView.findViewById(R.id.tvPollTitle);
-            tvClosesOn     = itemView.findViewById(R.id.tvClosesOn);
-            tvQuestion     = itemView.findViewById(R.id.tvPollQuestion);
+            tvSocietyName    = itemView.findViewById(R.id.tvSocietyName);
+            tvClosedBadge    = itemView.findViewById(R.id.tvClosedBadge);
+            tvTitle          = itemView.findViewById(R.id.tvPollTitle);
+            tvClosesOn       = itemView.findViewById(R.id.tvClosesOn);
+            tvQuestion       = itemView.findViewById(R.id.tvPollQuestion);
             optionsContainer = itemView.findViewById(R.id.optionsContainer);
-            tvTotalVotes   = itemView.findViewById(R.id.tvTotalVotes);
-            btnVote        = itemView.findViewById(R.id.btnVote);
+            tvTotalVotes     = itemView.findViewById(R.id.tvTotalVotes);
+            btnVote          = itemView.findViewById(R.id.btnVote);
+            btnDelete        = itemView.findViewById(R.id.btnDelete);
         }
     }
 }

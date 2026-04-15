@@ -29,21 +29,26 @@ import java.util.Set;
 /**
  * Polls screen.
  *
- * Loading sequence:
- *   1. Load user's societyIds
- *   2. Load active polls, filter by societyId
- *   3. Fetch society names for display
- *   4. Load all votes per poll (counts + user's own vote status)
- *      Falls back to a direct document read for the user's vote if the
- *      collection query is denied (e.g. restrictive rules).
+ * Regular users: see only active (open) polls for their societies.
+ * Admins / society admins: also see a "Closed Polls" section below,
+ * showing final vote counts. Delete button visible to admins on all polls.
  */
 public class PollsFragment extends Fragment {
 
-    private final List<Poll> polls = new ArrayList<>();
-    private PollsAdapter adapter;
+    private final List<Poll> activePolls = new ArrayList<>();
+    private final List<Poll> closedPolls = new ArrayList<>();
+
+    private PollsAdapter activeAdapter;
+    private PollsAdapter closedAdapter;
+
     private final Set<String> userSocietyIds = new HashSet<>();
+    private boolean isAdmin = false;
+    private boolean isSocietyAdmin = false;
+
     private View progressPolls;
     private TextView tvEmptyPolls;
+    private TextView tvClosedPollsLabel;
+    private RecyclerView rvClosedPolls;
 
     public PollsFragment() {
         super(R.layout.fragment_polls);
@@ -53,24 +58,36 @@ public class PollsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        progressPolls = view.findViewById(R.id.progressPolls);
-        tvEmptyPolls = view.findViewById(R.id.tvEmptyPolls);
+        progressPolls      = view.findViewById(R.id.progressPolls);
+        tvEmptyPolls       = view.findViewById(R.id.tvEmptyPolls);
+        tvClosedPollsLabel = view.findViewById(R.id.tvClosedPollsLabel);
+        rvClosedPolls      = view.findViewById(R.id.rvClosedPolls);
 
-        RecyclerView rv = view.findViewById(R.id.rvPolls);
-        rv.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new PollsAdapter(this::submitVote);
-        rv.setAdapter(adapter);
+        // Active polls RecyclerView — delete listener wired after we know role
+        RecyclerView rvPolls = view.findViewById(R.id.rvPolls);
+        rvPolls.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvPolls.setHasFixedSize(false);
+
+        rvClosedPolls.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvClosedPolls.setHasFixedSize(false);
+
+        // Adapters created without delete listener for now; replaced once role is known
+        activeAdapter = new PollsAdapter(this::submitVote, null);
+        closedAdapter = new PollsAdapter(this::submitVote, null);
+        rvPolls.setAdapter(activeAdapter);
+        rvClosedPolls.setAdapter(closedAdapter);
 
         loadUserSocietiesThenPolls();
     }
 
     // -------------------------------------------------------------------------
-    // Step 1 — User societies
+    // Step 1 — User societies + role
     // -------------------------------------------------------------------------
 
     private void loadUserSocietiesThenPolls() {
         if (progressPolls != null) progressPolls.setVisibility(View.VISIBLE);
         if (tvEmptyPolls != null) tvEmptyPolls.setVisibility(View.GONE);
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) { loadPolls(); return; }
 
@@ -78,6 +95,12 @@ public class PollsFragment extends Fragment {
                 .collection("users").document(user.getUid()).get()
                 .addOnSuccessListener((DocumentSnapshot doc) -> {
                     if (!isAdded()) return;
+
+                    isAdmin = "admin".equalsIgnoreCase(doc.getString("role"));
+
+                    List<?> adminOf = (List<?>) doc.get("adminOf");
+                    isSocietyAdmin = !isAdmin && adminOf != null && !adminOf.isEmpty();
+
                     userSocietyIds.clear();
                     List<?> ids = (List<?>) doc.get("societyIds");
                     if (ids != null) {
@@ -85,6 +108,16 @@ public class PollsFragment extends Fragment {
                             if (id instanceof String) userSocietyIds.add((String) id);
                         }
                     }
+
+                    // Re-create adapters with delete listener for admins
+                    if (isAdmin || isSocietyAdmin) {
+                        RecyclerView rvPolls = requireView().findViewById(R.id.rvPolls);
+                        activeAdapter = new PollsAdapter(this::submitVote, this::deletePoll);
+                        closedAdapter = new PollsAdapter(this::submitVote, this::deletePoll);
+                        rvPolls.setAdapter(activeAdapter);
+                        rvClosedPolls.setAdapter(closedAdapter);
+                    }
+
                     loadPolls();
                 })
                 .addOnFailureListener(e -> { if (isAdded()) loadPolls(); });
@@ -102,11 +135,15 @@ public class PollsFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
-                    polls.clear();
+                    activePolls.clear();
+                    closedPolls.clear();
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         String societyId = doc.getString("societyId");
-                        if (societyId != null && !societyId.isEmpty()
+
+                        // Visibility: admins see all; others see only their societies
+                        if (!isAdmin && !isSocietyAdmin
+                                && societyId != null && !societyId.isEmpty()
                                 && !userSocietyIds.contains(societyId)) continue;
 
                         Poll poll = new Poll();
@@ -117,18 +154,13 @@ public class PollsFragment extends Fragment {
                         poll.setSocietyId(societyId != null ? societyId : "");
                         poll.setEndsAt(doc.getTimestamp("endsAt"));
 
-                        // Skip polls whose closing date has passed
-                        if (poll.isClosed()) continue;
-
-                        List<?> rawOptions = (List<?>) doc.get("options");
-                        List<String> options = new ArrayList<>();
-                        if (rawOptions != null) {
-                            for (Object o : rawOptions) {
-                                if (o instanceof String) options.add((String) o);
-                            }
+                        // Split into active vs closed
+                        if (poll.isClosed()) {
+                            // Only admins/society admins see closed polls
+                            if (isAdmin || isSocietyAdmin) closedPolls.add(poll);
+                        } else {
+                            activePolls.add(poll);
                         }
-                        poll.setOptions(options);
-                        polls.add(poll);
                     }
 
                     fetchSocietyNamesThenVotes();
@@ -150,9 +182,8 @@ public class PollsFragment extends Fragment {
 
     private void fetchSocietyNamesThenVotes() {
         Set<String> ids = new HashSet<>();
-        for (Poll p : polls) {
-            if (!p.getSocietyId().isEmpty()) ids.add(p.getSocietyId());
-        }
+        for (Poll p : activePolls) if (!p.getSocietyId().isEmpty()) ids.add(p.getSocietyId());
+        for (Poll p : closedPolls) if (!p.getSocietyId().isEmpty()) ids.add(p.getSocietyId());
 
         if (ids.isEmpty()) { loadAllVotes(); return; }
 
@@ -169,9 +200,13 @@ public class PollsFragment extends Fragment {
                         }
                         remaining[0]--;
                         if (remaining[0] == 0) {
-                            for (Poll p : polls) {
-                                String name = nameMap.get(p.getSocietyId());
-                                if (name != null) p.setSocietyName(name);
+                            for (Poll p : activePolls) {
+                                String n = nameMap.get(p.getSocietyId());
+                                if (n != null) p.setSocietyName(n);
+                            }
+                            for (Poll p : closedPolls) {
+                                String n = nameMap.get(p.getSocietyId());
+                                if (n != null) p.setSocietyName(n);
                             }
                             if (isAdded()) loadAllVotes();
                         }
@@ -180,26 +215,23 @@ public class PollsFragment extends Fragment {
     }
 
     // -------------------------------------------------------------------------
-    // Step 4 — Load votes (counts + hasVoted check)
+    // Step 4 — Load votes
     // -------------------------------------------------------------------------
 
     private void loadAllVotes() {
+        List<Poll> all = new ArrayList<>(activePolls);
+        all.addAll(closedPolls);
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (polls.isEmpty()) {
-            if (progressPolls != null) progressPolls.setVisibility(View.GONE);
-            if (tvEmptyPolls != null) {
-                tvEmptyPolls.setText("No polls available yet.");
-                tvEmptyPolls.setVisibility(View.VISIBLE);
-            }
-            adapter.updateList(polls);
+
+        if (all.isEmpty()) {
+            publishPolls();
             return;
         }
 
-        final int[] remaining = {polls.size()};
+        final int[] remaining = {all.size()};
 
-        for (Poll poll : polls) {
-            // Try reading the whole votes collection (requires permissive read rules).
-            // If that fails, fall back to reading just the current user's vote document.
+        for (Poll poll : all) {
             FirebaseFirestore.getInstance()
                     .collection("polls").document(poll.getId())
                     .collection("votes")
@@ -211,7 +243,6 @@ public class PollsFragment extends Fragment {
                             applyVoteDocs(poll, task.getResult(), user);
                             finishOne(remaining);
                         } else {
-                            // Permission denied — fall back to user's own document only
                             if (user == null) { finishOne(remaining); return; }
                             FirebaseFirestore.getInstance()
                                     .collection("polls").document(poll.getId())
@@ -257,17 +288,36 @@ public class PollsFragment extends Fragment {
 
     private void finishOne(int[] remaining) {
         remaining[0]--;
-        if (remaining[0] == 0 && isAdded()) {
-            if (progressPolls != null) progressPolls.setVisibility(View.GONE);
-            if (polls.isEmpty()) {
-                if (tvEmptyPolls != null) {
-                    tvEmptyPolls.setText("No polls available yet.");
-                    tvEmptyPolls.setVisibility(View.VISIBLE);
-                }
-            } else {
-                if (tvEmptyPolls != null) tvEmptyPolls.setVisibility(View.GONE);
+        if (remaining[0] == 0 && isAdded()) publishPolls();
+    }
+
+    // -------------------------------------------------------------------------
+    // Publish to UI
+    // -------------------------------------------------------------------------
+
+    private void publishPolls() {
+        if (progressPolls != null) progressPolls.setVisibility(View.GONE);
+
+        activeAdapter.updateList(activePolls);
+
+        // Empty state only considers active polls for regular users
+        if (activePolls.isEmpty()) {
+            if (tvEmptyPolls != null) {
+                tvEmptyPolls.setText("No polls available yet.");
+                tvEmptyPolls.setVisibility(View.VISIBLE);
             }
-            adapter.updateList(polls);
+        } else {
+            if (tvEmptyPolls != null) tvEmptyPolls.setVisibility(View.GONE);
+        }
+
+        // Closed section — only for admins/society admins
+        if ((isAdmin || isSocietyAdmin) && !closedPolls.isEmpty()) {
+            closedAdapter.updateList(closedPolls);
+            if (tvClosedPollsLabel != null) tvClosedPollsLabel.setVisibility(View.VISIBLE);
+            if (rvClosedPolls != null) rvClosedPolls.setVisibility(View.VISIBLE);
+        } else {
+            if (tvClosedPollsLabel != null) tvClosedPollsLabel.setVisibility(View.GONE);
+            if (rvClosedPolls != null) rvClosedPolls.setVisibility(View.GONE);
         }
     }
 
@@ -292,7 +342,6 @@ public class PollsFragment extends Fragment {
                 .set(voteData)
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
-                    // Optimistic local update
                     List<Integer> counts = new ArrayList<>(poll.getVoteCounts());
                     while (counts.size() < poll.getOptions().size()) counts.add(0);
                     counts.set(optionIndex, counts.get(optionIndex) + 1);
@@ -300,7 +349,7 @@ public class PollsFragment extends Fragment {
                     poll.setTotalVotes(poll.getTotalVotes() + 1);
                     poll.setHasVoted(true);
                     poll.setVotedOptionIndex(optionIndex);
-                    adapter.notifyDataSetChanged();
+                    activeAdapter.notifyDataSetChanged();
                     Toast.makeText(requireContext(), "Vote recorded!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
@@ -310,7 +359,27 @@ public class PollsFragment extends Fragment {
     }
 
     // -------------------------------------------------------------------------
-    // Helpers
+    // Delete
+    // -------------------------------------------------------------------------
+
+    private void deletePoll(@NonNull Poll poll) {
+        FirebaseFirestore.getInstance()
+                .collection("polls").document(poll.getId())
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    if (!isAdded()) return;
+                    activePolls.remove(poll);
+                    closedPolls.remove(poll);
+                    publishPolls();
+                    Toast.makeText(requireContext(), "Poll deleted.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    if (!isAdded()) return;
+                    Toast.makeText(requireContext(),
+                            "Failed to delete poll: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
     // -------------------------------------------------------------------------
 
     @NonNull
