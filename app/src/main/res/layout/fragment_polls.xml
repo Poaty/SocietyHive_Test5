@@ -1,18 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvPolls"
+    <!-- Scrollable content: active polls + optional closed polls section -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollPolls"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
         android:clipToPadding="false"
-        android:paddingBottom="16dp" />
+        android:paddingBottom="16dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Active polls list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPolls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false" />
+
+            <!-- Closed polls section — only visible to admins -->
+            <TextView
+                android:id="@+id/tvClosedPollsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Closed Polls"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnBackground"
+                android:alpha="0.6"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvClosedPolls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Loading spinner -->
     <ProgressBar
         android:id="@+id/progressPolls"
         android:layout_width="wrap_content"
@@ -20,6 +59,7 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
+    <!-- Empty state -->
     <TextView
         android:id="@+id/tvEmptyPolls"
         android:layout_width="wrap_content"
