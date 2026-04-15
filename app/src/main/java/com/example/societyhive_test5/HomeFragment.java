@@ -259,6 +259,7 @@ public class HomeFragment extends Fragment {
         wire(view, R.id.tileCreateEvent,    R.id.createEventFragment);
         wire(view, R.id.tileCreatePin,      R.id.createPinFragment);
         wire(view, R.id.tileEditSociety,    R.id.editSocietyFragment);
+        wire(view, R.id.tileCreateSociety,  R.id.createSocietyFragment);
     }
 
     private void wire(@NonNull View root, int tileId, int destId) {

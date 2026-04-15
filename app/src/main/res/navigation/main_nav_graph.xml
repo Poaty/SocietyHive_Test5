@@ -107,4 +107,9 @@
         android:name="com.example.societyhive_test5.BrowseSocietiesFragment"
         android:label="Browse Societies" />
 
+    <fragment
+        android:id="@+id/createSocietyFragment"
+        android:name="com.example.societyhive_test5.CreateSocietyFragment"
+        android:label="Create Society" />
+
 </navigation>
