@@ -154,6 +154,15 @@ public class PollsFragment extends Fragment {
                         poll.setSocietyId(societyId != null ? societyId : "");
                         poll.setEndsAt(doc.getTimestamp("endsAt"));
 
+                        List<?> rawOptions = (List<?>) doc.get("options");
+                        List<String> options = new ArrayList<>();
+                        if (rawOptions != null) {
+                            for (Object o : rawOptions) {
+                                if (o instanceof String) options.add((String) o);
+                            }
+                        }
+                        poll.setOptions(options);
+
                         // Split into active vs closed
                         if (poll.isClosed()) {
                             // Only admins/society admins see closed polls
