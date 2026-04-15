@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Active/selected chip: filled maroon -->
+    <item android:color="#8D2E3A" android:state_checked="true" />
+    <!-- Default chip: white -->
+    <item android:color="#FFFFFF" />
+</selector>
