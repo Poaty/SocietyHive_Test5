@@ -137,7 +137,7 @@ public class EditSocietyFragment extends Fragment {
             fillFields(position);
         });
 
-        // Pre-select for society admins
+        // Pre-select for society admins — lock dropdown completely
         if (!preSelectedSocietyId.isEmpty()) {
             int idx = societyIds.indexOf(preSelectedSocietyId);
             if (idx >= 0) {
@@ -146,6 +146,8 @@ public class EditSocietyFragment extends Fragment {
                 fillFields(idx);
             }
             actvSociety.setEnabled(false);
+            actvSociety.setFocusable(false);
+            actvSociety.setClickable(false);
         }
     }
 
@@ -231,7 +233,11 @@ public class EditSocietyFragment extends Fragment {
         try { Color.parseColor(color); }
         catch (IllegalArgumentException e) { etColor.setError("Invalid colour \u2014 use #RRGGBB"); return; }
 
-        String societyId = societyIds.get(selectedIndex);
+        // If a society was pre-selected (society admin), always write to that ID —
+        // never trust selectedIndex, which the user could have tampered with via the UI.
+        String societyId = !preSelectedSocietyId.isEmpty()
+                ? preSelectedSocietyId
+                : societyIds.get(selectedIndex);
         Map<String, Object> updates = new HashMap<>();
         updates.put("name",        name);
         updates.put("description", desc);
