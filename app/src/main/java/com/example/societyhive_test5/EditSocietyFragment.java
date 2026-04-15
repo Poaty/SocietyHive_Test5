@@ -48,8 +48,9 @@ public class EditSocietyFragment extends Fragment {
     private final List<String> storedColors  = new ArrayList<>();
     private final List<String> storedIcons   = new ArrayList<>();
 
-    private int    selectedIndex  = 0;
-    private String pendingIconUrl = null;
+    private int    selectedIndex         = 0;
+    private String pendingIconUrl        = null;
+    private String preSelectedSocietyId  = "";
 
     private final ActivityResultLauncher<String> imagePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -70,6 +71,10 @@ public class EditSocietyFragment extends Fragment {
         etColor       = view.findViewById(R.id.etColor);
         colorSwatch   = view.findViewById(R.id.colorSwatch);
         ivSocietyIcon = view.findViewById(R.id.ivSocietyIcon);
+
+        if (getArguments() != null) {
+            preSelectedSocietyId = getArguments().getString("preSelectedSocietyId", "");
+        }
 
         ivSocietyIcon.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
@@ -128,9 +133,20 @@ public class EditSocietyFragment extends Fragment {
 
         actvSociety.setOnItemClickListener((parent, v, position, id) -> {
             selectedIndex = position;
-            pendingIconUrl = null; // reset pending icon when switching society
+            pendingIconUrl = null;
             fillFields(position);
         });
+
+        // Pre-select for society admins
+        if (!preSelectedSocietyId.isEmpty()) {
+            int idx = societyIds.indexOf(preSelectedSocietyId);
+            if (idx >= 0) {
+                selectedIndex = idx;
+                actvSociety.setText(societyNames.get(idx), false);
+                fillFields(idx);
+            }
+            actvSociety.setEnabled(false);
+        }
     }
 
     private void fillFields(int index) {
