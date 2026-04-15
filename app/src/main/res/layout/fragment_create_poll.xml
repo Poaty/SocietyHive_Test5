@@ -136,6 +136,33 @@
                         android:cursorVisible="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Closing date (optional) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilCloseDate"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Closing date (optional)"
+                    app:boxStrokeColor="?attr/colorOnPrimary"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/colorOnPrimary"
+                    app:boxStrokeWidth="1dp"
+                    app:endIconMode="clear_text"
+                    app:endIconTint="?attr/colorOnPrimary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etCloseDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textColorHint="?attr/colorOnPrimary"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:cursorVisible="false"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <!-- Create Poll button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCreatePoll"

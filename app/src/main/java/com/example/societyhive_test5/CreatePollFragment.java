@@ -1,5 +1,6 @@
 package com.example.societyhive_test5;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +8,10 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,6 +52,7 @@ public class CreatePollFragment extends Fragment {
 
     private TextInputEditText etTitle;
     private TextInputEditText etQuestion;
+    private TextInputEditText etCloseDate;
     private LinearLayout optionsContainer;
     private AutoCompleteTextView actvSociety;
 
@@ -55,6 +61,7 @@ public class CreatePollFragment extends Fragment {
     private final List<String> societyIds   = new ArrayList<>();
     private int selectedSocietyIndex = 0;
     private String preSelectedSocietyId = "";
+    private Calendar closeDateCal = null;
 
     public CreatePollFragment() {
         super(R.layout.fragment_create_poll);
@@ -66,8 +73,11 @@ public class CreatePollFragment extends Fragment {
 
         etTitle          = view.findViewById(R.id.etTitle);
         etQuestion       = view.findViewById(R.id.etQuestion);
+        etCloseDate      = view.findViewById(R.id.etCloseDate);
         optionsContainer = view.findViewById(R.id.optionsContainer);
         actvSociety      = view.findViewById(R.id.actvSociety);
+
+        etCloseDate.setOnClickListener(v -> showDatePicker());
 
         MaterialButton btnAddOption  = view.findViewById(R.id.btnAddOption);
         MaterialButton btnCreatePoll = view.findViewById(R.id.btnCreatePoll);
@@ -84,6 +94,37 @@ public class CreatePollFragment extends Fragment {
         }
 
         loadSocieties();
+    }
+
+    // -------------------------------------------------------------------------
+
+    private void showDatePicker() {
+        Calendar start = closeDateCal != null ? closeDateCal : Calendar.getInstance();
+        DatePickerDialog dialog = new DatePickerDialog(
+                requireContext(),
+                (datePicker, year, month, day) -> {
+                    Calendar picked = Calendar.getInstance();
+                    picked.set(year, month, day, 23, 59, 59);
+                    picked.set(Calendar.MILLISECOND, 0);
+
+                    // Must be a future date
+                    if (!picked.after(Calendar.getInstance())) {
+                        Toast.makeText(requireContext(),
+                                "Closing date must be in the future", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    closeDateCal = picked;
+                    etCloseDate.setText(
+                            new SimpleDateFormat("d MMM yyyy", Locale.UK)
+                                    .format(closeDateCal.getTime()));
+                },
+                start.get(Calendar.YEAR),
+                start.get(Calendar.MONTH),
+                start.get(Calendar.DAY_OF_MONTH));
+
+        // Prevent selecting today or earlier
+        dialog.getDatePicker().setMinDate(System.currentTimeMillis());
+        dialog.show();
     }
 
     // -------------------------------------------------------------------------
@@ -189,6 +230,9 @@ public class CreatePollFragment extends Fragment {
         data.put("isActive",  true);
         data.put("createdBy", user.getUid());
         data.put("createdAt", Timestamp.now());
+        if (closeDateCal != null) {
+            data.put("endsAt", new Timestamp(closeDateCal.getTime()));
+        }
 
         FirebaseFirestore.getInstance()
                 .collection("polls")
