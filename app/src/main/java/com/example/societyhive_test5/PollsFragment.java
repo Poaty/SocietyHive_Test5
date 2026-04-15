@@ -115,6 +115,10 @@ public class PollsFragment extends Fragment {
                         poll.setQuestion(safeString(doc.getString("question"), ""));
                         poll.setActive(true);
                         poll.setSocietyId(societyId != null ? societyId : "");
+                        poll.setEndsAt(doc.getTimestamp("endsAt"));
+
+                        // Skip polls whose closing date has passed
+                        if (poll.isClosed()) continue;
 
                         List<?> rawOptions = (List<?>) doc.get("options");
                         List<String> options = new ArrayList<>();

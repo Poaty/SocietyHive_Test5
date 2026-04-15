@@ -41,6 +41,18 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <!-- Closes label — only visible when poll has an end date -->
+        <TextView
+            android:id="@+id/tvClosesOn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:textColor="?attr/colorOnPrimary"
+            android:alpha="0.6"
+            android:textSize="11sp"
+            android:textStyle="italic"
+            android:visibility="gone" />
+
         <!-- Poll question -->
         <TextView
             android:id="@+id/tvPollQuestion"

@@ -1,6 +1,9 @@
 package com.example.societyhive_test5;
 
+import com.google.firebase.Timestamp;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +23,7 @@ import java.util.List;
 public class Poll {
     private String id;
     private String title;
+    private Timestamp endsAt; // null = no expiry
     private String question;
     private List<String> options;
     private String societyId;
@@ -72,4 +76,12 @@ public class Poll {
 
     public String getSocietyName() { return societyName; }
     public void setSocietyName(String societyName) { this.societyName = societyName != null ? societyName : ""; }
+
+    public Timestamp getEndsAt() { return endsAt; }
+    public void setEndsAt(Timestamp endsAt) { this.endsAt = endsAt; }
+
+    /** Returns true if the poll has an end date that has already passed. */
+    public boolean isClosed() {
+        return endsAt != null && endsAt.toDate().before(new Date());
+    }
 }

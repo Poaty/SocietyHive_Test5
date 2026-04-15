@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +51,17 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
         }
 
         holder.tvTitle.setText(poll.getTitle());
+
+        // Closing date label
+        if (poll.getEndsAt() != null) {
+            String formatted = new SimpleDateFormat("d MMM yyyy", Locale.UK)
+                    .format(poll.getEndsAt().toDate());
+            holder.tvClosesOn.setVisibility(View.VISIBLE);
+            holder.tvClosesOn.setText("Closes " + formatted);
+        } else {
+            holder.tvClosesOn.setVisibility(View.GONE);
+        }
+
         holder.tvQuestion.setText(poll.getQuestion());
 
         List<String> options = poll.getOptions();
@@ -133,6 +145,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
     static class ViewHolder extends RecyclerView.ViewHolder {
         final TextView tvSocietyName;
         final TextView tvTitle;
+        final TextView tvClosesOn;
         final TextView tvQuestion;
         final LinearLayout optionsContainer;
         final TextView tvTotalVotes;
@@ -142,6 +155,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             super(itemView);
             tvSocietyName  = itemView.findViewById(R.id.tvSocietyName);
             tvTitle        = itemView.findViewById(R.id.tvPollTitle);
+            tvClosesOn     = itemView.findViewById(R.id.tvClosesOn);
             tvQuestion     = itemView.findViewById(R.id.tvPollQuestion);
             optionsContainer = itemView.findViewById(R.id.optionsContainer);
             tvTotalVotes   = itemView.findViewById(R.id.tvTotalVotes);
