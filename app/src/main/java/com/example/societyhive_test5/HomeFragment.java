@@ -224,23 +224,34 @@ public class HomeFragment extends Fragment {
 
     private void publishAnnouncements(@NonNull View view) {
         if (isAdmin) {
-            announcementsAdapter.setDeleteListener(pinId ->
-                    FirebaseFirestore.getInstance()
-                            .collection("pins").document(pinId).delete()
-                            .addOnSuccessListener(unused -> {
-                                if (!isAdded()) return;
-                                announcements.removeIf(a -> a.getId().equals(pinId));
-                                announcementsAdapter.updateList(announcements);
-                                int vis = announcements.isEmpty() ? View.GONE : View.VISIBLE;
-                                view.findViewById(R.id.tvAnnouncementsLabel).setVisibility(vis);
-                                view.findViewById(R.id.rvAnnouncements).setVisibility(vis);
-                            }));
+            // Super admin: delete any pin, no filter needed
+            announcementsAdapter.setDeleteChecker(null);
+            announcementsAdapter.setDeleteListener(pinId -> deletePin(pinId, view));
+        } else if (adminOfSocietyId != null && !adminOfSocietyId.isEmpty()) {
+            // Society admin: delete button only on pins belonging to their society
+            final String mySocietyId = adminOfSocietyId;
+            announcementsAdapter.setDeleteChecker(a -> mySocietyId.equals(a.getSocietyId()));
+            announcementsAdapter.setDeleteListener(pinId -> deletePin(pinId, view));
         }
 
         announcementsAdapter.updateList(announcements);
         int visibility = announcements.isEmpty() ? View.GONE : View.VISIBLE;
         view.findViewById(R.id.tvAnnouncementsLabel).setVisibility(visibility);
         view.findViewById(R.id.rvAnnouncements).setVisibility(visibility);
+    }
+
+    private void deletePin(@NonNull String pinId, @NonNull View view) {
+        FirebaseFirestore.getInstance()
+                .collection("pins").document(pinId)
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    if (!isAdded()) return;
+                    announcements.removeIf(a -> a.getId().equals(pinId));
+                    announcementsAdapter.updateList(announcements);
+                    int vis = announcements.isEmpty() ? View.GONE : View.VISIBLE;
+                    view.findViewById(R.id.tvAnnouncementsLabel).setVisibility(vis);
+                    view.findViewById(R.id.rvAnnouncements).setVisibility(vis);
+                });
     }
 
     // -------------------------------------------------------------------------

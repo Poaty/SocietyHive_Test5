@@ -21,11 +21,23 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         void onDelete(String pinId);
     }
 
+    /** Controls per-item delete button visibility. Null = show on all items. */
+    public interface DeleteChecker {
+        boolean canDelete(Announcement announcement);
+    }
+
     private final List<Announcement> announcements = new ArrayList<>();
     @Nullable private OnDeleteListener deleteListener;
+    @Nullable private DeleteChecker    deleteChecker;
 
     public void setDeleteListener(@Nullable OnDeleteListener listener) {
         this.deleteListener = listener;
+        notifyDataSetChanged();
+    }
+
+    /** Optional filter — when set, the delete button only appears on items where this returns true. */
+    public void setDeleteChecker(@Nullable DeleteChecker checker) {
+        this.deleteChecker = checker;
         notifyDataSetChanged();
     }
 
@@ -60,8 +72,10 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
             holder.tvTimestamp.setText("");
         }
 
-        // Delete button — visible only for admins (when listener is set)
-        if (deleteListener != null) {
+        // Delete button — visible when a listener is set AND this item passes the checker
+        boolean showDelete = deleteListener != null
+                && (deleteChecker == null || deleteChecker.canDelete(a));
+        if (showDelete) {
             holder.btnDelete.setVisibility(View.VISIBLE);
             holder.btnDelete.setOnClickListener(v -> deleteListener.onDelete(a.getId()));
         } else {
