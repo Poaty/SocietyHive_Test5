@@ -39,13 +39,13 @@ public class PreferencesFragment extends Fragment {
         int[] tickIds  = {R.id.tickCrimson, R.id.tickOcean, R.id.tickViolet};
 
         for (int i = 0; i < SCHEMES.length; i++) {
-            makeCircle(view, circIds[i], SCHEMES[i][1]);
+            makeCircle(view, circIds[i], SCHEMES[i][1], SCHEMES[i][0].equals(savedKey));
         }
 
         for (int i = 0; i < SCHEMES.length; i++) {
             final String[] scheme = SCHEMES[i];
             view.findViewById(swatchIds[i])
-                    .setOnClickListener(v -> selectScheme(view, scheme[0], tickIds, swatchIds));
+                    .setOnClickListener(v -> selectScheme(view, scheme[0], tickIds, circIds));
         }
 
         refreshTicks(view, savedKey, tickIds);
@@ -53,9 +53,10 @@ public class PreferencesFragment extends Fragment {
     }
 
     private void selectScheme(@NonNull View root, @NonNull String themeKey,
-                               int[] tickIds, int[] swatchIds) {
+                               int[] tickIds, int[] circIds) {
         ThemeHelper.save(requireContext(), themeKey);
         refreshTicks(root, themeKey, tickIds);
+        refreshBorders(root, themeKey, circIds);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -80,15 +81,34 @@ public class PreferencesFragment extends Fragment {
         }
     }
 
-    private void makeCircle(@NonNull View root, int viewId, @NonNull String hex) {
+    private void refreshBorders(@NonNull View root, @NonNull String selectedKey, int[] circIds) {
+        for (int i = 0; i < SCHEMES.length; i++) {
+            View v = root.findViewById(circIds[i]);
+            if (v == null) continue;
+            // Re-draw the circle with the correct border thickness
+            makeCircle(root, circIds[i], SCHEMES[i][1], SCHEMES[i][0].equals(selectedKey));
+        }
+    }
+
+    private void makeCircle(@NonNull View root, int viewId,
+                             @NonNull String hex, boolean selected) {
         View v = root.findViewById(viewId);
         if (v == null) return;
+
+        int density = (int) root.getResources().getDisplayMetrics().density;
         GradientDrawable circle = new GradientDrawable();
         circle.setShape(GradientDrawable.OVAL);
         try {
             circle.setColor(android.graphics.Color.parseColor(hex));
         } catch (IllegalArgumentException e) {
             circle.setColor(android.graphics.Color.GRAY);
+        }
+        // Selected: thick white border; unselected: thin semi-transparent border
+        // so all circles are always visible against any background colour
+        if (selected) {
+            circle.setStroke(density * 3, android.graphics.Color.WHITE);
+        } else {
+            circle.setStroke(density * 2, 0x60FFFFFF); // 38% white
         }
         v.setBackground(circle);
     }
