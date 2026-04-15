@@ -12,6 +12,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -338,9 +339,16 @@ public class EventsFragment extends Fragment {
     }
 
     private void hookChips(@NonNull View view) {
-        ChipGroup group = view.findViewById(R.id.chipGroupFilters);
-        if (group == null) return;
-        group.setOnCheckedChangeListener((chipGroup, checkedId) -> applyFilters());
+        // Wire each chip individually — ChipGroup.setOnCheckedChangeListener can be
+        // unreliable with singleSelection on some Material versions. Reading
+        // chip.isChecked() in applyFilters() is the safest approach.
+        View.OnClickListener filterListener = v -> applyFilters();
+        Chip chipAll      = view.findViewById(R.id.chipAll);
+        Chip chipThisWeek = view.findViewById(R.id.chipThisWeek);
+        Chip chipNextWeek = view.findViewById(R.id.chipNextWeek);
+        if (chipAll      != null) chipAll.setOnClickListener(filterListener);
+        if (chipThisWeek != null) chipThisWeek.setOnClickListener(filterListener);
+        if (chipNextWeek != null) chipNextWeek.setOnClickListener(filterListener);
     }
 
     private void applyFilters() {
@@ -352,13 +360,15 @@ public class EventsFragment extends Fragment {
             query = ((android.widget.EditText) et).getText().toString().trim().toLowerCase(Locale.UK);
         }
 
-        int checkedId = View.NO_ID;
-        ChipGroup group = rootView.findViewById(R.id.chipGroupFilters);
-        if (group != null) checkedId = group.getCheckedChipId();
+        // Read each chip's checked state directly — more reliable than getCheckedChipId()
+        Chip chipThisWeekView = rootView.findViewById(R.id.chipThisWeek);
+        Chip chipNextWeekView = rootView.findViewById(R.id.chipNextWeek);
+        boolean filterThisWeek = chipThisWeekView != null && chipThisWeekView.isChecked();
+        boolean filterNextWeek = chipNextWeekView != null && chipNextWeekView.isChecked();
 
         filteredEvents.clear();
 
-        // Pre-compute week boundaries for chip filters
+        // Pre-compute week boundaries (only needed when a week filter is active)
         Calendar thisWeekStart = getWeekStart(0);
         Calendar thisWeekEnd   = getWeekStart(1);
         Calendar nextWeekEnd   = getWeekStart(2);
@@ -374,11 +384,11 @@ public class EventsFragment extends Fragment {
             if (!query.isEmpty() && !e.getName().toLowerCase(Locale.UK).contains(query)) continue;
 
             // Chip date filter
-            if (checkedId == R.id.chipThisWeek || checkedId == R.id.chipNextWeek) {
+            if (filterThisWeek || filterNextWeek) {
                 Date eventDate = parseEventDate(e.getDateTime());
                 if (eventDate == null) continue; // undatable events are excluded from week filters
 
-                if (checkedId == R.id.chipThisWeek) {
+                if (filterThisWeek) {
                     if (eventDate.before(thisWeekStart.getTime())
                             || !eventDate.before(thisWeekEnd.getTime())) continue;
                 } else {
