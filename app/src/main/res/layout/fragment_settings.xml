@@ -10,42 +10,69 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="18dp">
+        android:paddingBottom="32dp">
 
-        <!-- ── Account section ── -->
+        <!-- Page heading -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Account"
-            android:textSize="13sp"
-            android:textStyle="bold"
+            android:text="Settings"
             android:textColor="?attr/colorOnPrimaryContainer"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="4dp"/>
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="6dp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Manage your account and preferences"
+            android:textColor="?attr/colorOnPrimaryContainer"
+            android:alpha="0.6"
+            android:textSize="14sp"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="28dp" />
+
+        <!-- Single settings card -->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardAccount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="?attr/colorSecondaryContainer">
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="?attr/colorPrimary">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Display name -->
+                <!-- ── Account subheader ── -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ACCOUNT"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:alpha="0.5"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.12"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="18dp"
+                    android:paddingBottom="6dp" />
+
+                <!-- Display name row -->
                 <LinearLayout
                     android:id="@+id/rowEditName"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="64dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true">
@@ -54,7 +81,8 @@
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_person"
-                        app:tint="?attr/colorPrimary"/>
+                        app:tint="?attr/colorOnPrimary"
+                        android:alpha="0.8" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -68,8 +96,8 @@
                             android:layout_height="wrap_content"
                             android:text="Display Name"
                             android:textSize="15sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textStyle="bold"/>
+                            android:textColor="?attr/colorOnPrimary"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tvCurrentName"
@@ -77,33 +105,41 @@
                             android:layout_height="wrap_content"
                             android:text="Loading…"
                             android:textSize="13sp"
-                            android:textColor="?attr/colorOnSurfaceVariant"/>
+                            android:textColor="?attr/colorOnPrimary"
+                            android:alpha="0.6" />
                     </LinearLayout>
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@drawable/ic_preferences"
-                        app:tint="?attr/colorOutline"/>
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_chevron_down"
+                        android:rotation="-90"
+                        app:tint="?attr/colorOnPrimary"
+                        android:alpha="0.4" />
                 </LinearLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp"
-                    android:background="?attr/colorOutlineVariant" android:layout_marginStart="56dp"/>
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="58dp"
+                    android:background="#20FFFFFF" />
 
-                <!-- Email (read-only) -->
+                <!-- Email row -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="64dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp">
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp">
 
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_email"
-                        app:tint="?attr/colorPrimary"/>
+                        app:tint="?attr/colorOnPrimary"
+                        android:alpha="0.8" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -117,8 +153,8 @@
                             android:layout_height="wrap_content"
                             android:text="Email Address"
                             android:textSize="15sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textStyle="bold"/>
+                            android:textColor="?attr/colorOnPrimary"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tvCurrentEmail"
@@ -126,47 +162,41 @@
                             android:layout_height="wrap_content"
                             android:text="Loading…"
                             android:textSize="13sp"
-                            android:textColor="?attr/colorOnSurfaceVariant"/>
+                            android:textColor="?attr/colorOnPrimary"
+                            android:alpha="0.6" />
                     </LinearLayout>
                 </LinearLayout>
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                <!-- ── Section divider ── -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#30FFFFFF" />
 
-        <!-- ── Security section ── -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Security"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnPrimaryContainer"
-            android:letterSpacing="0.1"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="4dp"/>
+                <!-- ── Security subheader ── -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="SECURITY"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:alpha="0.5"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.12"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="6dp" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="?attr/colorSecondaryContainer">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <!-- Change password -->
+                <!-- Change password row -->
                 <LinearLayout
                     android:id="@+id/rowChangePassword"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="64dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true">
@@ -175,7 +205,8 @@
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_lock"
-                        app:tint="?attr/colorPrimary"/>
+                        app:tint="?attr/colorOnPrimary"
+                        android:alpha="0.8" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -184,28 +215,34 @@
                         android:layout_marginStart="16dp"
                         android:text="Change Password"
                         android:textSize="15sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textStyle="bold"/>
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textStyle="bold" />
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@drawable/ic_preferences"
-                        app:tint="?attr/colorOutline"/>
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_chevron_down"
+                        android:rotation="-90"
+                        app:tint="?attr/colorOnPrimary"
+                        android:alpha="0.4" />
                 </LinearLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp"
-                    android:background="?attr/colorOutlineVariant" android:layout_marginStart="56dp"/>
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="58dp"
+                    android:background="#20FFFFFF" />
 
-                <!-- Send password reset email -->
+                <!-- Password reset row -->
                 <LinearLayout
                     android:id="@+id/rowResetPassword"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="64dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true">
@@ -214,7 +251,8 @@
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_email"
-                        app:tint="?attr/colorPrimary"/>
+                        app:tint="?attr/colorOnPrimary"
+                        android:alpha="0.8" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -228,60 +266,55 @@
                             android:layout_height="wrap_content"
                             android:text="Send Password Reset Email"
                             android:textSize="15sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textStyle="bold"/>
+                            android:textColor="?attr/colorOnPrimary"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="A reset link will be sent to your email"
                             android:textSize="12sp"
-                            android:textColor="?attr/colorOnSurfaceVariant"/>
+                            android:textColor="?attr/colorOnPrimary"
+                            android:alpha="0.6" />
                     </LinearLayout>
                 </LinearLayout>
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                <!-- ── Section divider ── -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#30FFFFFF" />
 
-        <!-- ── Notifications section ── -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Notifications"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnPrimaryContainer"
-            android:letterSpacing="0.1"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="4dp"/>
+                <!-- ── Notifications subheader ── -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="NOTIFICATIONS"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:alpha="0.5"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.12"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="6dp" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="?attr/colorSecondaryContainer">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <!-- Event reminders -->
+                <!-- Event reminders row -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="64dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp">
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp">
 
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_calendar"
-                        app:tint="?attr/colorPrimary"/>
+                        app:tint="?attr/colorOnPrimary"
+                        android:alpha="0.8" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -290,33 +323,38 @@
                         android:layout_marginStart="16dp"
                         android:text="Event Reminders"
                         android:textSize="15sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textStyle="bold"/>
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textStyle="bold" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchEventReminders"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"/>
+                        android:checked="true" />
                 </LinearLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp"
-                    android:background="?attr/colorOutlineVariant" android:layout_marginStart="56dp"/>
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="58dp"
+                    android:background="#20FFFFFF" />
 
-                <!-- Chat messages -->
+                <!-- Chat messages row -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="64dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp">
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp">
 
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_chat"
-                        app:tint="?attr/colorPrimary"/>
+                        app:tint="?attr/colorOnPrimary"
+                        android:alpha="0.8" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -325,53 +363,46 @@
                         android:layout_marginStart="16dp"
                         android:text="Chat Messages"
                         android:textSize="15sp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textStyle="bold"/>
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textStyle="bold" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchChatNotifications"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"/>
+                        android:checked="true" />
                 </LinearLayout>
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                <!-- ── Section divider ── -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#30FFFFFF" />
 
-        <!-- ── Danger zone ── -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Account Actions"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnPrimaryContainer"
-            android:letterSpacing="0.1"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="4dp"/>
+                <!-- ── Account Actions subheader ── -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ACCOUNT ACTIONS"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:alpha="0.5"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.12"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="6dp" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="?attr/colorSecondaryContainer">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
+                <!-- Sign out row -->
                 <LinearLayout
                     android:id="@+id/rowSignOut"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="64dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true">
@@ -380,7 +411,7 @@
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_logout"
-                        app:tint="?attr/colorError"/>
+                        app:tint="#FF5252" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -389,9 +420,14 @@
                         android:layout_marginStart="16dp"
                         android:text="Sign Out"
                         android:textSize="15sp"
-                        android:textColor="?attr/colorError"
-                        android:textStyle="bold"/>
+                        android:textColor="#FF5252"
+                        android:textStyle="bold" />
                 </LinearLayout>
+
+                <!-- Bottom padding inside card -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
