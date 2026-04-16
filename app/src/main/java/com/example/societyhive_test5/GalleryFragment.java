@@ -35,8 +35,9 @@ public class GalleryFragment extends Fragment {
     private static final String UPLOAD_PRESET  = "societyhive_gallery";
 
     private boolean isAdmin = false;
-    private final List<String> tabSocietyIds   = new ArrayList<>();
-    private final List<String> tabSocietyNames = new ArrayList<>();
+    private final List<String> tabSocietyIds     = new ArrayList<>();
+    private final List<String> tabSocietyNames   = new ArrayList<>();
+    private final List<String> tabSocietyColors  = new ArrayList<>();
     private String pendingSocietyId;
     private ActivityResultLauncher<String> imagePickerLauncher;
 
@@ -47,7 +48,6 @@ public class GalleryFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         try {
             Map<String, String> config = new HashMap<>();
@@ -84,10 +84,13 @@ public class GalleryFragment extends Fragment {
                     if (!isAdded()) return;
                     tabSocietyIds.add("");
                     tabSocietyNames.add("All");
+                    tabSocietyColors.add("");
                     for (QueryDocumentSnapshot doc : snap) {
                         tabSocietyIds.add(doc.getId());
                         String name = doc.getString("name");
                         tabSocietyNames.add(name != null ? name : doc.getId());
+                        String color = doc.getString("hexColor");
+                        tabSocietyColors.add(color != null ? color : "#8D2E3A");
                     }
                     setupTabs(tabLayout, viewPager, fabUpload);
                 });
@@ -110,21 +113,26 @@ public class GalleryFragment extends Fragment {
                 if (ids.size() > 1) {
                     tabSocietyIds.add("");
                     tabSocietyNames.add("All");
+                    tabSocietyColors.add("");
                 }
 
                 AtomicInteger remaining = new AtomicInteger(ids.size());
                 Map<String, String> nameMap = new HashMap<>();
+                Map<String, String> colorMap = new HashMap<>();
 
                 for (String id : ids) {
                     db.collection("societies").document(id).get().addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             String n = task.getResult().getString("name");
                             if (n != null) nameMap.put(id, n);
+                            String c = task.getResult().getString("hexColor");
+                            colorMap.put(id, c != null ? c : "#8D2E3A");
                         }
                         if (remaining.decrementAndGet() == 0) {
                             for (String sid : ids) {
                                 tabSocietyIds.add(sid);
                                 tabSocietyNames.add(nameMap.getOrDefault(sid, sid));
+                                tabSocietyColors.add(colorMap.getOrDefault(sid, "#8D2E3A"));
                             }
                             if (isAdded()) setupTabs(tabLayout, viewPager, fabUpload);
                         }
@@ -137,11 +145,10 @@ public class GalleryFragment extends Fragment {
     private void setupTabs(TabLayout tabLayout, ViewPager2 viewPager, FloatingActionButton fabUpload) {
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         GalleryPagerAdapter pagerAdapter =
-                new GalleryPagerAdapter(this, tabSocietyIds, currentUid, isAdmin);
+                new GalleryPagerAdapter(this, tabSocietyIds, tabSocietyColors, currentUid, isAdmin);
         viewPager.setAdapter(pagerAdapter);
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, pos) -> tab.setText(tabSocietyNames.get(pos))).attach();
-
 
         boolean firstIsAll = tabSocietyIds.get(0).isEmpty();
         fabUpload.setVisibility(firstIsAll ? View.GONE : View.VISIBLE);
