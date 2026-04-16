@@ -24,9 +24,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * Settings screen.
  *
  * Sections:
- *   Account    — display name (editable), email (read-only)
- *   Security   — change password (requires re-auth), send reset email
- *   Notifications — toggle switches (UI-only until FCM is wired up)
+ *   Account        — display name (editable), email (read-only)
+ *   Security       — change password (requires re-auth)
  *   Account Actions — sign out
  */
 public class SettingsFragment extends Fragment {
@@ -43,7 +42,6 @@ public class SettingsFragment extends Fragment {
 
         view.findViewById(R.id.rowEditName).setOnClickListener(v -> showEditNameDialog());
         view.findViewById(R.id.rowChangePassword).setOnClickListener(v -> showChangePasswordDialog());
-        view.findViewById(R.id.rowResetPassword).setOnClickListener(v -> sendPasswordResetEmail());
         view.findViewById(R.id.rowSignOut).setOnClickListener(v -> confirmSignOut());
     }
 
@@ -226,30 +224,6 @@ public class SettingsFragment extends Fragment {
                     Toast.makeText(requireContext(),
                             "Current password is incorrect",
                             Toast.LENGTH_SHORT).show();
-                });
-    }
-
-    // -------------------------------------------------------------------------
-    // Password reset email
-    // -------------------------------------------------------------------------
-
-    private void sendPasswordResetEmail() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null || user.getEmail() == null) return;
-
-        FirebaseAuth.getInstance()
-                .sendPasswordResetEmail(user.getEmail())
-                .addOnSuccessListener(unused -> {
-                    if (!isAdded()) return;
-                    Toast.makeText(requireContext(),
-                            "Reset email sent to " + user.getEmail(),
-                            Toast.LENGTH_LONG).show();
-                })
-                .addOnFailureListener(e -> {
-                    if (!isAdded()) return;
-                    Toast.makeText(requireContext(),
-                            "Failed to send reset email: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
                 });
     }
 

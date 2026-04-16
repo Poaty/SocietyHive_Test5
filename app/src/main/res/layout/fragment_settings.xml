@@ -53,16 +53,15 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="ACCOUNT"
+                    android:text="Account"
                     android:textColor="?attr/colorOnPrimary"
                     android:alpha="0.5"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
-                    android:letterSpacing="0.12"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
                     android:paddingTop="18dp"
-                    android:paddingBottom="6dp" />
+                    android:paddingBottom="4dp" />
 
                 <!-- Display name row -->
                 <LinearLayout
@@ -81,8 +80,8 @@
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_person"
-                        app:tint="?attr/colorOnPrimary"
-                        android:alpha="0.8" />
+                        android:alpha="0.75"
+                        app:tint="?attr/colorOnPrimary" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -96,8 +95,7 @@
                             android:layout_height="wrap_content"
                             android:text="Display Name"
                             android:textSize="15sp"
-                            android:textColor="?attr/colorOnPrimary"
-                            android:textStyle="bold" />
+                            android:textColor="?attr/colorOnPrimary" />
 
                         <TextView
                             android:id="@+id/tvCurrentName"
@@ -114,8 +112,8 @@
                         android:layout_height="16dp"
                         android:src="@drawable/ic_chevron_down"
                         android:rotation="-90"
-                        app:tint="?attr/colorOnPrimary"
-                        android:alpha="0.4" />
+                        android:alpha="0.35"
+                        app:tint="?attr/colorOnPrimary" />
                 </LinearLayout>
 
                 <!-- Divider -->
@@ -125,7 +123,7 @@
                     android:layout_marginStart="58dp"
                     android:background="#20FFFFFF" />
 
-                <!-- Email row -->
+                <!-- Email row (read-only) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
@@ -138,8 +136,8 @@
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_email"
-                        app:tint="?attr/colorOnPrimary"
-                        android:alpha="0.8" />
+                        android:alpha="0.75"
+                        app:tint="?attr/colorOnPrimary" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -153,8 +151,7 @@
                             android:layout_height="wrap_content"
                             android:text="Email Address"
                             android:textSize="15sp"
-                            android:textColor="?attr/colorOnPrimary"
-                            android:textStyle="bold" />
+                            android:textColor="?attr/colorOnPrimary" />
 
                         <TextView
                             android:id="@+id/tvCurrentEmail"
@@ -177,16 +174,15 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="SECURITY"
+                    android:text="Security"
                     android:textColor="?attr/colorOnPrimary"
                     android:alpha="0.5"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
-                    android:letterSpacing="0.12"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
                     android:paddingTop="14dp"
-                    android:paddingBottom="6dp" />
+                    android:paddingBottom="4dp" />
 
                 <!-- Change password row -->
                 <LinearLayout
@@ -205,8 +201,8 @@
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_lock"
-                        app:tint="?attr/colorOnPrimary"
-                        android:alpha="0.8" />
+                        android:alpha="0.75"
+                        app:tint="?attr/colorOnPrimary" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -215,162 +211,15 @@
                         android:layout_marginStart="16dp"
                         android:text="Change Password"
                         android:textSize="15sp"
-                        android:textColor="?attr/colorOnPrimary"
-                        android:textStyle="bold" />
+                        android:textColor="?attr/colorOnPrimary" />
 
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@drawable/ic_chevron_down"
                         android:rotation="-90"
-                        app:tint="?attr/colorOnPrimary"
-                        android:alpha="0.4" />
-                </LinearLayout>
-
-                <!-- Divider -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="58dp"
-                    android:background="#20FFFFFF" />
-
-                <!-- Password reset row -->
-                <LinearLayout
-                    android:id="@+id/rowResetPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_email"
-                        app:tint="?attr/colorOnPrimary"
-                        android:alpha="0.8" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Send Password Reset Email"
-                            android:textSize="15sp"
-                            android:textColor="?attr/colorOnPrimary"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="A reset link will be sent to your email"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorOnPrimary"
-                            android:alpha="0.6" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!-- ── Section divider ── -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#30FFFFFF" />
-
-                <!-- ── Notifications subheader ── -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="NOTIFICATIONS"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:alpha="0.5"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.12"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:paddingTop="14dp"
-                    android:paddingBottom="6dp" />
-
-                <!-- Event reminders row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp">
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_calendar"
-                        app:tint="?attr/colorOnPrimary"
-                        android:alpha="0.8" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="16dp"
-                        android:text="Event Reminders"
-                        android:textSize="15sp"
-                        android:textColor="?attr/colorOnPrimary"
-                        android:textStyle="bold" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchEventReminders"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true" />
-                </LinearLayout>
-
-                <!-- Divider -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="58dp"
-                    android:background="#20FFFFFF" />
-
-                <!-- Chat messages row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp">
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_chat"
-                        app:tint="?attr/colorOnPrimary"
-                        android:alpha="0.8" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="16dp"
-                        android:text="Chat Messages"
-                        android:textSize="15sp"
-                        android:textColor="?attr/colorOnPrimary"
-                        android:textStyle="bold" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchChatNotifications"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true" />
+                        android:alpha="0.35"
+                        app:tint="?attr/colorOnPrimary" />
                 </LinearLayout>
 
                 <!-- ── Section divider ── -->
@@ -383,16 +232,15 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="ACCOUNT ACTIONS"
+                    android:text="Account Actions"
                     android:textColor="?attr/colorOnPrimary"
                     android:alpha="0.5"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
-                    android:letterSpacing="0.12"
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
                     android:paddingTop="14dp"
-                    android:paddingBottom="6dp" />
+                    android:paddingBottom="4dp" />
 
                 <!-- Sign out row -->
                 <LinearLayout
@@ -420,11 +268,10 @@
                         android:layout_marginStart="16dp"
                         android:text="Sign Out"
                         android:textSize="15sp"
-                        android:textColor="#FF5252"
-                        android:textStyle="bold" />
+                        android:textColor="#FF5252" />
                 </LinearLayout>
 
-                <!-- Bottom padding inside card -->
+                <!-- Bottom padding -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="8dp" />
