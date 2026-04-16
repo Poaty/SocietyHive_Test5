@@ -14,11 +14,6 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
-/**
- * Expandable hybrid event cards:
- * - collapsed: quick scan + attending indicator
- * - expanded: description + organiser + attend button + view details button
- */
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventVH> {
 
     public interface OnAttendClickListener {

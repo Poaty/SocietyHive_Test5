@@ -34,21 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Events screen.
- *
- * Loads events from Firestore: events/{eventId}
- * Filters by visibility:
- *   - isPublic == true  → visible to everyone
- *   - isPublic == false → visible only if user is in the event's society
- *
- * Attendance persisted to: userAttendance/{userId}/attendingEvents/{eventId}
- *
- * Loading sequence:
- *   1. loadEventsFromFirestore()    — fetch all event documents
- *   2. loadAttendanceAndMerge()     — mark which events user is attending
- *   3. loadUserSocietiesAndFilter() — fetch user's societyIds, filter list, render
- */
 public class EventsFragment extends Fragment {
 
     private static final String ATTENDANCE_COLLECTION = "userAttendance";
@@ -60,7 +45,7 @@ public class EventsFragment extends Fragment {
     private View rootView;
     private android.widget.ProgressBar progressEvents;
 
-    // The societies this user belongs to — used for visibility filtering
+
     private final Set<String> userSocietyIds = new HashSet<>();
     private boolean isAdmin = false;
 
@@ -99,9 +84,9 @@ public class EventsFragment extends Fragment {
         loadEventsFromFirestore();
     }
 
-    // -------------------------------------------------------------------------
-    // Step 1 — Load events
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadEventsFromFirestore() {
         if (progressEvents != null) progressEvents.setVisibility(View.VISIBLE);
@@ -143,9 +128,9 @@ public class EventsFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Step 2 — Merge attendance state
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadAttendanceAndMerge() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -176,18 +161,11 @@ public class EventsFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Step 3 — Load user's societies, then filter and render
-    // -------------------------------------------------------------------------
 
-    /**
-     * Fetches the current user's societyIds from users/{uid}, then calls
-     * applyFilters() so the list only shows events the user is allowed to see.
-     *
-     * Visibility rule:
-     *   show event if event.isPublic == true
-     *               OR event.societyId is in the user's societyIds
-     */
+
+
+
+
     private void loadUserSocietiesAndFilter() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -217,9 +195,9 @@ public class EventsFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Attendance toggle — writes/deletes in Firestore
-    // -------------------------------------------------------------------------
+
+
+
 
     private void toggleAttendance(@NonNull Event event, boolean attending) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -260,11 +238,11 @@ public class EventsFragment extends Fragment {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Dummy data — used until Firestore events collection is populated.
-    // societyId values match whatever document IDs you have in your
-    // Firestore societies collection. Update them to match yours.
-    // -------------------------------------------------------------------------
+
+
+
+
+
 
     private void seedDummyEvents() {
         allEvents.add(new Event(
@@ -275,7 +253,7 @@ public class EventsFragment extends Fragment {
                 "Motorsport Society",
                 "A showcase of classic and modern cars around Nottingham city centre.",
                 "motorsport-society-id",
-                false, // members only
+                false,
                 false, false
         ));
         allEvents.add(new Event(
@@ -286,7 +264,7 @@ public class EventsFragment extends Fragment {
                 "Business Society",
                 "Meet new members, socialise, and hear about upcoming society activities.",
                 "business-society-id",
-                true, // public — anyone can see this
+                true,
                 false, false
         ));
         allEvents.add(new Event(
@@ -297,7 +275,7 @@ public class EventsFragment extends Fragment {
                 "Computing Society",
                 "Bring your laptop and work on projects in a relaxed, collaborative session.",
                 "computing-society-id",
-                false, // members only
+                false,
                 false, false
         ));
         allEvents.add(new Event(
@@ -308,7 +286,7 @@ public class EventsFragment extends Fragment {
                 "Careers Hub",
                 "A speaker session covering graduate roles, interview expectations, and application tips.",
                 "careers-hub-id",
-                true, // public — open taster
+                true,
                 false, false
         ));
         allEvents.add(new Event(
@@ -319,14 +297,14 @@ public class EventsFragment extends Fragment {
                 "Student Union",
                 "A welcome event for new students to connect with societies and student reps.",
                 "student-union-id",
-                true, // public
+                true,
                 false, false
         ));
     }
 
-    // -------------------------------------------------------------------------
-    // Search, chip filters, and rendering
-    // -------------------------------------------------------------------------
+
+
+
 
     private void hookSearch(@NonNull View view) {
         View et = view.findViewById(R.id.etSearchEvents);
@@ -339,9 +317,9 @@ public class EventsFragment extends Fragment {
     }
 
     private void hookChips(@NonNull View view) {
-        // Wire each chip individually — ChipGroup.setOnCheckedChangeListener can be
-        // unreliable with singleSelection on some Material versions. Reading
-        // chip.isChecked() in applyFilters() is the safest approach.
+
+
+
         View.OnClickListener filterListener = v -> applyFilters();
         Chip chipAll      = view.findViewById(R.id.chipAll);
         Chip chipThisWeek = view.findViewById(R.id.chipThisWeek);
@@ -360,7 +338,7 @@ public class EventsFragment extends Fragment {
             query = ((android.widget.EditText) et).getText().toString().trim().toLowerCase(Locale.UK);
         }
 
-        // Read each chip's checked state directly — more reliable than getCheckedChipId()
+
         Chip chipThisWeekView = rootView.findViewById(R.id.chipThisWeek);
         Chip chipNextWeekView = rootView.findViewById(R.id.chipNextWeek);
         boolean filterThisWeek = chipThisWeekView != null && chipThisWeekView.isChecked();
@@ -368,25 +346,25 @@ public class EventsFragment extends Fragment {
 
         filteredEvents.clear();
 
-        // Pre-compute week boundaries (only needed when a week filter is active)
+
         Calendar thisWeekStart = getWeekStart(0);
         Calendar thisWeekEnd   = getWeekStart(1);
         Calendar nextWeekEnd   = getWeekStart(2);
 
         for (Event e : allEvents) {
-            // Visibility: admins see all; public events visible to everyone;
-            // private events only visible to society members or attendees
+
+
             if (!isAdmin && !e.isPublic()
                     && !userSocietyIds.contains(e.getSocietyId())
                     && !e.isAttending()) continue;
 
-            // Search filter
+
             if (!query.isEmpty() && !e.getName().toLowerCase(Locale.UK).contains(query)) continue;
 
-            // Chip date filter
+
             if (filterThisWeek || filterNextWeek) {
                 Date eventDate = parseEventDate(e.getDateTime());
-                if (eventDate == null) continue; // undatable events are excluded from week filters
+                if (eventDate == null) continue;
 
                 if (filterThisWeek) {
                     if (eventDate.before(thisWeekStart.getTime())
@@ -403,14 +381,11 @@ public class EventsFragment extends Fragment {
         adapter.updateList(filteredEvents);
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
 
-    /**
-     * Returns a Calendar set to Monday 00:00:00 of the week that is
-     * {@code weeksFromNow} weeks from the current week.
-     */
+
+
+
+
     @NonNull
     private static Calendar getWeekStart(int weeksFromNow) {
         Calendar cal = Calendar.getInstance(Locale.UK);
@@ -423,10 +398,7 @@ public class EventsFragment extends Fragment {
         return cal;
     }
 
-    /**
-     * Parses the date from a dateTime string.
-     * Handles both "dd-MMM-yyyy" and "dd-MMM-yyyy • HH:mm" formats.
-     */
+
     @Nullable
     private static Date parseEventDate(@Nullable String dateTime) {
         if (dateTime == null || dateTime.isEmpty()) return null;

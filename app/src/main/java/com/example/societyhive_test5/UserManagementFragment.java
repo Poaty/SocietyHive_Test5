@@ -23,13 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * User Management screen.
- *
- * Super admin (no args):   shows all users, can promote to society admin.
- * Society admin (societyFilter arg):  shows only members of that society,
- *   can remove members and handle join requests for that society.
- */
 public class UserManagementFragment extends Fragment {
 
     private static final String ARG_SOCIETY_FILTER = "societyFilter";
@@ -74,7 +67,7 @@ public class UserManagementFragment extends Fragment {
             }
         });
 
-        // Join requests card
+
         view.findViewById(R.id.cardJoinRequests).setOnClickListener(v -> showJoinRequests());
 
         loadJoinRequestCount(view);
@@ -90,7 +83,7 @@ public class UserManagementFragment extends Fragment {
                         List<String> societyIds = (List<String>) doc.get("societyIds");
                         List<String> adminOf    = (List<String>) doc.get("adminOf");
 
-                        // Filter by society if we're in society admin mode
+
                         if (societyFilter != null) {
                             if (societyIds == null || !societyIds.contains(societyFilter)) continue;
                         }
@@ -198,7 +191,7 @@ public class UserManagementFragment extends Fragment {
 
     private void approveRequest(String reqId, String uid, String sid) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Add user to society
+
         db.collection("users").document(uid)
                 .update("societyIds", com.google.firebase.firestore.FieldValue.arrayUnion(sid))
                 .addOnSuccessListener(unused ->

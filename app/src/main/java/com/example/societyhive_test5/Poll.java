@@ -6,37 +6,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Poll model.
- *
- * Firestore document structure:  polls/{pollId}
- *   title       (String)
- *   question    (String)
- *   options     (Array<String>)
- *   societyId   (String)
- *   isActive    (boolean)
- *
- * Votes stored at:  polls/{pollId}/votes/{userId}
- *   optionIndex (number)
- *   votedAt     (Timestamp)
- */
 public class Poll {
     private String id;
     private String title;
-    private Timestamp endsAt; // null = no expiry
+    private Timestamp endsAt;
     private String question;
     private List<String> options;
     private String societyId;
     private boolean isActive;
 
-    // Fetched separately — not stored in the poll document
+
     private String societyName = "";
 
-    // UI-only state
-    private int selectedOptionIndex = -1; // -1 = nothing tapped yet
+
+    private int selectedOptionIndex = -1;
     private boolean hasVoted = false;
     private int votedOptionIndex = -1;
-    private List<Integer> voteCounts = new ArrayList<>(); // votes per option index
+    private List<Integer> voteCounts = new ArrayList<>();
     private int totalVotes = 0;
 
     public Poll() {}
@@ -80,7 +66,7 @@ public class Poll {
     public Timestamp getEndsAt() { return endsAt; }
     public void setEndsAt(Timestamp endsAt) { this.endsAt = endsAt; }
 
-    /** Returns true if the poll has an end date that has already passed. */
+
     public boolean isClosed() {
         return endsAt != null && endsAt.toDate().before(new Date());
     }

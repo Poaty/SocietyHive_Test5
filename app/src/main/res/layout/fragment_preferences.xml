@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:paddingBottom="32dp">
 
-        <!-- Page heading -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
             android:layout_marginTop="70dp"
             android:layout_marginBottom="6dp" />
 
-        <!-- Subtitle -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginBottom="28dp" />
 
-        <!-- Section label -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginBottom="10dp" />
 
-        <!-- Colour scheme card -->
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Crimson row -->
+
                 <LinearLayout
                     android:id="@+id/swatchCrimson"
                     android:layout_width="match_parent"
@@ -98,14 +98,14 @@
 
                 </LinearLayout>
 
-                <!-- Divider -->
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="76dp"
                     android:background="#20FFFFFF" />
 
-                <!-- Ocean row -->
+
                 <LinearLayout
                     android:id="@+id/swatchOcean"
                     android:layout_width="match_parent"
@@ -142,14 +142,14 @@
 
                 </LinearLayout>
 
-                <!-- Divider -->
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="76dp"
                     android:background="#20FFFFFF" />
 
-                <!-- Violet row -->
+
                 <LinearLayout
                     android:id="@+id/swatchViolet"
                     android:layout_width="match_parent"

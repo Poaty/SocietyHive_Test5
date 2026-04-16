@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:padding="20dp">
 
-        <!-- Event title -->
+
         <TextView
             android:id="@+id/tvEventTitle"
             android:layout_width="0dp"
@@ -24,7 +24,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Date/time • Location -->
+
         <TextView
             android:id="@+id/tvEventMeta"
             android:layout_width="0dp"
@@ -37,7 +37,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Organiser -->
+
         <TextView
             android:id="@+id/tvEventOrganiser"
             android:layout_width="0dp"
@@ -50,7 +50,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- About card -->
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardDetails"
             android:layout_width="0dp"
@@ -89,7 +89,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Attend button -->
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAttendDetails"
             android:layout_width="0dp"

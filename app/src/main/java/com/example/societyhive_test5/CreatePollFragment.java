@@ -32,22 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Admin screen for creating a new poll.
- *
- * Loads all societies from Firestore so the admin can choose which
- * society the poll belongs to. Options can be added dynamically.
- *
- * Firestore structure written:
- *   polls/{auto}
- *     title       (String)
- *     question    (String)
- *     options     (Array<String>)
- *     societyId   (String)
- *     isActive    (boolean) = true
- *     createdBy   (String)
- *     createdAt   (Timestamp)
- */
 public class CreatePollFragment extends Fragment {
 
     private TextInputEditText etTitle;
@@ -82,7 +66,7 @@ public class CreatePollFragment extends Fragment {
         MaterialButton btnAddOption  = view.findViewById(R.id.btnAddOption);
         MaterialButton btnCreatePoll = view.findViewById(R.id.btnCreatePoll);
 
-        // Start with two blank option fields
+
         addOptionField();
         addOptionField();
 
@@ -96,7 +80,7 @@ public class CreatePollFragment extends Fragment {
         loadSocieties();
     }
 
-    // -------------------------------------------------------------------------
+
 
     private void showDatePicker() {
         Calendar start = closeDateCal != null ? closeDateCal : Calendar.getInstance();
@@ -107,7 +91,7 @@ public class CreatePollFragment extends Fragment {
                     picked.set(year, month, day, 23, 59, 59);
                     picked.set(Calendar.MILLISECOND, 0);
 
-                    // Must be a future date
+
                     if (!picked.after(Calendar.getInstance())) {
                         Toast.makeText(requireContext(),
                                 "Closing date must be in the future", Toast.LENGTH_SHORT).show();
@@ -122,12 +106,12 @@ public class CreatePollFragment extends Fragment {
                 start.get(Calendar.MONTH),
                 start.get(Calendar.DAY_OF_MONTH));
 
-        // Prevent selecting today or earlier
+
         dialog.getDatePicker().setMinDate(System.currentTimeMillis());
         dialog.show();
     }
 
-    // -------------------------------------------------------------------------
+
 
     private void addOptionField() {
         View optionView = LayoutInflater.from(requireContext())
@@ -186,7 +170,7 @@ public class CreatePollFragment extends Fragment {
         }
     }
 
-    // -------------------------------------------------------------------------
+
 
     private void attemptCreate() {
         String title    = text(etTitle);

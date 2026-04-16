@@ -93,9 +93,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
-    // -------------------------------------------------------------------------
-    // ViewHolders
-    // -------------------------------------------------------------------------
+
+
+
 
     static class SentVH extends RecyclerView.ViewHolder {
         final TextView tvMessage;

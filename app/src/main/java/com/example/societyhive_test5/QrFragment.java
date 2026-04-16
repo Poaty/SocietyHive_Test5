@@ -21,14 +21,6 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 
 import java.util.Collections;
 
-/**
- * QR scanner screen — camera preview is embedded directly in the fragment layout.
- *
- * Uses ZXing's BarcodeView so the scanner renders inside the card defined in
- * fragment_qr.xml rather than launching a separate full-screen activity.
- *
- * QR payload format: plain Firestore eventId string.
- */
 public class QrFragment extends Fragment {
 
     private BarcodeView barcodeView;

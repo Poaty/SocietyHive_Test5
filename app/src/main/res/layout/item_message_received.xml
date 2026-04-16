@@ -10,7 +10,7 @@
     android:paddingEnd="60dp"
     android:gravity="bottom">
 
-    <!-- Sender avatar -->
+
     <ImageView
         android:id="@+id/ivSenderAvatar"
         android:layout_width="32dp"
@@ -22,7 +22,7 @@
         android:scaleType="centerInside"
         android:contentDescription="Sender avatar" />
 
-    <!-- Bubble + name -->
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"

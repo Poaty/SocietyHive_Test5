@@ -38,7 +38,7 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="20dp" />
 
-                <!-- Society dropdown -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilSociety"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -62,7 +62,7 @@
                         android:cursorVisible="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Pin content -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilPinContent"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -85,7 +85,7 @@
                         android:inputType="textCapSentences|textMultiLine" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Create Pin button -->
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCreatePin"
                     android:layout_width="wrap_content"

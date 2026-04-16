@@ -18,19 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Firebase-backed sign-up screen.
- *
- * Expected XML ids in activity_sign_up.xml:
- * - etFullName
- * - etEmail
- * - etPassword
- * - etConfirmPassword
- * - btnCreateAccount
- * - tvSignUp   (the "Log In" text link on your current screen)
- *
- * If your XML ids differ, rename the findViewById references to match.
- */
 public class SignUpActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -107,7 +94,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 .addOnSuccessListener(unused -> {
                                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
 
-                                    // Sign out so the user returns through the login flow cleanly
+
                                     mAuth.signOut();
 
                                     startActivity(new Intent(SignUpActivity.this, LoginActivity.class));

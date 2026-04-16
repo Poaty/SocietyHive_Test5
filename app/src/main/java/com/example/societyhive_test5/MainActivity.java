@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -59,17 +58,17 @@ public class MainActivity extends AppCompatActivity {
 
             NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-            // Custom bottom nav setup: always navigate cleanly without saving/restoring
-            // secondary screens (Profile, Preferences, Settings) opened from the toolbar.
+
+
             NavOptions bottomNavOptions = new NavOptions.Builder()
                     .setLaunchSingleTop(true)
                     .setPopUpTo(R.id.homeFragment, false, false)
                     .setRestoreState(false)
                     .build();
 
-            // Flag to block re-entrant calls between the item listener and destination listener.
-            // navigate() dispatches onDestinationChanged synchronously, which calls
-            // setSelectedItemId, which re-fires the item listener — causing an infinite loop.
+
+
+
             final boolean[] isNavigating = {false};
 
             bottomNav.setOnItemSelectedListener(item -> {
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             });
 
-            // Sync the bottom nav icon when navigating back via the back arrow.
+
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int id = destination.getId();
                 if (id == R.id.homeFragment || id == R.id.eventsFragment
@@ -135,9 +134,9 @@ public class MainActivity extends AppCompatActivity {
         return navController.navigateUp() || super.onSupportNavigateUp();
     }
 
-    // -------------------------------------------------------------------------
-    // FCM setup
-    // -------------------------------------------------------------------------
+
+
+
 
     private void requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

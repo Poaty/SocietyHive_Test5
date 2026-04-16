@@ -21,27 +21,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Full event details screen.
- *
- * Receives an eventId via navigation arguments, fetches the event document
- * from Firestore, and displays all fields. The Attend button reads and writes
- * to the same userAttendance path used by EventsFragment so attendance state
- * is consistent across both screens.
- */
 public class EventDetailsFragment extends Fragment {
 
     private static final String ATTENDANCE_COLLECTION = "userAttendance";
     private static final String ATTENDING_SUB = "attendingEvents";
 
-    // Views
+
     private TextView tvTitle;
     private TextView tvMeta;
     private TextView tvOrganiser;
     private TextView tvDescription;
     private MaterialButton btnAttend;
 
-    // The event loaded from Firestore
+
     private String eventId;
     private String eventName = "";
     private boolean isAttending = false;
@@ -77,9 +69,9 @@ public class EventDetailsFragment extends Fragment {
         loadEvent();
     }
 
-    // -------------------------------------------------------------------------
-    // Load event from Firestore
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadEvent() {
         FirebaseFirestore.getInstance()
@@ -111,14 +103,14 @@ public class EventDetailsFragment extends Fragment {
         tvDescription.setText(desc);
     }
 
-    // -------------------------------------------------------------------------
-    // Load attendance state, then wire up the button
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadAttendanceState() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            // Not logged in — show button but it won't save
+
             updateAttendButton(false);
             wireAttendButton();
             return;
@@ -151,9 +143,9 @@ public class EventDetailsFragment extends Fragment {
         });
     }
 
-    // -------------------------------------------------------------------------
-    // Save attendance to Firestore
-    // -------------------------------------------------------------------------
+
+
+
 
     private void saveAttendance(boolean attending) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -194,9 +186,9 @@ public class EventDetailsFragment extends Fragment {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
+
+
+
 
     private void updateAttendButton(boolean attending) {
         btnAttend.setText(attending ? "Attending ✓" : "Attend Event");

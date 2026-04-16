@@ -26,13 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Polls screen.
- *
- * Regular users: see only active (open) polls for their societies.
- * Admins / society admins: also see a "Closed Polls" section below,
- * showing final vote counts. Delete button visible to admins on all polls.
- */
 public class PollsFragment extends Fragment {
 
     private final List<Poll> activePolls = new ArrayList<>();
@@ -63,7 +56,7 @@ public class PollsFragment extends Fragment {
         tvClosedPollsLabel = view.findViewById(R.id.tvClosedPollsLabel);
         rvClosedPolls      = view.findViewById(R.id.rvClosedPolls);
 
-        // Active polls RecyclerView — delete listener wired after we know role
+
         RecyclerView rvPolls = view.findViewById(R.id.rvPolls);
         rvPolls.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvPolls.setHasFixedSize(false);
@@ -71,7 +64,7 @@ public class PollsFragment extends Fragment {
         rvClosedPolls.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvClosedPolls.setHasFixedSize(false);
 
-        // Adapters created without delete listener for now; replaced once role is known
+
         activeAdapter = new PollsAdapter(this::submitVote, null);
         closedAdapter = new PollsAdapter(this::submitVote, null);
         rvPolls.setAdapter(activeAdapter);
@@ -80,9 +73,9 @@ public class PollsFragment extends Fragment {
         loadUserSocietiesThenPolls();
     }
 
-    // -------------------------------------------------------------------------
-    // Step 1 — User societies + role
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadUserSocietiesThenPolls() {
         if (progressPolls != null) progressPolls.setVisibility(View.VISIBLE);
@@ -109,7 +102,7 @@ public class PollsFragment extends Fragment {
                         }
                     }
 
-                    // Re-create adapters with delete listener for admins
+
                     if (isAdmin || isSocietyAdmin) {
                         RecyclerView rvPolls = requireView().findViewById(R.id.rvPolls);
                         activeAdapter = new PollsAdapter(this::submitVote, this::deletePoll);
@@ -123,9 +116,9 @@ public class PollsFragment extends Fragment {
                 .addOnFailureListener(e -> { if (isAdded()) loadPolls(); });
     }
 
-    // -------------------------------------------------------------------------
-    // Step 2 — Load polls
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadPolls() {
         FirebaseFirestore.getInstance()
@@ -141,7 +134,7 @@ public class PollsFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         String societyId = doc.getString("societyId");
 
-                        // Visibility: admins see all; others see only their societies
+
                         if (!isAdmin && !isSocietyAdmin
                                 && societyId != null && !societyId.isEmpty()
                                 && !userSocietyIds.contains(societyId)) continue;
@@ -163,9 +156,9 @@ public class PollsFragment extends Fragment {
                         }
                         poll.setOptions(options);
 
-                        // Split into active vs closed
+
                         if (poll.isClosed()) {
-                            // Only admins/society admins see closed polls
+
                             if (isAdmin || isSocietyAdmin) closedPolls.add(poll);
                         } else {
                             activePolls.add(poll);
@@ -185,9 +178,9 @@ public class PollsFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Step 3 — Fetch society names
-    // -------------------------------------------------------------------------
+
+
+
 
     private void fetchSocietyNamesThenVotes() {
         Set<String> ids = new HashSet<>();
@@ -223,9 +216,9 @@ public class PollsFragment extends Fragment {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Step 4 — Load votes
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadAllVotes() {
         List<Poll> all = new ArrayList<>(activePolls);
@@ -300,16 +293,16 @@ public class PollsFragment extends Fragment {
         if (remaining[0] == 0 && isAdded()) publishPolls();
     }
 
-    // -------------------------------------------------------------------------
-    // Publish to UI
-    // -------------------------------------------------------------------------
+
+
+
 
     private void publishPolls() {
         if (progressPolls != null) progressPolls.setVisibility(View.GONE);
 
         activeAdapter.updateList(activePolls);
 
-        // Empty state only considers active polls for regular users
+
         if (activePolls.isEmpty()) {
             if (tvEmptyPolls != null) {
                 tvEmptyPolls.setText("No polls available yet.");
@@ -319,7 +312,7 @@ public class PollsFragment extends Fragment {
             if (tvEmptyPolls != null) tvEmptyPolls.setVisibility(View.GONE);
         }
 
-        // Closed section — only for admins/society admins
+
         if ((isAdmin || isSocietyAdmin) && !closedPolls.isEmpty()) {
             closedAdapter.updateList(closedPolls);
             if (tvClosedPollsLabel != null) tvClosedPollsLabel.setVisibility(View.VISIBLE);
@@ -330,9 +323,9 @@ public class PollsFragment extends Fragment {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Voting
-    // -------------------------------------------------------------------------
+
+
+
 
     private void submitVote(@NonNull Poll poll, int optionIndex) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -367,9 +360,9 @@ public class PollsFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Delete
-    // -------------------------------------------------------------------------
+
+
+
 
     private void deletePoll(@NonNull Poll poll) {
         FirebaseFirestore.getInstance()
@@ -389,7 +382,7 @@ public class PollsFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
+
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {

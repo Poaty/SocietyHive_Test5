@@ -25,21 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Society group chat screen.
- *
- * Reads and writes messages from:
- *   societies/{societyId}/messages/{messageId}
- *
- * Message fields:
- *   text       (String)
- *   senderId   (String)
- *   senderName (String)
- *   timestamp  (Timestamp)
- *
- * Messages load in real-time — when another user sends a message on a
- * different device/emulator it appears here instantly without refreshing.
- */
 public class ChatConversationFragment extends Fragment {
 
     private final List<Message> messages = new ArrayList<>();
@@ -60,7 +45,7 @@ public class ChatConversationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable android.os.Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // ---- Read navigation arguments ----
+
         String chatTitle = "Chat";
         String chatColor = "#8D2E3A";
         societyId = null;
@@ -71,7 +56,7 @@ public class ChatConversationFragment extends Fragment {
             societyId = getArguments().getString("societyId", null);
         }
 
-        // ---- Header ----
+
         TextView tvHeader = view.findViewById(R.id.tvChatHeaderTitle);
         View headerBar = view.findViewById(R.id.viewChatHeaderAccent);
         tvHeader.setText(chatTitle);
@@ -81,7 +66,7 @@ public class ChatConversationFragment extends Fragment {
             headerBar.setBackgroundColor(Color.parseColor("#8D2E3A"));
         }
 
-        // ---- RecyclerView ----
+
         rv = view.findViewById(R.id.rvMessages);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         rv.setHasFixedSize(false);
@@ -89,7 +74,7 @@ public class ChatConversationFragment extends Fragment {
         adapter = new MessageAdapter(new ArrayList<>());
         rv.setAdapter(adapter);
 
-        // ---- Send button ----
+
         EditText etMessage = view.findViewById(R.id.etMessage);
         View btnSend = view.findViewById(R.id.btnSendMessage);
 
@@ -100,7 +85,7 @@ public class ChatConversationFragment extends Fragment {
             sendMessage(text);
         });
 
-        // ---- Load current user name then start listening ----
+
         resolveCurrentUserName(() -> {
             if (societyId != null && !societyId.isEmpty()) {
                 startListening();
@@ -117,9 +102,9 @@ public class ChatConversationFragment extends Fragment {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Real-time message listener
-    // -------------------------------------------------------------------------
+
+
+
 
     private void startListening() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -159,9 +144,9 @@ public class ChatConversationFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Sending a message
-    // -------------------------------------------------------------------------
+
+
+
 
     private void enrichWithPhotos(@NonNull List<Message> msgs) {
         java.util.Set<String> toFetch = new java.util.HashSet<>();
@@ -226,12 +211,12 @@ public class ChatConversationFragment extends Fragment {
                     Toast.makeText(requireContext(),
                             "Send failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-        // On success the snapshot listener fires automatically, updating the UI
+
     }
 
-    // -------------------------------------------------------------------------
-    // Resolve the signed-in user's display name from Firestore
-    // -------------------------------------------------------------------------
+
+
+
 
     private void resolveCurrentUserName(@NonNull Runnable onReady) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -255,9 +240,9 @@ public class ChatConversationFragment extends Fragment {
                 .addOnFailureListener(e -> onReady.run());
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
+
+
+
 
     @NonNull
     private String safeString(@Nullable String value) {

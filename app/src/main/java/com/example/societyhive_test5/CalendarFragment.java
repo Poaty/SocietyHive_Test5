@@ -32,13 +32,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-/**
- * Shows a custom month calendar with event-day highlighting and an event list
- * for the selected date.
- *
- * Days that have events are shown with a light pink circle (maroon outline).
- * The selected day is shown with a solid maroon circle and white text.
- */
 public class CalendarFragment extends Fragment {
 
     private static final String ATTENDANCE_COLLECTION = "userAttendance";
@@ -47,7 +40,7 @@ public class CalendarFragment extends Fragment {
     private static final SimpleDateFormat SDF_HEADER = new SimpleDateFormat("MMMM d", Locale.UK);
     private static final SimpleDateFormat SDF_MONTH  = new SimpleDateFormat("MMMM", Locale.UK);
 
-    // Maroon primary (#8D2E3A) and light pink (#F3D7DC)
+
     private static final int COLOR_PRIMARY      = 0xFF8D2E3A;
     private static final int COLOR_PRIMARY_LIGHT = 0xFFF3D7DC;
     private static final int COLOR_TEXT_DARK    = 0xFF1E1E1E;
@@ -59,11 +52,11 @@ public class CalendarFragment extends Fragment {
     private TextView tvNoEvents;
     private final Set<String> userSocietyIds = new HashSet<>();
 
-    // Month currently displayed in the calendar
-    private int currentYear;
-    private int currentMonth; // 0-based (Calendar.MONTH)
 
-    // Currently selected date
+    private int currentYear;
+    private int currentMonth;
+
+
     private int selectedYear;
     private int selectedMonth;
     private int selectedDay;
@@ -84,7 +77,7 @@ public class CalendarFragment extends Fragment {
         adapter = new CalendarEventsAdapter();
         rv.setAdapter(adapter);
 
-        // Default to today
+
         Calendar today = Calendar.getInstance();
         currentYear  = today.get(Calendar.YEAR);
         currentMonth = today.get(Calendar.MONTH);
@@ -92,7 +85,7 @@ public class CalendarFragment extends Fragment {
         selectedMonth = currentMonth;
         selectedDay   = today.get(Calendar.DAY_OF_MONTH);
 
-        // Wire navigation buttons
+
         view.findViewById(R.id.btnPrevMonth).setOnClickListener(v -> {
             currentMonth--;
             if (currentMonth < 0) { currentMonth = 11; currentYear--; }
@@ -106,16 +99,16 @@ public class CalendarFragment extends Fragment {
         view.findViewById(R.id.btnPrevYear).setOnClickListener(v -> { currentYear--; updateCalendar(); });
         view.findViewById(R.id.btnNextYear).setOnClickListener(v -> { currentYear++; updateCalendar(); });
 
-        // Show header for today before data loads
+
         updateMonthYearHeader();
         updateEventsHeader(selectedYear, selectedMonth, selectedDay);
 
         loadEventsFromFirestore();
     }
 
-    // -------------------------------------------------------------------------
-    // Calendar rendering
-    // -------------------------------------------------------------------------
+
+
+
 
     private void updateCalendar() {
         updateMonthYearHeader();
@@ -142,10 +135,10 @@ public class CalendarFragment extends Fragment {
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, 1);
-        int firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK); // 1=Sun…7=Sat
+        int firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
         int daysInMonth    = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        int offset = firstDayOfWeek - 1; // 0=Sun start, 6=Sat start
+        int offset = firstDayOfWeek - 1;
         int totalCells = offset + daysInMonth;
         int rows = (int) Math.ceil(totalCells / 7.0);
 
@@ -181,7 +174,7 @@ public class CalendarFragment extends Fragment {
         tv.setGravity(Gravity.CENTER);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
 
-        if (day < 1) return tv; // empty cell
+        if (day < 1) return tv;
 
         tv.setText(String.valueOf(day));
 
@@ -212,13 +205,13 @@ public class CalendarFragment extends Fragment {
         selectedYear  = currentYear;
         selectedMonth = currentMonth;
         selectedDay   = day;
-        buildCalendarGrid(currentYear, currentMonth); // redraw to update selection circle
+        buildCalendarGrid(currentYear, currentMonth);
         showEventsForSelectedDate();
     }
 
-    // -------------------------------------------------------------------------
-    // Step 1 — Load all events
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadEventsFromFirestore() {
         FirebaseFirestore.getInstance()
@@ -248,9 +241,9 @@ public class CalendarFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Step 2 — Merge attendance state
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadAttendanceAndMerge() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -271,9 +264,9 @@ public class CalendarFragment extends Fragment {
                 .addOnFailureListener(e -> { if (isAdded()) loadUserSocietiesAndFilter(); });
     }
 
-    // -------------------------------------------------------------------------
-    // Step 3 — Filter by visibility, then render
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadUserSocietiesAndFilter() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -305,14 +298,14 @@ public class CalendarFragment extends Fragment {
         allVisibleEvents.clear();
         allVisibleEvents.addAll(visible);
 
-        // Build the calendar grid now that we know which days have events
+
         buildCalendarGrid(currentYear, currentMonth);
         showEventsForSelectedDate();
     }
 
-    // -------------------------------------------------------------------------
-    // Date filtering and display
-    // -------------------------------------------------------------------------
+
+
+
 
     private void showEventsForSelectedDate() {
         List<Event> dayEvents = new ArrayList<>();
@@ -353,14 +346,11 @@ public class CalendarFragment extends Fragment {
         tvEventsOnDate.setText("Events on " + SDF_HEADER.format(cal.getTime()));
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
 
-    /**
-     * Parses the date from a dateTime string.
-     * Handles both "dd-MMM-yyyy" and "dd-MMM-yyyy • HH:mm" formats.
-     */
+
+
+
+
     @Nullable
     static Date parseEventDate(@Nullable String dateTime) {
         if (dateTime == null || dateTime.isEmpty()) return null;

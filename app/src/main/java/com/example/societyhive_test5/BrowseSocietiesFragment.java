@@ -30,14 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Shows all societies the current user has not yet joined.
- * Tapping "Request" submits a join request to the joinRequests collection,
- * which admins can then approve or reject in UserManagementFragment.
- */
 public class BrowseSocietiesFragment extends Fragment {
 
-    // Simple data holder for this screen
+
     private static class SocietyRow {
         String id, name, iconUrl, colorHex;
         int memberCount;
@@ -74,7 +69,7 @@ public class BrowseSocietiesFragment extends Fragment {
         loadSocieties();
     }
 
-    // -------------------------------------------------------------------------
+
 
     private void loadSocieties() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -82,7 +77,7 @@ public class BrowseSocietiesFragment extends Fragment {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // 1. Get the user's current societies and pending requests
+
         db.collection("users").document(user.getUid()).get()
                 .addOnSuccessListener(userDoc -> {
                     if (!isAdded()) return;
@@ -90,7 +85,7 @@ public class BrowseSocietiesFragment extends Fragment {
                     List<String> joined = (List<String>) userDoc.get("societyIds");
                     Set<String> joinedSet = joined != null ? new HashSet<>(joined) : new HashSet<>();
 
-                    // 2. Also check for pending join requests to mark buttons correctly
+
                     db.collection("joinRequests")
                             .whereEqualTo("userId", user.getUid())
                             .whereEqualTo("status", "pending")
@@ -104,7 +99,7 @@ public class BrowseSocietiesFragment extends Fragment {
                                     if (sid != null) pendingIds.add(sid);
                                 }
 
-                                // 3. Load all societies and filter out joined ones
+
                                 db.collection("societies").get()
                                         .addOnSuccessListener(societiesSnap -> {
                                             if (!isAdded()) return;
@@ -172,9 +167,9 @@ public class BrowseSocietiesFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Adapter
-    // -------------------------------------------------------------------------
+
+
+
 
     private class BrowseAdapter extends RecyclerView.Adapter<BrowseAdapter.VH> {
 

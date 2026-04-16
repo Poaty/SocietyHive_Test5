@@ -8,7 +8,7 @@ public class Announcement {
     private String title;
     private String content;
     private String societyId;
-    private String societyName; // UI-only, not stored in Firestore
+    private String societyName;
     private String createdBy;
     private Timestamp createdAt;
 

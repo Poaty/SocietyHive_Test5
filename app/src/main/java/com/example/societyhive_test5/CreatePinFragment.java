@@ -24,16 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Admin screen for creating a pinned message for a society.
- *
- * Writes to Firestore:
- *   pins/{auto}
- *     content    (String)
- *     societyId  (String)
- *     createdBy  (String)
- *     createdAt  (Timestamp)
- */
 public class CreatePinFragment extends Fragment {
 
     private TextInputEditText    etPinContent;
@@ -65,7 +55,7 @@ public class CreatePinFragment extends Fragment {
         loadSocieties();
     }
 
-    // -------------------------------------------------------------------------
+
 
     private void loadSocieties() {
         FirebaseFirestore.getInstance()
@@ -113,7 +103,7 @@ public class CreatePinFragment extends Fragment {
         }
     }
 
-    // -------------------------------------------------------------------------
+
 
     private void attemptCreate() {
         String content = etPinContent.getText() != null

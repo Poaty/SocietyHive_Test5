@@ -31,7 +31,7 @@ public class CalendarEventsAdapter extends RecyclerView.Adapter<CalendarEventsAd
         Event event = events.get(position);
         holder.tvName.setText(event.getName());
 
-        // Format subtitle: "17:00 - Nov 19 - 2025"
+
         String subtitle = formatSubtitle(event.getDateTime());
         holder.tvDateTime.setText(subtitle);
     }
@@ -51,8 +51,8 @@ public class CalendarEventsAdapter extends RecyclerView.Adapter<CalendarEventsAd
         if (dateTime == null || !dateTime.contains(" • ")) return dateTime != null ? dateTime : "";
         try {
             String[] parts = dateTime.split(" • ");
-            String datePart = parts[0].trim();   // "19-Nov-2025"
-            String timePart = parts[1].trim();   // "17:00"
+            String datePart = parts[0].trim();
+            String timePart = parts[1].trim();
 
             Date d = new SimpleDateFormat("dd-MMM-yyyy", Locale.UK).parse(datePart);
             if (d == null) return dateTime;

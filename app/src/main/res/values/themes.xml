@@ -1,6 +1,6 @@
 <resources>
 
-    <!-- ── Crimson (default) ── original app colours -->
+
     <style name="Theme.SocietyHive.Crimson" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">#8D2E3A</item>
         <item name="colorOnPrimary">#FFFFFF</item>
@@ -28,7 +28,7 @@
         <item name="colorOutlineVariant">#BDBDBD</item>
     </style>
 
-    <!-- ── Ocean ── steel blue / dark navy -->
+
     <style name="Theme.SocietyHive.Ocean" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">#1B3A6B</item>
         <item name="colorOnPrimary">#FFFFFF</item>
@@ -56,7 +56,7 @@
         <item name="colorOutlineVariant">#90B8D8</item>
     </style>
 
-    <!-- ── Violet ── medium purple / dark purple -->
+
     <style name="Theme.SocietyHive.Violet" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">#5C3D8F</item>
         <item name="colorOnPrimary">#FFFFFF</item>
@@ -84,7 +84,7 @@
         <item name="colorOutlineVariant">#C0A8E0</item>
     </style>
 
-    <!-- Base app theme — Crimson by default, overridden at runtime by ThemeHelper -->
+
     <style name="Base.Theme.SocietyHive_Test5" parent="Theme.SocietyHive.Crimson" />
     <style name="Theme.SocietyHive_Test5" parent="Base.Theme.SocietyHive_Test5" />
 

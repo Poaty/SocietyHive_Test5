@@ -38,7 +38,7 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="20dp" />
 
-                <!-- Event Name -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilEventName"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -68,7 +68,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="6dp" />
 
-                <!-- Description -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilDescription"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -91,7 +91,7 @@
                         android:inputType="textCapSentences|textMultiLine" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Location -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilLocation"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -113,7 +113,7 @@
                         android:inputType="textCapSentences" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Date & Time (tap to pick) -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilDateTime"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -137,7 +137,7 @@
                         android:cursorVisible="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Public / Private toggle -->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -175,7 +175,7 @@
                         android:checked="true" />
                 </LinearLayout>
 
-                <!-- Society dropdown -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilSociety"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -200,7 +200,7 @@
                         android:cursorVisible="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Create Event button -->
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCreateEvent"
                     android:layout_width="wrap_content"
