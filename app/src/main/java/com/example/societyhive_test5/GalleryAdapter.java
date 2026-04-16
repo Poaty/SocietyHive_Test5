@@ -74,9 +74,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoVie
                 ? societyColorMap.get(photo.getSocietyId())
                 : "#8D2E3A";
         try {
-            holder.accentStrip.setBackgroundColor(Color.parseColor(colorHex));
+            holder.card.setStrokeColor(Color.parseColor(colorHex));
         } catch (IllegalArgumentException ignored) {
-            holder.accentStrip.setBackgroundColor(Color.parseColor("#8D2E3A"));
+            holder.card.setStrokeColor(Color.parseColor("#8D2E3A"));
         }
 
         if (photo.getCreatedAt() != null) {
@@ -143,7 +143,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoVie
 
     static class PhotoViewHolder extends RecyclerView.ViewHolder {
         final MaterialCardView card;
-        final View accentStrip;
         final ImageView ivPhoto;
         final ImageView ivAvatar;
         final TextView tvName;
@@ -152,13 +151,12 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoVie
 
         PhotoViewHolder(@NonNull View v) {
             super(v);
-            card        = v.findViewById(R.id.cardGalleryPhoto);
-            accentStrip = v.findViewById(R.id.viewSocietyAccentStrip);
-            ivPhoto     = v.findViewById(R.id.ivPhoto);
-            ivAvatar    = v.findViewById(R.id.ivUploaderAvatar);
-            tvName      = v.findViewById(R.id.tvUploaderName);
-            tvDate      = v.findViewById(R.id.tvUploadDate);
-            btnDelete   = v.findViewById(R.id.btnDeletePhoto);
+            card      = v.findViewById(R.id.cardGalleryPhoto);
+            ivPhoto   = v.findViewById(R.id.ivPhoto);
+            ivAvatar  = v.findViewById(R.id.ivUploaderAvatar);
+            tvName    = v.findViewById(R.id.tvUploaderName);
+            tvDate    = v.findViewById(R.id.tvUploadDate);
+            btnDelete = v.findViewById(R.id.btnDeletePhoto);
         }
     }
 }
