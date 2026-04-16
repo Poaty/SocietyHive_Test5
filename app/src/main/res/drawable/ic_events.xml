@@ -1,5 +1,13 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#000000" android:viewportHeight="960" android:viewportWidth="960" android:width="24dp">
-      
-    <path android:fillColor="@android:color/white" android:pathData="M222,760L80,618L136,562L221,647L391,477L447,534L222,760ZM222,440L80,298L136,242L221,327L391,157L447,214L222,440ZM520,680L520,600L880,600L880,680L520,680ZM520,360L520,280L880,280L880,360L520,360Z"/>
-    
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Calendar page with a filled event-dot — clearly "Events" -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp"
+    android:viewportHeight="960"
+    android:viewportWidth="960"
+    android:width="24dp">
+
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M760,160L680,160L680,80L600,80L600,160L360,160L360,80L280,80L280,160L200,160Q167,160 143.5,183.5Q120,207 120,240L120,800Q120,833 143.5,856.5Q167,880 200,880L760,880Q793,880 816.5,856.5Q840,833 840,800L840,240Q840,207 816.5,183.5Q793,160 760,160ZM760,800L200,800L200,400L760,400ZM760,320L200,320L200,240L760,240ZM480,700Q430,700 395,665Q360,630 360,580Q360,530 395,495Q430,460 480,460Q530,460 565,495Q600,530 600,580Q600,630 565,665Q530,700 480,700Z" />
+
 </vector>
