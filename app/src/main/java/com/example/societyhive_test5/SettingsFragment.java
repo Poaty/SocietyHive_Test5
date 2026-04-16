@@ -53,11 +53,6 @@ public class SettingsFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        TextView tvEmail = view.findViewById(R.id.tvCurrentEmail);
-        if (tvEmail != null && user.getEmail() != null) {
-            tvEmail.setText(user.getEmail());
-        }
-
         TextView tvName = view.findViewById(R.id.tvCurrentName);
         if (tvName == null) return;
 
