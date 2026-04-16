@@ -32,9 +32,20 @@
             android:alpha="0.6"
             android:textSize="14sp"
             android:layout_marginStart="24dp"
-            android:layout_marginBottom="28dp" />
+            android:layout_marginBottom="18dp" />
 
-        <!-- Single settings card -->
+        <!-- Section label -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Account"
+            android:textColor="?attr/colorOnPrimaryContainer"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Outer card containing the tile grid -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,234 +58,142 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="14dp">
 
-                <!-- ── Account subheader ── -->
-                <TextView
+                <!-- 2-column tile grid -->
+                <GridLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Account"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:alpha="0.5"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:paddingTop="18dp"
-                    android:paddingBottom="4dp" />
+                    android:columnCount="2">
 
-                <!-- Display name row -->
-                <LinearLayout
-                    android:id="@+id/rowEditName"
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_person"
-                        android:alpha="0.75"
-                        app:tint="?attr/colorOnPrimary" />
-
-                    <LinearLayout
+                    <!-- Edit Name tile -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/rowEditName"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="16dp">
+                        android:layout_height="90dp"
+                        android:layout_margin="6dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:layout_columnWeight="1"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="?attr/colorSecondaryContainer">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Display Name"
-                            android:textSize="15sp"
-                            android:textColor="?attr/colorOnPrimary" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="10dp">
 
-                        <TextView
-                            android:id="@+id/tvCurrentName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Loading…"
-                            android:textSize="13sp"
-                            android:textColor="?attr/colorOnPrimary"
-                            android:alpha="0.6" />
-                    </LinearLayout>
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:src="@drawable/ic_person"
+                                app:tint="?attr/colorOnSecondaryContainer" />
 
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_chevron_down"
-                        android:rotation="-90"
-                        android:alpha="0.35"
-                        app:tint="?attr/colorOnPrimary" />
-                </LinearLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:text="Edit Name"
+                                android:textStyle="bold"
+                                android:textColor="?attr/colorOnSecondaryContainer" />
 
-                <!-- Divider -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="58dp"
-                    android:background="#20FFFFFF" />
+                            <TextView
+                                android:id="@+id/tvCurrentName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text=""
+                                android:textSize="11sp"
+                                android:textColor="?attr/colorOnSecondaryContainer"
+                                android:alpha="0.6"
+                                android:maxLines="1"
+                                android:ellipsize="end" />
 
-                <!-- Email row (read-only) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp">
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_email"
-                        android:alpha="0.75"
-                        app:tint="?attr/colorOnPrimary" />
-
-                    <LinearLayout
+                    <!-- Change Password tile -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/rowChangePassword"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginStart="16dp">
+                        android:layout_height="90dp"
+                        android:layout_margin="6dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:layout_columnWeight="1"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="?attr/colorSecondaryContainer">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Email Address"
-                            android:textSize="15sp"
-                            android:textColor="?attr/colorOnPrimary" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="10dp">
 
-                        <TextView
-                            android:id="@+id/tvCurrentEmail"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Loading…"
-                            android:textSize="13sp"
-                            android:textColor="?attr/colorOnPrimary"
-                            android:alpha="0.6" />
-                    </LinearLayout>
-                </LinearLayout>
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:src="@drawable/ic_lock"
+                                app:tint="?attr/colorOnSecondaryContainer" />
 
-                <!-- ── Section divider ── -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#30FFFFFF" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:text="Change Password"
+                                android:textStyle="bold"
+                                android:textColor="?attr/colorOnSecondaryContainer"
+                                android:gravity="center" />
 
-                <!-- ── Security subheader ── -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Security"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:alpha="0.5"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:paddingTop="14dp"
-                    android:paddingBottom="4dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                <!-- Change password row -->
-                <LinearLayout
-                    android:id="@+id/rowChangePassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
+                </GridLayout>
 
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_lock"
-                        android:alpha="0.75"
-                        app:tint="?attr/colorOnPrimary" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="16dp"
-                        android:text="Change Password"
-                        android:textSize="15sp"
-                        android:textColor="?attr/colorOnPrimary" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_chevron_down"
-                        android:rotation="-90"
-                        android:alpha="0.35"
-                        app:tint="?attr/colorOnPrimary" />
-                </LinearLayout>
-
-                <!-- ── Section divider ── -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#30FFFFFF" />
-
-                <!-- ── Account Actions subheader ── -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Account Actions"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:alpha="0.5"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:paddingTop="14dp"
-                    android:paddingBottom="4dp" />
-
-                <!-- Sign out row -->
-                <LinearLayout
+                <!-- Sign Out tile — full width, red -->
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/rowSignOut"
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:background="?attr/selectableItemBackground"
+                    android:layout_height="90dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="6dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="?attr/colorSecondaryContainer">
 
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_logout"
-                        app:tint="#FF5252" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="10dp">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="16dp"
-                        android:text="Sign Out"
-                        android:textSize="15sp"
-                        android:textColor="#FF5252" />
-                </LinearLayout>
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_logout"
+                            app:tint="#D32F2F" />
 
-                <!-- Bottom padding -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Sign Out"
+                            android:textStyle="bold"
+                            android:textColor="#D32F2F" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
