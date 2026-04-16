@@ -38,7 +38,7 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="20dp" />
 
-                <!-- Poll title -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilTitle"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -59,7 +59,7 @@
                         android:inputType="textCapSentences" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Poll question -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilQuestion"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -81,7 +81,7 @@
                         android:inputType="textCapSentences" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Options label -->
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -91,14 +91,14 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="6dp" />
 
-                <!-- Dynamic options container — options are added programmatically -->
+
                 <LinearLayout
                     android:id="@+id/optionsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
 
-                <!-- Add another option button -->
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddOption"
                     style="@style/Widget.Material3.Button.OutlinedButton"
@@ -111,7 +111,7 @@
                     app:strokeColor="?attr/colorOnPrimary"
                     app:cornerRadius="28dp" />
 
-                <!-- Society dropdown -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilSociety"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -136,7 +136,7 @@
                         android:cursorVisible="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Closing date (optional) -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilCloseDate"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -163,7 +163,7 @@
                         android:inputType="none" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Create Poll button -->
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCreatePoll"
                     android:layout_width="wrap_content"

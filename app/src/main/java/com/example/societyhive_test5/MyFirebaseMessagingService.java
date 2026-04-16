@@ -13,34 +13,21 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-/**
- * Handles FCM token refresh and foreground message display.
- *
- * Token lifecycle:
- *   - onNewToken() fires when the token is first generated or rotated.
- *     We save it to users/{uid}.fcmToken so Cloud Functions can address this device.
- *   - MainActivity also fetches and saves the token on every launch to cover
- *     the case where the user logs in after the token was generated.
- *
- * Notifications:
- *   - Background: FCM delivers the notification automatically (no code needed).
- *   - Foreground: onMessageReceived() fires; we build and post the notification ourselves.
- */
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     static final String CHANNEL_ID   = "societyhive_pins";
     static final String CHANNEL_NAME = "Pins";
 
-    // -------------------------------------------------------------------------
-    // Token
-    // -------------------------------------------------------------------------
+
+
+
 
     @Override
     public void onNewToken(String token) {
         saveTokenToFirestore(token);
     }
 
-    /** Saves the FCM token to the current user's Firestore document. */
+
     static void saveTokenToFirestore(String token) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null || token == null) return;
@@ -49,7 +36,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .document(user.getUid())
                 .update("fcmToken", token)
                 .addOnFailureListener(e -> {
-                    // If the field doesn't exist yet (new user doc), use set with merge
+
                     java.util.Map<String, Object> data = new java.util.HashMap<>();
                     data.put("fcmToken", token);
                     FirebaseFirestore.getInstance()
@@ -59,9 +46,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Foreground message display
-    // -------------------------------------------------------------------------
+
+
+
 
     @Override
     public void onMessageReceived(RemoteMessage message) {

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingTop="12dp">
 
-    <!-- Calendar navigation button -->
+
     <ImageButton
         android:id="@+id/btnCalendar"
         android:layout_width="48dp"
@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/cardSearch" />
 
-    <!-- Search pill -->
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSearch"
         android:layout_width="0dp"
@@ -61,7 +61,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Filter chips -->
+
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroupFilters"
         android:layout_width="0dp"
@@ -108,7 +108,7 @@
 
     </com.google.android.material.chip.ChipGroup>
 
-    <!-- Loading spinner -->
+
     <ProgressBar
         android:id="@+id/progressEvents"
         android:layout_width="wrap_content"
@@ -119,7 +119,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Events list -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEvents"
         android:layout_width="0dp"

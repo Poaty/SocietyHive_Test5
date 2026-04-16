@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Top row: society badge + delete button -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
 
         </LinearLayout>
 
-        <!-- Pin content -->
+
         <TextView
             android:id="@+id/tvAnnouncementTitle"
             android:layout_width="match_parent"
@@ -59,7 +59,7 @@
             android:textColor="?attr/colorOnPrimary"
             android:textSize="15sp" />
 
-        <!-- Timestamp -->
+
         <TextView
             android:id="@+id/tvAnnouncementTimestamp"
             android:layout_width="match_parent"

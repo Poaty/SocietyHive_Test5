@@ -21,7 +21,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         void onDelete(String pinId);
     }
 
-    /** Controls per-item delete button visibility. Null = show on all items. */
+
     public interface DeleteChecker {
         boolean canDelete(Announcement announcement);
     }
@@ -35,7 +35,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
         notifyDataSetChanged();
     }
 
-    /** Optional filter — when set, the delete button only appears on items where this returns true. */
+
     public void setDeleteChecker(@Nullable DeleteChecker checker) {
         this.deleteChecker = checker;
         notifyDataSetChanged();
@@ -53,13 +53,13 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Announcement a = announcements.get(position);
 
-        // Society badge
+
         String societyName = a.getSocietyName();
         if (societyName != null && !societyName.isEmpty()) {
             holder.tvSocietyName.setVisibility(View.VISIBLE);
             holder.tvSocietyName.setText(societyName);
         } else {
-            holder.tvSocietyName.setVisibility(View.INVISIBLE); // keep space for delete btn alignment
+            holder.tvSocietyName.setVisibility(View.INVISIBLE);
         }
 
         holder.tvTitle.setText(a.getTitle());
@@ -72,7 +72,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
             holder.tvTimestamp.setText("");
         }
 
-        // Delete button — visible when a listener is set AND this item passes the checker
+
         boolean showDelete = deleteListener != null
                 && (deleteChecker == null || deleteChecker.canDelete(a));
         if (showDelete) {

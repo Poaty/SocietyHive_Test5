@@ -17,8 +17,8 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            // If user is already logged in, go straight to MainActivity
-            // Otherwise go to LoginActivity
+
+
             Class<?> destination = FirebaseAuth.getInstance().getCurrentUser() != null
                     ? MainActivity.class
                     : LoginActivity.class;

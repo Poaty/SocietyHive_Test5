@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Full Name -->
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardFullName"
         android:layout_width="0dp"
@@ -68,7 +68,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Email -->
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardEmail"
         android:layout_width="0dp"
@@ -117,7 +117,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Password -->
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardPassword"
         android:layout_width="0dp"
@@ -166,7 +166,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Confirm Password -->
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardConfirmPassword"
         android:layout_width="0dp"
@@ -215,7 +215,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Create Account button -->
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCreateAccount"
         android:layout_width="0dp"
@@ -230,7 +230,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Bottom link -->
+
     <LinearLayout
         android:id="@+id/rowSignIn"
         android:layout_width="wrap_content"

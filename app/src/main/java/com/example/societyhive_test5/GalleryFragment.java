@@ -48,7 +48,7 @@ public class GalleryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialise Cloudinary once — throws if called again, so catch silently
+
         try {
             Map<String, String> config = new HashMap<>();
             config.put("cloud_name", CLOUD_NAME);
@@ -142,7 +142,7 @@ public class GalleryFragment extends Fragment {
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, pos) -> tab.setText(tabSocietyNames.get(pos))).attach();
 
-        // FAB visible for all users on a specific society tab; hidden on "All"
+
         boolean firstIsAll = tabSocietyIds.get(0).isEmpty();
         fabUpload.setVisibility(firstIsAll ? View.GONE : View.VISIBLE);
 

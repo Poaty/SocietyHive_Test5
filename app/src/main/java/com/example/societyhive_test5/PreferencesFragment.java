@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class PreferencesFragment extends Fragment {
 
-    // [themeKey, backgroundHex, displayName]
+
     private static final String[][] SCHEMES = {
             {"crimson", "#F6BFC6", "Crimson"},
             {"ocean",   "#4472C4", "Ocean"},
@@ -85,7 +85,7 @@ public class PreferencesFragment extends Fragment {
         for (int i = 0; i < SCHEMES.length; i++) {
             View v = root.findViewById(circIds[i]);
             if (v == null) continue;
-            // Re-draw the circle with the correct border thickness
+
             makeCircle(root, circIds[i], SCHEMES[i][1], SCHEMES[i][0].equals(selectedKey));
         }
     }
@@ -103,12 +103,12 @@ public class PreferencesFragment extends Fragment {
         } catch (IllegalArgumentException e) {
             circle.setColor(android.graphics.Color.GRAY);
         }
-        // Selected: thick white border; unselected: thin semi-transparent border
-        // so all circles are always visible against any background colour
+
+
         if (selected) {
             circle.setStroke(density * 3, android.graphics.Color.WHITE);
         } else {
-            circle.setStroke(density * 2, 0x60FFFFFF); // 38% white
+            circle.setStroke(density * 2, 0x60FFFFFF);
         }
         v.setBackground(circle);
     }

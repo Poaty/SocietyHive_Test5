@@ -31,7 +31,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
 
     private final List<Poll> polls = new ArrayList<>();
     private final VoteListener voteListener;
-    @Nullable private final DeleteListener deleteListener; // null = no delete button shown
+    @Nullable private final DeleteListener deleteListener;
 
     public PollsAdapter(@NonNull VoteListener voteListener, @Nullable DeleteListener deleteListener) {
         this.voteListener = voteListener;
@@ -51,7 +51,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
         Poll poll = polls.get(position);
         boolean closed = poll.isClosed();
 
-        // Society name badge
+
         String societyName = poll.getSocietyName();
         if (societyName != null && !societyName.isEmpty()) {
             holder.tvSocietyName.setVisibility(View.VISIBLE);
@@ -60,12 +60,12 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             holder.tvSocietyName.setVisibility(View.GONE);
         }
 
-        // CLOSED badge — only on expired polls
+
         holder.tvClosedBadge.setVisibility(closed ? View.VISIBLE : View.GONE);
 
         holder.tvTitle.setText(poll.getTitle());
 
-        // Closing date label
+
         if (poll.getEndsAt() != null) {
             String formatted = new SimpleDateFormat("d MMM yyyy", Locale.UK)
                     .format(poll.getEndsAt().toDate());
@@ -82,7 +82,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
         int total = poll.getTotalVotes();
         boolean hasVoted = poll.isHasVoted();
 
-        // Build option rows dynamically
+
         holder.optionsContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(holder.itemView.getContext());
 
@@ -110,7 +110,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
                 ivCheckbox.clearColorFilter();
             }
 
-            // Show results if user has voted OR the poll is closed (admins see final counts)
+
             if ((hasVoted || closed) && !counts.isEmpty() && i < counts.size()) {
                 layoutResult.setVisibility(View.VISIBLE);
                 int voteCount = counts.get(i);
@@ -131,7 +131,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             holder.optionsContainer.addView(optionView);
         }
 
-        // Footer: vote counts + buttons
+
         if (hasVoted || closed) {
             holder.tvTotalVotes.setVisibility(View.VISIBLE);
             holder.tvTotalVotes.setText(
@@ -146,7 +146,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             });
         }
 
-        // Delete button — only shown when a delete listener is provided (admins)
+
         if (deleteListener != null) {
             holder.btnDelete.setVisibility(View.VISIBLE);
             holder.btnDelete.setOnClickListener(v -> deleteListener.onDelete(poll));

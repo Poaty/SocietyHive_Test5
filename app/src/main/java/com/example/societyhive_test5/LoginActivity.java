@@ -11,15 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 
-/**
- * Firebase-backed login screen.
- *
- * Expected XML ids in activity_login.xml:
- * - etEmail
- * - etPassword
- * - btnLogin
- * - tvSignUp
- */
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -31,12 +22,12 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        // Auto-skip login if already signed in
-        //if (mAuth.getCurrentUser() != null) {
-        //    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-        //    finish();
-        //    return;
-        //}
+
+
+
+
+
+
 
         EditText etEmail = findViewById(R.id.etEmail);
         EditText etPassword = findViewById(R.id.etPassword);
@@ -64,9 +55,9 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
 
-                        // Fetch the user's saved theme before launching MainActivity so
-                        // ThemeHelper.apply() in MainActivity reads the correct key immediately
-                        // — no colour flash on the home screen.
+
+
+
                         String uid = mAuth.getCurrentUser().getUid();
                         com.google.firebase.firestore.FirebaseFirestore.getInstance()
                                 .collection("users")

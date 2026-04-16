@@ -33,7 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Camera preview card -->
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardCameraPreview"
         android:layout_width="0dp"
@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- Live camera preview — fills the card -->
+
             <com.journeyapps.barcodescanner.BarcodeView
                 android:id="@+id/barcodeView"
                 android:layout_width="0dp"
@@ -62,7 +62,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Scanner frame -->
+
             <FrameLayout
                 android:id="@+id/frameScanner"
                 android:layout_width="0dp"
@@ -96,7 +96,7 @@
                     app:tint="#55FFFFFF" />
             </FrameLayout>
 
-            <!-- top-left corner -->
+
             <View
                 android:layout_width="42dp"
                 android:layout_height="42dp"
@@ -106,7 +106,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- top-right corner -->
+
             <View
                 android:layout_width="42dp"
                 android:layout_height="42dp"
@@ -116,7 +116,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- bottom-left corner -->
+
             <View
                 android:layout_width="42dp"
                 android:layout_height="42dp"
@@ -126,7 +126,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- bottom-right corner -->
+
             <View
                 android:layout_width="42dp"
                 android:layout_height="42dp"

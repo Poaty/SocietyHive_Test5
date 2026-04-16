@@ -2,21 +2,6 @@ package com.example.societyhive_test5;
 
 import androidx.annotation.NonNull;
 
-/**
- * Event model.
- *
- * Fields match Firestore document structure:
- *   events/{eventId}
- *     name        (String)
- *     dateTime    (String, e.g. "19-Nov-2025 • 17:00")
- *     location    (String)
- *     organiser   (String)
- *     description (String)
- *     societyId   (String)  — links the event to a society
- *     isPublic    (boolean) — true = visible to all / QR-accessible
- *
- * 'attending' and 'expanded' are local UI state — not stored in Firestore.
- */
 public class Event {
     private String id;
     private String name;
@@ -27,11 +12,11 @@ public class Event {
     private String societyId;
     private boolean isPublic;
 
-    // UI-only state (not from Firestore)
+
     private boolean attending;
     private boolean expanded;
 
-    /** Required for Firestore toObject() deserialization. */
+
     public Event() {}
 
     public Event(@NonNull String id,

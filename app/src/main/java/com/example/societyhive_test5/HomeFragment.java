@@ -29,7 +29,7 @@ public class HomeFragment extends Fragment {
     private final List<Announcement> announcements = new ArrayList<>();
     private final Set<String> userSocietyIds = new HashSet<>();
     private boolean isAdmin = false;
-    private String adminOfSocietyId = null; // first society this user is admin of
+    private String adminOfSocietyId = null;
 
     public HomeFragment() {
         super(R.layout.fragment_home);
@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment {
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
 
-                    // Name
+
                     String fullName = doc.getString("fullName");
                     if (tvWelcome != null && fullName != null && !fullName.trim().isEmpty()) {
                         String firstName = fullName.trim().split("\\s+")[0];
@@ -71,12 +71,12 @@ public class HomeFragment extends Fragment {
                         tvWelcome.setText("Welcome");
                     }
 
-                    // Role — super admin
+
                     String role = doc.getString("role");
                     isAdmin = "admin".equalsIgnoreCase(role);
                     showAdminSection(view, isAdmin);
 
-                    // Society admin — adminOf array
+
                     List<?> adminOf = (List<?>) doc.get("adminOf");
                     if (!isAdmin && adminOf != null && !adminOf.isEmpty()) {
                         adminOfSocietyId = (String) adminOf.get(0);
@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment {
                         showSocietyAdminSection(view, false);
                     }
 
-                    // Society IDs
+
                     userSocietyIds.clear();
                     List<?> ids = (List<?>) doc.get("societyIds");
                     if (ids != null) {
@@ -112,7 +112,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void wireSocietyAdminTiles(@NonNull View view, @NonNull String societyId) {
-        // Post Pin — pre-fill societyId
+
         View tilePin = view.findViewById(R.id.tileSAPostPin);
         if (tilePin != null) tilePin.setOnClickListener(v -> {
             Bundle args = new Bundle();
@@ -120,7 +120,7 @@ public class HomeFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(R.id.createPinFragment, args);
         });
 
-        // Create Event
+
         View tileEvent = view.findViewById(R.id.tileSACreateEvent);
         if (tileEvent != null) tileEvent.setOnClickListener(v -> {
             Bundle args = new Bundle();
@@ -128,7 +128,7 @@ public class HomeFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(R.id.createEventFragment, args);
         });
 
-        // Create Poll
+
         View tilePoll = view.findViewById(R.id.tileSACreatePoll);
         if (tilePoll != null) tilePoll.setOnClickListener(v -> {
             Bundle args = new Bundle();
@@ -136,7 +136,7 @@ public class HomeFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(R.id.createPollFragment, args);
         });
 
-        // Manage Members — pass societyFilter so UserManagementFragment filters to this society
+
         View tileMembers = view.findViewById(R.id.tileSAManageMembers);
         if (tileMembers != null) tileMembers.setOnClickListener(v -> {
             Bundle args = new Bundle();
@@ -144,7 +144,7 @@ public class HomeFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(R.id.userManagementFragment, args);
         });
 
-        // Edit Society — pre-select the society admin's own society
+
         View tileEditSociety = view.findViewById(R.id.tileSAEditSociety);
         if (tileEditSociety != null) tileEditSociety.setOnClickListener(v -> {
             Bundle args = new Bundle();
@@ -153,9 +153,9 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // -------------------------------------------------------------------------
-    // Announcements (Pins)
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadAnnouncements(@NonNull View view) {
         View progress = view.findViewById(R.id.progressPins);
@@ -224,11 +224,11 @@ public class HomeFragment extends Fragment {
 
     private void publishAnnouncements(@NonNull View view) {
         if (isAdmin) {
-            // Super admin: delete any pin, no filter needed
+
             announcementsAdapter.setDeleteChecker(null);
             announcementsAdapter.setDeleteListener(pinId -> deletePin(pinId, view));
         } else if (adminOfSocietyId != null && !adminOfSocietyId.isEmpty()) {
-            // Society admin: delete button only on pins belonging to their society
+
             final String mySocietyId = adminOfSocietyId;
             announcementsAdapter.setDeleteChecker(a -> mySocietyId.equals(a.getSocietyId()));
             announcementsAdapter.setDeleteListener(pinId -> deletePin(pinId, view));
@@ -254,9 +254,9 @@ public class HomeFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Tile navigation
-    // -------------------------------------------------------------------------
+
+
+
 
     private void wireTiles(@NonNull View view) {
         wire(view, R.id.tileEvents,         R.id.eventsFragment);

@@ -29,21 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Admin screen for creating a new event.
- *
- * Writes to Firestore structure:
- *   events/{auto}
- *     name        (String)
- *     description (String)
- *     location    (String)
- *     dateTime    (String, e.g. "19-Nov-2025 • 17:00")
- *     organiser   (String) — admin's display name
- *     societyId   (String)
- *     isPublic    (boolean)
- *     createdBy   (String) — admin uid
- *     createdAt   (Timestamp)
- */
 public class CreateEventFragment extends Fragment {
 
     private static final String[] MONTH_NAMES = {
@@ -83,7 +68,7 @@ public class CreateEventFragment extends Fragment {
 
         MaterialButton btnCreate = view.findViewById(R.id.btnCreateEvent);
 
-        // Tapping the date/time field opens a DatePicker, then a TimePicker
+
         etDateTime.setOnClickListener(v -> showDatePicker());
 
         btnCreate.setOnClickListener(v -> attemptCreate());
@@ -95,9 +80,9 @@ public class CreateEventFragment extends Fragment {
         loadSocieties();
     }
 
-    // -------------------------------------------------------------------------
-    // Date / Time pickers
-    // -------------------------------------------------------------------------
+
+
+
 
     private void showDatePicker() {
         Calendar cal = Calendar.getInstance();
@@ -118,7 +103,7 @@ public class CreateEventFragment extends Fragment {
             pickedMinute = minute;
             dateTimePicked = true;
 
-            // Check if selected datetime is in the past
+
             java.util.Calendar selected = java.util.Calendar.getInstance();
             selected.set(pickedYear, pickedMonth, pickedDay, hour, minute, 0);
             if (selected.before(java.util.Calendar.getInstance())) {
@@ -136,9 +121,9 @@ public class CreateEventFragment extends Fragment {
         }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show();
     }
 
-    // -------------------------------------------------------------------------
-    // Societies
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadSocieties() {
         FirebaseFirestore.getInstance()
@@ -186,9 +171,9 @@ public class CreateEventFragment extends Fragment {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Submit
-    // -------------------------------------------------------------------------
+
+
+
 
     private void attemptCreate() {
         String name        = text(etEventName);
@@ -221,7 +206,7 @@ public class CreateEventFragment extends Fragment {
         String societyId = societyIds.get(selectedSocietyIndex);
         boolean isPublic = switchPublic.isChecked();
 
-        // Fetch the admin's display name to use as organiser
+
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(user.getUid())
@@ -237,7 +222,7 @@ public class CreateEventFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-                    // Fall back gracefully
+
                     writeEvent(name, description, location, dateTime,
                                "Admin", societyId, isPublic, user.getUid());
                 });

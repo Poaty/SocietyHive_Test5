@@ -140,8 +140,8 @@ public class EditSocietyFragment extends Fragment {
             fillFields(position);
         });
 
-        // Pre-select for society admins — lock the entire TextInputLayout so the
-        // ExposedDropdownMenu cannot be opened (disabling only the inner ACTV is not enough).
+
+
         if (!preSelectedSocietyId.isEmpty()) {
             int idx = societyIds.indexOf(preSelectedSocietyId);
             if (idx >= 0) {
@@ -235,8 +235,8 @@ public class EditSocietyFragment extends Fragment {
         try { Color.parseColor(color); }
         catch (IllegalArgumentException e) { etColor.setError("Invalid colour \u2014 use #RRGGBB"); return; }
 
-        // If a society was pre-selected (society admin), always write to that ID —
-        // never trust selectedIndex, which the user could have tampered with via the UI.
+
+
         String societyId = !preSelectedSocietyId.isEmpty()
                 ? preSelectedSocietyId
                 : societyIds.get(selectedIndex);

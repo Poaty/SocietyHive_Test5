@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:padding="18dp">
 
-        <!-- Society name badge -->
+
         <TextView
             android:id="@+id/tvSocietyName"
             android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
             android:textStyle="bold"
             android:visibility="gone" />
 
-        <!-- Poll title -->
+
         <TextView
             android:id="@+id/tvPollTitle"
             android:layout_width="match_parent"
@@ -41,7 +41,7 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <!-- CLOSED badge — only visible on expired polls -->
+
         <TextView
             android:id="@+id/tvClosedBadge"
             android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
             android:textStyle="bold"
             android:visibility="gone" />
 
-        <!-- Closes label — only visible when poll has an end date -->
+
         <TextView
             android:id="@+id/tvClosesOn"
             android:layout_width="wrap_content"
@@ -71,7 +71,7 @@
             android:textStyle="italic"
             android:visibility="gone" />
 
-        <!-- Poll question -->
+
         <TextView
             android:id="@+id/tvPollQuestion"
             android:layout_width="match_parent"
@@ -83,14 +83,14 @@
             android:alpha="0.75"
             android:textSize="14sp" />
 
-        <!-- Options container — populated programmatically -->
+
         <LinearLayout
             android:id="@+id/optionsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />
 
-        <!-- Total votes shown after voting -->
+
         <TextView
             android:id="@+id/tvTotalVotes"
             android:layout_width="match_parent"
@@ -101,7 +101,7 @@
             android:textSize="13sp"
             android:visibility="gone" />
 
-        <!-- Vote button row -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Custom calendar card -->
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
                 android:orientation="vertical"
                 android:padding="8dp">
 
-                <!-- Month / Year navigation row -->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
@@ -35,7 +35,7 @@
                     android:paddingStart="4dp"
                     android:paddingEnd="4dp">
 
-                    <!-- Month navigation -->
+
                     <TextView
                         android:id="@+id/btnPrevMonth"
                         android:layout_width="36dp"
@@ -73,7 +73,7 @@
                         android:focusable="true"
                         android:background="?attr/selectableItemBackgroundBorderless" />
 
-                    <!-- Thin divider between month and year controls -->
+
                     <View
                         android:layout_width="1dp"
                         android:layout_height="24dp"
@@ -81,7 +81,7 @@
                         android:layout_marginEnd="4dp"
                         android:background="@color/field_stroke" />
 
-                    <!-- Year navigation -->
+
                     <TextView
                         android:id="@+id/btnPrevYear"
                         android:layout_width="36dp"
@@ -121,7 +121,7 @@
 
                 </LinearLayout>
 
-                <!-- Day-of-week headers -->
+
                 <TableLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
                     </TableRow>
                 </TableLayout>
 
-                <!-- Day grid — populated programmatically -->
+
                 <TableLayout
                     android:id="@+id/calendarTable"
                     android:layout_width="match_parent"
@@ -149,7 +149,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Divider -->
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -157,7 +157,7 @@
             android:layout_marginEnd="16dp"
             android:background="@color/button1" />
 
-        <!-- Events header -->
+
         <TextView
             android:id="@+id/tvEventsOnDate"
             android:layout_width="match_parent"
@@ -171,7 +171,7 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Empty state -->
+
         <TextView
             android:id="@+id/tvNoEvents"
             android:layout_width="match_parent"
@@ -183,7 +183,7 @@
             android:textSize="14sp"
             android:visibility="gone" />
 
-        <!-- Events list -->
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCalendarEvents"
             android:layout_width="match_parent"

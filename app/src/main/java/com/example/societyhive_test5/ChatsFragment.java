@@ -24,23 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Chats screen.
- *
- * Shows one chat room per society the signed-in user belongs to.
- * Each row previews the most recent message in that society's chat.
- *
- * Firestore structure used:
- *   societies/{societyId}            — name, hexColor
- *   societies/{societyId}/messages/{messageId}
- *                                    — text, senderName, senderId, timestamp
- *
- * Flow:
- *   1. Read users/{uid}.societyIds
- *   2. For each societyId, read the society doc (name + color)
- *   3. For each society, query the last message for the preview
- *   4. Render the list; update in real-time via snapshot listeners
- */
 public class ChatsFragment extends Fragment {
 
     private final List<Chat> allChats = new ArrayList<>();
@@ -48,7 +31,7 @@ public class ChatsFragment extends Fragment {
     private ChatAdapter adapter;
     private View rootView;
 
-    // Snapshot listeners so we can detach them when the fragment is destroyed
+
     private final List<com.google.firebase.firestore.ListenerRegistration> listeners =
             new ArrayList<>();
 
@@ -85,7 +68,7 @@ public class ChatsFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Detach all real-time listeners to avoid memory leaks
+
         for (com.google.firebase.firestore.ListenerRegistration reg : listeners) {
             reg.remove();
         }
@@ -93,9 +76,9 @@ public class ChatsFragment extends Fragment {
         rootView = null;
     }
 
-    // -------------------------------------------------------------------------
-    // Load societies the user belongs to, then fetch last message for each
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadChatsForUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -112,7 +95,7 @@ public class ChatsFragment extends Fragment {
                     boolean isAdmin = "admin".equalsIgnoreCase(userDoc.getString("role"));
 
                     if (isAdmin) {
-                        // Admins see every society's chat
+
                         db.collection("societies")
                                 .get()
                                 .addOnSuccessListener(querySnapshot -> {
@@ -127,7 +110,7 @@ public class ChatsFragment extends Fragment {
                         return;
                     }
 
-                    // Regular users — load only their societies
+
                     List<String> societyIds = (List<String>) userDoc.get("societyIds");
                     if (societyIds == null || societyIds.isEmpty()) {
                         allChats.clear();
@@ -150,10 +133,7 @@ public class ChatsFragment extends Fragment {
                 });
     }
 
-    /**
-     * Given a society document, build a Chat entry and attach a real-time
-     * listener to keep the last-message preview up to date.
-     */
+
     private void addChatFromSociety(
             @NonNull DocumentSnapshot societyDoc,
             @NonNull FirebaseFirestore db,
@@ -177,12 +157,12 @@ public class ChatsFragment extends Fragment {
         final String finalColor = colorHex;
         final String finalIconUrl = iconUrl;
 
-        // Add a placeholder row immediately so the list isn't blank while loading
+
         Chat placeholder = new Chat(societyId, finalName, "Loading…", "", finalColor, finalIconUrl);
         allChats.add(placeholder);
-        checkAllLoaded(remaining); // may trigger initial render
+        checkAllLoaded(remaining);
 
-        // Attach a real-time listener to the most recent message
+
         com.google.firebase.firestore.ListenerRegistration reg =
                 db.collection("societies")
                         .document(societyId)
@@ -200,7 +180,7 @@ public class ChatsFragment extends Fragment {
                             String text = lastMsg.getString("text");
                             String senderName = lastMsg.getString("senderName");
 
-                            // Format preview as "Name: message" or just "message"
+
                             String preview;
                             FirebaseUser me = FirebaseAuth.getInstance().getCurrentUser();
                             String senderId = lastMsg.getString("senderId");
@@ -213,7 +193,7 @@ public class ChatsFragment extends Fragment {
                                         : (text != null ? text : "");
                             }
 
-                            // Format the timestamp
+
                             com.google.firebase.Timestamp ts = lastMsg.getTimestamp("timestamp");
                             String timeLabel = formatTimestamp(ts);
 
@@ -223,7 +203,7 @@ public class ChatsFragment extends Fragment {
         listeners.add(reg);
     }
 
-    /** Replaces or inserts the Chat entry for the given society. */
+
     private void updateChatPreview(String societyId, String name,
                                    String preview, String time, String color, String iconUrl) {
         for (int i = 0; i < allChats.size(); i++) {
@@ -233,7 +213,7 @@ public class ChatsFragment extends Fragment {
                 return;
             }
         }
-        // Not in list yet — add it
+
         allChats.add(new Chat(societyId, name, preview, time, color, iconUrl));
         applySearch();
     }
@@ -244,9 +224,9 @@ public class ChatsFragment extends Fragment {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Search
-    // -------------------------------------------------------------------------
+
+
+
 
     private void hookSearch(@NonNull View view) {
         View et = view.findViewById(R.id.etSearchChats);
@@ -282,9 +262,9 @@ public class ChatsFragment extends Fragment {
         adapter.updateList(filteredChats);
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
+
+
+
 
     private String formatTimestamp(@Nullable com.google.firebase.Timestamp ts) {
         if (ts == null) return "";
@@ -296,7 +276,7 @@ public class ChatsFragment extends Fragment {
         long diffDays = diffMs / (1000 * 60 * 60 * 24);
 
         if (diffDays == 0) {
-            // Today — show HH:mm
+
             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm", Locale.UK);
             return sdf.format(msgDate);
         } else if (diffDays == 1) {

@@ -38,7 +38,7 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="20dp" />
 
-                <!-- Society icon -->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
                     android:textSize="14sp"
                     android:layout_marginBottom="6dp" />
 
-                <!-- Society Name -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilName"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -99,7 +99,7 @@
                         android:inputType="textCapWords" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Description -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilDescription"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -123,7 +123,7 @@
                         android:inputType="textCapSentences|textMultiLine" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Colour hex -->
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilColor"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -146,7 +146,7 @@
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Colour preview swatch -->
+
                 <View
                     android:id="@+id/colorSwatch"
                     android:layout_width="match_parent"
@@ -154,7 +154,7 @@
                     android:layout_marginTop="10dp"
                     android:background="#8D2E3A" />
 
-                <!-- Create button -->
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCreate"
                     android:layout_width="wrap_content"

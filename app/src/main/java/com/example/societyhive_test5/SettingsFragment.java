@@ -20,14 +20,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-/**
- * Settings screen.
- *
- * Sections:
- *   Account        — display name (editable), email (read-only)
- *   Security       — change password (requires re-auth)
- *   Account Actions — sign out
- */
 public class SettingsFragment extends Fragment {
 
     public SettingsFragment() {
@@ -45,9 +37,9 @@ public class SettingsFragment extends Fragment {
         view.findViewById(R.id.rowSignOut).setOnClickListener(v -> confirmSignOut());
     }
 
-    // -------------------------------------------------------------------------
-    // Load account info
-    // -------------------------------------------------------------------------
+
+
+
 
     private void loadAccountInfo(@NonNull View view) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -67,22 +59,22 @@ public class SettingsFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Edit display name
-    // -------------------------------------------------------------------------
+
+
+
 
     private void showEditNameDialog() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        // Build dialog with a TextInputLayout for a polished look
+
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_input_field, null);
         TextInputLayout til = dialogView.findViewById(R.id.tilDialogInput);
         TextInputEditText et = dialogView.findViewById(R.id.etDialogInput);
 
         if (til != null) til.setHint("Full name");
 
-        // Pre-fill with current name
+
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(user.getUid())
@@ -123,7 +115,7 @@ public class SettingsFragment extends Fragment {
                     Toast.makeText(requireContext(),
                             "Name updated", Toast.LENGTH_SHORT).show();
 
-                    // Refresh the subtitle in the row
+
                     View v = getView();
                     if (v != null) {
                         TextView tv = v.findViewById(R.id.tvCurrentName);
@@ -138,9 +130,9 @@ public class SettingsFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Change password (requires re-authentication)
-    // -------------------------------------------------------------------------
+
+
+
 
     private void showChangePasswordDialog() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -154,7 +146,7 @@ public class SettingsFragment extends Fragment {
         AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Change Password")
                 .setView(dialogView)
-                .setPositiveButton("Update", null) // set manually to prevent auto-dismiss
+                .setPositiveButton("Update", null)
                 .setNegativeButton("Cancel", null)
                 .create();
 
@@ -222,9 +214,9 @@ public class SettingsFragment extends Fragment {
                 });
     }
 
-    // -------------------------------------------------------------------------
-    // Sign out
-    // -------------------------------------------------------------------------
+
+
+
 
     private void confirmSignOut() {
         new MaterialAlertDialogBuilder(requireContext())

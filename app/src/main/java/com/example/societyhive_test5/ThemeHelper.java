@@ -4,20 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-/**
- * Applies the user's chosen M3 colour scheme before setContentView().
- *
- * Call ThemeHelper.apply(this) as the very first line of every Activity's
- * onCreate(), before super.onCreate(), so the theme is set before the
- * window is created.
- *
- * Theme keys (stored in SharedPreferences under "pref_theme_key"):
- *   "crimson"  — default, deep red
- *   "midnight" — indigo blue
- *   "forest"   — forest green
- *   "slate"    — M3 baseline purple
- *   "charcoal" — blue-grey
- */
 public final class ThemeHelper {
 
     static final String PREFS     = "societyhive_prefs";
@@ -25,7 +11,7 @@ public final class ThemeHelper {
 
     private ThemeHelper() {}
 
-    /** Reads the saved theme key from SharedPreferences and calls setTheme(). */
+
     public static void apply(Activity activity) {
         String key = activity
                 .getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -33,7 +19,7 @@ public final class ThemeHelper {
         activity.setTheme(themeResId(key));
     }
 
-    /** Persists the chosen key to SharedPreferences. */
+
     public static void save(Context context, String themeKey) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                .edit()
@@ -41,7 +27,7 @@ public final class ThemeHelper {
                .apply();
     }
 
-    /** Returns the current saved key. */
+
     public static String current(Context context) {
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                       .getString(KEY_THEME, "crimson");

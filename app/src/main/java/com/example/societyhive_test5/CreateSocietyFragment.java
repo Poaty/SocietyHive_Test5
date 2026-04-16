@@ -57,7 +57,7 @@ public class CreateSocietyFragment extends Fragment {
         colorSwatch   = view.findViewById(R.id.colorSwatch);
         ivSocietyIcon = view.findViewById(R.id.ivSocietyIcon);
 
-        // Default colour
+
         etColor.setText("#8D2E3A");
 
         ivSocietyIcon.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
