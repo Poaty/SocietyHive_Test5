@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class UserManagementFragment extends Fragment {
 
@@ -154,30 +155,62 @@ public class UserManagementFragment extends Fragment {
                 return;
             }
 
-            List<String> labels = new ArrayList<>();
-            List<String> docIds = new ArrayList<>();
-            List<String> uids   = new ArrayList<>();
-            List<String> sids   = new ArrayList<>();
+            int total = snap.size();
+            List<String> labels = new ArrayList<>(total);
+            List<String> docIds = new ArrayList<>(total);
+            List<String> uids   = new ArrayList<>(total);
+            List<String> sids   = new ArrayList<>(total);
 
             for (QueryDocumentSnapshot doc : snap) {
                 String uid = doc.getString("userId");
                 String sid = doc.getString("societyId");
-                String name = doc.getString("userName");
-                if (name == null) name = uid;
-                labels.add(name + " → " + sid);
+                labels.add("");
                 docIds.add(doc.getId());
                 uids.add(uid != null ? uid : "");
                 sids.add(sid != null ? sid : "");
             }
 
-            String[] items = labels.toArray(new String[0]);
-            new MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Pending Join Requests")
-                    .setItems(items, (dialog, which) ->
-                            showApproveRejectDialog(docIds.get(which), uids.get(which), sids.get(which), labels.get(which)))
-                    .setNegativeButton("Close", null)
-                    .show();
+            AtomicInteger remaining = new AtomicInteger(total * 2);
+
+            for (int i = 0; i < total; i++) {
+                final int idx = i;
+
+                db.collection("users").document(uids.get(idx)).get()
+                        .addOnSuccessListener(userDoc -> {
+                            String fullName = userDoc.getString("fullName");
+                            String[] parts = labels.get(idx).split(" → ");
+                            String society = parts.length > 1 ? parts[1] : "…";
+                            labels.set(idx, (fullName != null && !fullName.isEmpty() ? fullName : uids.get(idx)) + " → " + society);
+                            if (remaining.decrementAndGet() == 0) showRequestsDialog(labels, docIds, uids, sids);
+                        })
+                        .addOnFailureListener(e -> {
+                            if (remaining.decrementAndGet() == 0) showRequestsDialog(labels, docIds, uids, sids);
+                        });
+
+                db.collection("societies").document(sids.get(idx)).get()
+                        .addOnSuccessListener(socDoc -> {
+                            String socName = socDoc.getString("name");
+                            String[] parts = labels.get(idx).split(" → ");
+                            String user = parts.length > 0 ? parts[0] : "…";
+                            labels.set(idx, user + " → " + (socName != null && !socName.isEmpty() ? socName : sids.get(idx)));
+                            if (remaining.decrementAndGet() == 0) showRequestsDialog(labels, docIds, uids, sids);
+                        })
+                        .addOnFailureListener(e -> {
+                            if (remaining.decrementAndGet() == 0) showRequestsDialog(labels, docIds, uids, sids);
+                        });
+            }
         });
+    }
+
+    private void showRequestsDialog(List<String> labels, List<String> docIds, List<String> uids, List<String> sids) {
+        if (!isAdded()) return;
+        String[] items = labels.toArray(new String[0]);
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Pending Join Requests")
+                .setItems(items, (dialog, which) ->
+                        showApproveRejectDialog(docIds.get(which), uids.get(which), sids.get(which), labels.get(which)))
+                .setNegativeButton("Close", null)
+                .show();
     }
 
     private void showApproveRejectDialog(String reqId, String uid, String sid, String label) {
