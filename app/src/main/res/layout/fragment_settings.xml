@@ -181,8 +181,8 @@
                         <ImageView
                             android:layout_width="32dp"
                             android:layout_height="32dp"
-                            android:src="@drawable/ic_logout"
-                            app:tint="#D32F2F" />
+                            android:src="@drawable/ic_sign_out_custom"
+                            android:scaleType="fitCenter" />
 
                         <TextView
                             android:layout_width="wrap_content"
