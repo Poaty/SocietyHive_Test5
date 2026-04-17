@@ -113,6 +113,7 @@ public class EventDetailsFragment extends Fragment {
         generateQrCode();
     }
 
+    // generate a qr with the event id encoded so it can be scanned for check-in
     private void generateQrCode() {
         if (eventId == null || ivQrCode == null || cardQr == null) return;
         try {
@@ -156,6 +157,7 @@ public class EventDetailsFragment extends Fragment {
     }
 
     private void wireAttendButton() {
+        // toggle and save - optimistic update so it feels instant
         btnAttend.setOnClickListener(v -> {
             isAttending = !isAttending;
             updateAttendButton(isAttending);
