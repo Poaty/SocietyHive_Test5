@@ -23,6 +23,7 @@ import com.cloudinary.android.callback.UploadCallback;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -145,14 +146,15 @@ public class CreateSocietyFragment extends Fragment {
         data.put("createdAt",   Timestamp.now());
         if (pendingIconUrl != null) data.put("iconUrl", pendingIconUrl);
 
-        FirebaseFirestore.getInstance().collection("societies")
-                .add(data)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        societiesCollection.add(data)
                 .addOnSuccessListener(docRef -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
                             "Society created \u2014 remember to assign a society admin via User Management",
                             Toast.LENGTH_LONG).show();
-                    NavHostFragment.findNavController(this).navigateUp();
+                    NavHelpers.navigateUp(this);
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
@@ -164,6 +166,6 @@ public class CreateSocietyFragment extends Fragment {
 
     @NonNull
     private String text(@Nullable TextInputEditText et) {
-        return (et != null && et.getText() != null) ? et.getText().toString().trim() : "";
+        return (et != null && et.getText() != null) ? TextHelpers.trimmed(et) : "";
     }
 }

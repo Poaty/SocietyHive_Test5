@@ -33,8 +33,8 @@ public class LoginActivity extends AppCompatActivity {
         TextView tvSignUp = findViewById(R.id.tvSignUp);
 
         btnLogin.setOnClickListener(v -> {
-            String email = etEmail.getText().toString().trim();
-            String password = etPassword.getText().toString().trim();
+            String email = TextHelpers.trimmed(etEmail);
+            String password = TextHelpers.trimmed(etPassword);
 
             // dont bother if fields are empty
             if (email.isEmpty() || password.isEmpty()) {

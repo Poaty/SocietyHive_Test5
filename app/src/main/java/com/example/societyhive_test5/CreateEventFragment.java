@@ -19,6 +19,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -126,9 +128,9 @@ public class CreateEventFragment extends Fragment {
 
 
     private void loadSocieties() {
-        FirebaseFirestore.getInstance()
-                .collection("societies")
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        societiesCollection.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     societyIds.clear();
@@ -200,21 +202,21 @@ public class CreateEventFragment extends Fragment {
             return;
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         String societyId = societyIds.get(selectedSocietyIndex);
         boolean isPublic = switchPublic.isChecked();
 
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String organiser = doc.getString("fullName");
-                    if (organiser == null || organiser.trim().isEmpty()) {
+                    if (organiser == null || TextHelpers.isBlank(organiser)) {
                         organiser = user.getEmail() != null ? user.getEmail() : "Admin";
                     }
                     writeEvent(name, description, location, dateTime,
@@ -242,13 +244,13 @@ public class CreateEventFragment extends Fragment {
         data.put("createdBy",   uid);
         data.put("createdAt",   Timestamp.now());
 
-        FirebaseFirestore.getInstance()
-                .collection("events")
-                .add(data)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
+        eventsCollection.add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(), "Event created!", Toast.LENGTH_SHORT).show();
-                    NavHostFragment.findNavController(this).navigateUp();
+                    NavHelpers.navigateUp(this);
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
@@ -259,6 +261,6 @@ public class CreateEventFragment extends Fragment {
 
     @NonNull
     private String text(@Nullable TextInputEditText et) {
-        return (et != null && et.getText() != null) ? et.getText().toString().trim() : "";
+        return (et != null && et.getText() != null) ? TextHelpers.trimmed(et) : "";
     }
 }

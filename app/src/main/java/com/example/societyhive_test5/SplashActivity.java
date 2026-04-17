@@ -19,7 +19,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
 
 
-            Class<?> destination = FirebaseAuth.getInstance().getCurrentUser() != null
+            Class<?> destination = AuthHelpers.currentUser() != null
                     ? MainActivity.class
                     : LoginActivity.class;
 

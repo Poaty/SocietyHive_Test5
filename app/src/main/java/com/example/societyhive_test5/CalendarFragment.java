@@ -246,7 +246,7 @@ public class CalendarFragment extends Fragment {
 
 
     private void loadAttendanceAndMerge() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) { loadUserSocietiesAndFilter(); return; }
 
         FirebaseFirestore.getInstance()
@@ -269,7 +269,7 @@ public class CalendarFragment extends Fragment {
 
 
     private void loadUserSocietiesAndFilter() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) { applyVisibilityFilter(); return; }
 
         FirebaseFirestore.getInstance()
@@ -370,6 +370,6 @@ public class CalendarFragment extends Fragment {
 
     @NonNull
     private static String safeString(@Nullable String value, @NonNull String fallback) {
-        return (value != null && !value.trim().isEmpty()) ? value.trim() : fallback;
+        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
     }
 }

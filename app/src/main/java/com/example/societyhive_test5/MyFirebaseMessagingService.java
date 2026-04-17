@@ -29,7 +29,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
     static void saveTokenToFirestore(String token) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null || token == null) return;
         FirebaseFirestore.getInstance()
                 .collection("users")
