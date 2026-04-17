@@ -26,6 +26,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -71,7 +73,7 @@ public class ProfileFragment extends Fragment {
         ivProfilePicture.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
         view.findViewById(R.id.btnBrowseSocieties).setOnClickListener(v ->
-                NavHostFragment.findNavController(this).navigate(R.id.browseSocietiesFragment));
+                NavHelpers.navigate(this, R.id.browseSocietiesFragment));
 
         view.findViewById(R.id.btnLogOut).setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
@@ -90,10 +92,10 @@ public class ProfileFragment extends Fragment {
 
         tvEmail.setText(user.getEmail() != null ? user.getEmail() : "");
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener(document -> {
                     if (!isAdded() || !document.exists()) return;
 
@@ -142,10 +144,10 @@ public class ProfileFragment extends Fragment {
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         if (user == null || imageUrl == null) return;
 
-                        FirebaseFirestore.getInstance()
-                                .collection("users")
-                                .document(user.getUid())
-                                .update("profileImageUrl", imageUrl)
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        CollectionReference usersCollection = db.collection("users");
+                        DocumentReference userDocument = usersCollection.document(user.getUid());
+                        userDocument.update("profileImageUrl", imageUrl)
                                 .addOnSuccessListener(unused -> {
                                     if (!isAdded()) return;
                                     loadAvatar(imageUrl);
@@ -185,9 +187,11 @@ public class ProfileFragment extends Fragment {
         adapter.updateList(societies);
         if (societyIds == null || societyIds.isEmpty()) return;
         for (String id : societyIds) {
-            if (id == null || id.trim().isEmpty()) continue;
-            FirebaseFirestore.getInstance()
-                    .collection("societies").document(id).get()
+            if (id == null || (id == null || id.trim().isEmpty())) continue;
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            CollectionReference societiesCollection = db.collection("societies");
+            DocumentReference societyDocument = societiesCollection.document(id);
+            societyDocument.get()
                     .addOnSuccessListener(this::addSocietyIfValid);
         }
     }
@@ -198,9 +202,9 @@ public class ProfileFragment extends Fragment {
         String colorHex = doc.getString("hexColor");
         String desc     = doc.getString("description");
         String iconUrl  = doc.getString("iconUrl");
-        if (name     == null || name.trim().isEmpty())     name     = "Unnamed Society";
-        if (colorHex == null || colorHex.trim().isEmpty()) colorHex = "#8D2E3A";
-        if (desc     == null || desc.trim().isEmpty())     desc     = "";
+        if (name     == null || (name == null || name.trim().isEmpty()))     name     = "Unnamed Society";
+        if (colorHex == null || (colorHex == null || colorHex.trim().isEmpty())) colorHex = "#8D2E3A";
+        if (desc     == null || (desc == null || desc.trim().isEmpty()))     desc     = "";
         if (iconUrl  == null) iconUrl = "";
         societies.add(new Society(doc.getId(), name, desc, colorHex, iconUrl));
         adapter.updateList(societies);
@@ -230,13 +234,13 @@ public class ProfileFragment extends Fragment {
             b.putString("societyId", society.getId());
             b.putString("chatTitle", society.getName());
             b.putString("chatColor", society.getColorHex());
-            NavHostFragment.findNavController(this).navigate(R.id.chatConversationFragment, b);
+            NavHelpers.navigate(this, R.id.chatConversationFragment, b);
         });
 
         View rowEvents = sheetView.findViewById(R.id.rowViewEvents);
         if (rowEvents != null) rowEvents.setOnClickListener(v -> {
             sheet.dismiss();
-            NavHostFragment.findNavController(this).navigate(R.id.eventsFragment);
+            NavHelpers.navigate(this, R.id.eventsFragment);
         });
 
         View rowLeave = sheetView.findViewById(R.id.rowLeaveSociety);
@@ -261,9 +265,10 @@ public class ProfileFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
         // remove society id from the user's list
-        FirebaseFirestore.getInstance()
-                .collection("users").document(user.getUid())
-                .update("societyIds", FieldValue.arrayRemove(society.getId()))
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.update("societyIds", FieldValue.arrayRemove(society.getId()))
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),

@@ -20,6 +20,8 @@ import com.google.android.material.button.MaterialButton;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -78,7 +80,9 @@ public class BrowseSocietiesFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
-        db.collection("users").document(user.getUid()).get()
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener(userDoc -> {
                     if (!isAdded()) return;
 
@@ -86,7 +90,8 @@ public class BrowseSocietiesFragment extends Fragment {
                     Set<String> joinedSet = joined != null ? new HashSet<>(joined) : new HashSet<>();
 
 
-                    db.collection("joinRequests")
+                    CollectionReference joinRequestsCollection = db.collection("joinRequests");
+                    joinRequestsCollection
                             .whereEqualTo("userId", user.getUid())
                             .whereEqualTo("status", "pending")
                             .get()
@@ -100,7 +105,8 @@ public class BrowseSocietiesFragment extends Fragment {
                                 }
 
 
-                                db.collection("societies").get()
+                                CollectionReference societiesCollection = db.collection("societies");
+                                societiesCollection.get()
                                         .addOnSuccessListener(societiesSnap -> {
                                             if (!isAdded()) return;
                                             rows.clear();
@@ -149,9 +155,9 @@ public class BrowseSocietiesFragment extends Fragment {
         data.put("status",    "pending");
         data.put("createdAt", Timestamp.now());
 
-        FirebaseFirestore.getInstance()
-                .collection("joinRequests")
-                .add(data)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference joinRequestsCollection = db.collection("joinRequests");
+        joinRequestsCollection.add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
                     row.requested = true;

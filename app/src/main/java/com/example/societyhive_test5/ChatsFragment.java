@@ -151,8 +151,8 @@ public class ChatsFragment extends Fragment {
         String iconUrl = societyDoc.getString("iconUrl");
         if (iconUrl == null) iconUrl = "";
 
-        if (name == null || name.trim().isEmpty()) name = "Society Chat";
-        if (colorHex == null || colorHex.trim().isEmpty()) colorHex = "#8D2E3A";
+        if (name == null || (name == null || name.trim().isEmpty())) name = "Society Chat";
+        if (colorHex == null || (colorHex == null || colorHex.trim().isEmpty())) colorHex = "#8D2E3A";
 
         final String finalName = name;
         final String finalColor = colorHex;

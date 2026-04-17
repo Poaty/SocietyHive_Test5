@@ -18,6 +18,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SettingsFragment extends Fragment {
@@ -48,10 +50,10 @@ public class SettingsFragment extends Fragment {
         TextView tvName = view.findViewById(R.id.tvCurrentName);
         if (tvName == null) return;
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String name = doc.getString("fullName");
@@ -75,10 +77,10 @@ public class SettingsFragment extends Fragment {
         if (til != null) til.setHint("Full name");
 
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String current = doc.getString("fullName");
@@ -106,10 +108,10 @@ public class SettingsFragment extends Fragment {
     }
 
     private void saveDisplayName(@NonNull String uid, @NonNull String name) {
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(uid)
-                .update("fullName", name)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(uid);
+        userDocument.update("fullName", name)
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),

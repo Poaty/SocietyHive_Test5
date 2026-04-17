@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -214,9 +216,9 @@ public class CalendarFragment extends Fragment {
 
 
     private void loadEventsFromFirestore() {
-        FirebaseFirestore.getInstance()
-                .collection("events")
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
+        eventsCollection.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     allVisibleEvents.clear();
@@ -249,11 +251,11 @@ public class CalendarFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) { loadUserSocietiesAndFilter(); return; }
 
-        FirebaseFirestore.getInstance()
-                .collection(ATTENDANCE_COLLECTION)
-                .document(user.getUid())
-                .collection(ATTENDING_SUB)
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference attendanceCollection = db.collection(ATTENDANCE_COLLECTION);
+        DocumentReference userAttendanceDocument = attendanceCollection.document(user.getUid());
+        CollectionReference attendingEventsCollection = userAttendanceDocument.collection(ATTENDING_SUB);
+        attendingEventsCollection.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     Set<String> attendingIds = new HashSet<>();
@@ -272,10 +274,10 @@ public class CalendarFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) { applyVisibilityFilter(); return; }
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener((DocumentSnapshot doc) -> {
                     if (!isAdded()) return;
                     userSocietyIds.clear();
@@ -370,6 +372,6 @@ public class CalendarFragment extends Fragment {
 
     @NonNull
     private static String safeString(@Nullable String value, @NonNull String fallback) {
-        return (value != null && !value.trim().isEmpty()) ? value.trim() : fallback;
+        return (value != null && !(value == null || value.trim().isEmpty())) ? value.trim() : fallback;
     }
 }

@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -90,9 +92,9 @@ public class SignUpActivity extends AppCompatActivity {
                         userData.put("themeKey", "crimson");
                         userData.put("createdAt", FieldValue.serverTimestamp());
 
-                        db.collection("users")
-                                .document(user.getUid())
-                                .set(userData)
+                        CollectionReference usersCollection = db.collection("users");
+                        DocumentReference userDocument = usersCollection.document(user.getUid());
+                        userDocument.set(userData)
                                 .addOnSuccessListener(unused -> {
                                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
 

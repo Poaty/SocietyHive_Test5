@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
@@ -114,10 +116,11 @@ public class ChatConversationFragment extends Fragment {
 
         final String myUid = user.getUid();
 
-        messageListener = FirebaseFirestore.getInstance()
-                .collection("societies")
-                .document(societyId)
-                .collection("messages")
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        DocumentReference societyDocument = societiesCollection.document(societyId);
+        CollectionReference messagesCollection = societyDocument.collection("messages");
+        messageListener = messagesCollection
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .addSnapshotListener((snapshots, error) -> {
                     if (!isAdded()) return;
@@ -167,8 +170,11 @@ public class ChatConversationFragment extends Fragment {
         java.util.concurrent.atomic.AtomicInteger remaining =
                 new java.util.concurrent.atomic.AtomicInteger(toFetch.size());
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
         for (String uid : toFetch) {
-            FirebaseFirestore.getInstance().collection("users").document(uid).get()
+            DocumentReference userDocument = usersCollection.document(uid);
+            userDocument.get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null
                                 && task.getResult().exists()) {
@@ -204,11 +210,11 @@ public class ChatConversationFragment extends Fragment {
         data.put("senderName", currentUserName);
         data.put("timestamp", Timestamp.now());
 
-        FirebaseFirestore.getInstance()
-                .collection("societies")
-                .document(societyId)
-                .collection("messages")
-                .add(data)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        DocumentReference societyDocument = societiesCollection.document(societyId);
+        CollectionReference messagesCollection = societyDocument.collection("messages");
+        messagesCollection.add(data)
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
@@ -228,14 +234,14 @@ public class ChatConversationFragment extends Fragment {
             return;
         }
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String name = doc.getString("fullName");
-                    if (name != null && !name.trim().isEmpty()) {
+                    if (name != null && !(name == null || name.trim().isEmpty())) {
                         currentUserName = name.trim();
                     }
                     onReady.run();

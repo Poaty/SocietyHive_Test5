@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -58,9 +59,9 @@ public class CreatePinFragment extends Fragment {
 
 
     private void loadSocieties() {
-        FirebaseFirestore.getInstance()
-                .collection("societies")
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        societiesCollection.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     societyIds.clear();
@@ -130,13 +131,13 @@ public class CreatePinFragment extends Fragment {
         data.put("createdBy", user.getUid());
         data.put("createdAt", Timestamp.now());
 
-        FirebaseFirestore.getInstance()
-                .collection("pins")
-                .add(data)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference pinsCollection = db.collection("pins");
+        pinsCollection.add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(), "Pin created!", Toast.LENGTH_SHORT).show();
-                    NavHostFragment.findNavController(this).navigateUp();
+                    NavHelpers.navigateUp(this);
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
