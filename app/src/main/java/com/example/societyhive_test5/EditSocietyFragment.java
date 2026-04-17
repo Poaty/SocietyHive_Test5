@@ -25,6 +25,8 @@ import com.cloudinary.android.callback.UploadCallback;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -96,7 +98,9 @@ public class EditSocietyFragment extends Fragment {
     }
 
     private void loadSocieties() {
-        FirebaseFirestore.getInstance().collection("societies").get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        societiesCollection.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     societyIds.clear(); societyNames.clear();
@@ -246,12 +250,14 @@ public class EditSocietyFragment extends Fragment {
         updates.put("hexColor",    color);
         if (pendingIconUrl != null) updates.put("iconUrl", pendingIconUrl);
 
-        FirebaseFirestore.getInstance().collection("societies").document(societyId)
-                .update(updates)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        DocumentReference societyDocument = societiesCollection.document(societyId);
+        societyDocument.update(updates)
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(), "Society updated!", Toast.LENGTH_SHORT).show();
-                    NavHostFragment.findNavController(this).navigateUp();
+                    NavHelpers.navigateUp(this);
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
@@ -261,6 +267,6 @@ public class EditSocietyFragment extends Fragment {
 
     @NonNull
     private String text(@Nullable TextInputEditText et) {
-        return (et != null && et.getText() != null) ? et.getText().toString().trim() : "";
+        return (et != null && et.getText() != null) ? TextHelpers.trimmed(et) : "";
     }
 }

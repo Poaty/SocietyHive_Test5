@@ -15,7 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -77,7 +80,9 @@ public class UserManagementFragment extends Fragment {
 
     // loads all users, filters to just this society if societyFilter is set
     private void loadUsers() {
-        FirebaseFirestore.getInstance().collection("users").get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        usersCollection.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     allUsers.clear();
@@ -123,7 +128,7 @@ public class UserManagementFragment extends Fragment {
         TextView tvCount = view.findViewById(R.id.tvRequestCount);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        com.google.firebase.firestore.Query query = (societyFilter != null)
+        Query query = (societyFilter != null)
                 ? db.collection("joinRequests")
                         .whereEqualTo("societyId", societyFilter)
                         .whereEqualTo("status", "pending")
@@ -145,7 +150,7 @@ public class UserManagementFragment extends Fragment {
     private void showJoinRequests() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        com.google.firebase.firestore.Query query = (societyFilter != null)
+        Query query = (societyFilter != null)
                 ? db.collection("joinRequests")
                         .whereEqualTo("societyId", societyFilter)
                         .whereEqualTo("status", "pending")
@@ -181,7 +186,9 @@ public class UserManagementFragment extends Fragment {
             for (int i = 0; i < total; i++) {
                 final int idx = i;
 
-                db.collection("users").document(uids.get(idx)).get()
+                CollectionReference usersCollection = db.collection("users");
+                DocumentReference userDocument = usersCollection.document(uids.get(idx));
+                userDocument.get()
                         .addOnSuccessListener(userDoc -> {
                             String fullName = userDoc.getString("fullName");
                             userNames.set(idx, (fullName != null && !fullName.isEmpty()) ? fullName : uids.get(idx));
@@ -192,7 +199,9 @@ public class UserManagementFragment extends Fragment {
                             if (remaining.decrementAndGet() == 0) showRequestsDialog(userNames, socNames, docIds, uids, sids);
                         });
 
-                db.collection("societies").document(sids.get(idx)).get()
+                CollectionReference societiesCollection = db.collection("societies");
+                DocumentReference societyDocument = societiesCollection.document(sids.get(idx));
+                societyDocument.get()
                         .addOnSuccessListener(socDoc -> {
                             String socName = socDoc.getString("name");
                             socNames.set(idx, (socName != null && !socName.isEmpty()) ? socName : sids.get(idx));
@@ -234,20 +243,28 @@ public class UserManagementFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // add the society to the user's list then mark request as approved
-        db.collection("users").document(uid)
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(uid);
+        userDocument
                 .update("societyIds", com.google.firebase.firestore.FieldValue.arrayUnion(sid))
-                .addOnSuccessListener(unused ->
-                        db.collection("joinRequests").document(reqId)
-                                .update("status", "approved")
-                                .addOnSuccessListener(u2 -> {
-                                    if (!isAdded()) return;
-                                    Toast.makeText(requireContext(), "Request approved!", Toast.LENGTH_SHORT).show();
-                                    loadUsers();
-                                }));
+                .addOnSuccessListener(unused -> {
+                    CollectionReference joinRequestsCollection = db.collection("joinRequests");
+                    DocumentReference requestDocument = joinRequestsCollection.document(reqId);
+                    requestDocument
+                            .update("status", "approved")
+                            .addOnSuccessListener(u2 -> {
+                                if (!isAdded()) return;
+                                Toast.makeText(requireContext(), "Request approved!", Toast.LENGTH_SHORT).show();
+                                loadUsers();
+                            });
+                });
     }
 
     private void rejectRequest(String reqId) {
-        FirebaseFirestore.getInstance().collection("joinRequests").document(reqId)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference joinRequestsCollection = db.collection("joinRequests");
+        DocumentReference requestDocument = joinRequestsCollection.document(reqId);
+        requestDocument
                 .update("status", "rejected")
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
@@ -275,7 +292,10 @@ public class UserManagementFragment extends Fragment {
     }
 
     private void removeFromSociety(@NonNull UserItem user) {
-        FirebaseFirestore.getInstance().collection("users").document(user.getId())
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getId());
+        userDocument
                 .update("societyIds", com.google.firebase.firestore.FieldValue.arrayRemove(societyFilter))
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
@@ -287,7 +307,9 @@ public class UserManagementFragment extends Fragment {
     }
 
     private void showPickSocietyForAdmin(@NonNull UserItem user) {
-        FirebaseFirestore.getInstance().collection("societies").get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        societiesCollection.get()
                 .addOnSuccessListener(snap -> {
                     if (!isAdded()) return;
                     List<String> names = new ArrayList<>();
@@ -303,8 +325,9 @@ public class UserManagementFragment extends Fragment {
                             .setItems(items, (d, which) -> {
                                 Map<String, Object> update = new HashMap<>();
                                 update.put("adminOf", com.google.firebase.firestore.FieldValue.arrayUnion(ids.get(which)));
-                                FirebaseFirestore.getInstance()
-                                        .collection("users").document(user.getId())
+                                CollectionReference usersCollection = db.collection("users");
+                                DocumentReference userDocument = usersCollection.document(user.getId());
+                                userDocument
                                         .update(update)
                                         .addOnSuccessListener(u -> {
                                             if (!isAdded()) return;

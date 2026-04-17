@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
@@ -80,7 +82,7 @@ public class ChatConversationFragment extends Fragment {
         View btnSend = view.findViewById(R.id.btnSendMessage);
 
         btnSend.setOnClickListener(v -> {
-            String text = etMessage.getText().toString().trim();
+            String text = TextHelpers.trimmed(etMessage);
             if (text.isEmpty()) return;
             etMessage.setText("");
             sendMessage(text);
@@ -109,7 +111,7 @@ public class ChatConversationFragment extends Fragment {
 
     // real-time listener, updates whenever a new message is sent
     private void startListening() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null || societyId == null) return;
 
         final String myUid = user.getUid();
@@ -167,8 +169,11 @@ public class ChatConversationFragment extends Fragment {
         java.util.concurrent.atomic.AtomicInteger remaining =
                 new java.util.concurrent.atomic.AtomicInteger(toFetch.size());
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
         for (String uid : toFetch) {
-            FirebaseFirestore.getInstance().collection("users").document(uid).get()
+            DocumentReference userDocument = usersCollection.document(uid);
+            userDocument.get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null
                                 && task.getResult().exists()) {
@@ -195,7 +200,7 @@ public class ChatConversationFragment extends Fragment {
     }
 
     private void sendMessage(@NonNull String text) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null || societyId == null) return;
 
         Map<String, Object> data = new HashMap<>();
@@ -204,11 +209,11 @@ public class ChatConversationFragment extends Fragment {
         data.put("senderName", currentUserName);
         data.put("timestamp", Timestamp.now());
 
-        FirebaseFirestore.getInstance()
-                .collection("societies")
-                .document(societyId)
-                .collection("messages")
-                .add(data)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        DocumentReference societyDocument = societiesCollection.document(societyId);
+        CollectionReference messagesCollection = societyDocument.collection("messages");
+        messagesCollection.add(data)
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
@@ -222,7 +227,7 @@ public class ChatConversationFragment extends Fragment {
 
 
     private void resolveCurrentUserName(@NonNull Runnable onReady) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             onReady.run();
             return;
@@ -235,7 +240,7 @@ public class ChatConversationFragment extends Fragment {
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String name = doc.getString("fullName");
-                    if (name != null && !name.trim().isEmpty()) {
+                    if (name != null && !TextHelpers.isBlank(name)) {
                         currentUserName = name.trim();
                     }
                     onReady.run();
