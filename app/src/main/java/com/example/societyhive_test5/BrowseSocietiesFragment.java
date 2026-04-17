@@ -71,13 +71,14 @@ public class BrowseSocietiesFragment extends Fragment {
 
 
 
+    // shows all societies the user hasnt joined yet, with pending state if they already requested
     private void loadSocieties() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
+        // get joined societies first so we can filter them out
         db.collection("users").document(user.getUid()).get()
                 .addOnSuccessListener(userDoc -> {
                     if (!isAdded()) return;
@@ -85,7 +86,7 @@ public class BrowseSocietiesFragment extends Fragment {
                     List<String> joined = (List<String>) userDoc.get("societyIds");
                     Set<String> joinedSet = joined != null ? new HashSet<>(joined) : new HashSet<>();
 
-
+                    // also need to check any pending requests so button shows the right state
                     db.collection("joinRequests")
                             .whereEqualTo("userId", user.getUid())
                             .whereEqualTo("status", "pending")
@@ -143,6 +144,7 @@ public class BrowseSocietiesFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
+        // write the join request, admin will see it in user management
         Map<String, Object> data = new HashMap<>();
         data.put("userId",    user.getUid());
         data.put("societyId", row.id);
@@ -230,6 +232,7 @@ public class BrowseSocietiesFragment extends Fragment {
                     ivIcon.setImageResource(R.drawable.ic_profile);
                 }
 
+                // disable the button if they already sent a request
                 if (row.requested) {
                     btnRequest.setText("Requested");
                     btnRequest.setEnabled(false);

@@ -120,6 +120,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoVie
     @Override
     public int getItemCount() { return photos.size(); }
 
+    // relative time for recent stuff, absolute date for older photos
     private String formatTimestamp(Date date) {
         long now = System.currentTimeMillis();
         long diff = now - date.getTime();

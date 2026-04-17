@@ -113,6 +113,7 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.cardSocietyAdminDashboard).setVisibility(v);
     }
 
+    // society admin tiles all pass the societyId as an arg so the target screen pre-selects it
     private void wireSocietyAdminTiles(@NonNull View view, @NonNull String societyId) {
 
         View tilePin = view.findViewById(R.id.tileSAPostPin);
@@ -243,6 +244,7 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.rvAnnouncements).setVisibility(visibility);
     }
 
+    // remove from list without reloading the whole thing
     private void deletePin(@NonNull String pinId, @NonNull View view) {
         FirebaseFirestore.getInstance()
                 .collection("pins").document(pinId)

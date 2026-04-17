@@ -108,6 +108,7 @@ public class UserManagementFragment extends Fragment {
                 });
     }
 
+    // just local filter, no extra firebase calls
     private void filterUsers(String query) {
         String q = query.toLowerCase().trim();
         filtered.clear();
@@ -286,6 +287,7 @@ public class UserManagementFragment extends Fragment {
                 });
     }
 
+    // lets you pick which society to make them admin of
     private void showPickSocietyForAdmin(@NonNull UserItem user) {
         FirebaseFirestore.getInstance().collection("societies").get()
                 .addOnSuccessListener(snap -> {

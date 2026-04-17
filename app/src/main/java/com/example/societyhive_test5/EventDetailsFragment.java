@@ -128,10 +128,11 @@ public class EventDetailsFragment extends Fragment {
 
 
 
+    // check if theyre already attending before wiring the button
     private void loadAttendanceState() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-
+            // not logged in, still show the button but tapping will prompt login
             updateAttendButton(false);
             wireAttendButton();
             return;

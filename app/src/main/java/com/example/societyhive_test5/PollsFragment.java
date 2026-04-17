@@ -184,6 +184,7 @@ public class PollsFragment extends Fragment {
 
 
 
+    // collect unique society ids from all polls then look them up in one go
     private void fetchSocietyNamesThenVotes() {
         Set<String> ids = new HashSet<>();
         for (Poll p : activePolls) if (!p.getSocietyId().isEmpty()) ids.add(p.getSocietyId());
@@ -222,6 +223,7 @@ public class PollsFragment extends Fragment {
 
 
 
+    // get votes for all polls at once so we can show counts and highlight which one they picked
     private void loadAllVotes() {
         List<Poll> all = new ArrayList<>(activePolls);
         all.addAll(closedPolls);
