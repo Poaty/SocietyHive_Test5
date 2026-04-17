@@ -202,7 +202,7 @@ public class CreatePollFragment extends Fragment {
             return;
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         String societyId = societyIds.get(selectedSocietyIndex);
@@ -236,6 +236,6 @@ public class CreatePollFragment extends Fragment {
 
     @NonNull
     private String text(@Nullable TextInputEditText et) {
-        return (et != null && et.getText() != null) ? et.getText().toString().trim() : "";
+        return (et != null && et.getText() != null) ? TextHelpers.trimmed(et) : "";
     }
 }

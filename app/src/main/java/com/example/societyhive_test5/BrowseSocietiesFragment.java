@@ -74,7 +74,7 @@ public class BrowseSocietiesFragment extends Fragment {
 
 
     private void loadSocieties() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -146,7 +146,7 @@ public class BrowseSocietiesFragment extends Fragment {
     }
 
     private void submitRequest(SocietyRow row, MaterialButton btn) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         Map<String, Object> data = new HashMap<>();

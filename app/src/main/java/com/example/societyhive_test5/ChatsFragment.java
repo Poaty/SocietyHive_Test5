@@ -82,7 +82,7 @@ public class ChatsFragment extends Fragment {
 
     // admin sees all societies, regular users only see ones they joined
     private void loadChatsForUser() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -151,8 +151,9 @@ public class ChatsFragment extends Fragment {
         String iconUrl = societyDoc.getString("iconUrl");
         if (iconUrl == null) iconUrl = "";
 
-        if (name == null || (name == null || name.trim().isEmpty())) name = "Society Chat";
-        if (colorHex == null || (colorHex == null || colorHex.trim().isEmpty())) colorHex = "#8D2E3A";
+
+        if (name == null || TextHelpers.isBlank(name)) name = "Society Chat";
+        if (colorHex == null || TextHelpers.isBlank(colorHex)) colorHex = "#8D2E3A";
 
         final String finalName = name;
         final String finalColor = colorHex;
@@ -184,7 +185,7 @@ public class ChatsFragment extends Fragment {
 
 
                             String preview;
-                            FirebaseUser me = FirebaseAuth.getInstance().getCurrentUser();
+                            FirebaseUser me = AuthHelpers.currentUser();
                             String senderId = lastMsg.getString("senderId");
 
                             if (me != null && me.getUid().equals(senderId)) {

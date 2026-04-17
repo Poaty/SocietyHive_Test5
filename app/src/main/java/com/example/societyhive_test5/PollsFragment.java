@@ -84,7 +84,7 @@ public class PollsFragment extends Fragment {
         if (progressPolls != null) progressPolls.setVisibility(View.VISIBLE);
         if (tvEmptyPolls != null) tvEmptyPolls.setVisibility(View.GONE);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) { loadPolls(); return; }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -233,7 +233,7 @@ public class PollsFragment extends Fragment {
         List<Poll> all = new ArrayList<>(activePolls);
         all.addAll(closedPolls);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
 
         if (all.isEmpty()) {
             publishPolls();
@@ -337,7 +337,7 @@ public class PollsFragment extends Fragment {
 
     // vote is stored as a doc with the uid as the key so you cant vote twice
     private void submitVote(@NonNull Poll poll, int optionIndex) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             Toast.makeText(requireContext(), "Please log in to vote.", Toast.LENGTH_SHORT).show();
             return;
@@ -421,6 +421,7 @@ public class PollsFragment extends Fragment {
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {
-        return (value != null && !(value == null || value.trim().isEmpty())) ? value.trim() : fallback;
+
+        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
     }
 }

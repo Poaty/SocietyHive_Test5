@@ -44,7 +44,7 @@ public class SettingsFragment extends Fragment {
 
 
     private void loadAccountInfo(@NonNull View view) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         TextView tvName = view.findViewById(R.id.tvCurrentName);
@@ -66,7 +66,7 @@ public class SettingsFragment extends Fragment {
 
 
     private void showEditNameDialog() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
 
@@ -93,7 +93,7 @@ public class SettingsFragment extends Fragment {
                 .setPositiveButton("Save", (dialog, which) -> {
                     if (et == null) return;
                     String newName = et.getText() != null
-                            ? et.getText().toString().trim() : "";
+                            ? TextHelpers.trimmed(et) : "";
 
                     if (newName.isEmpty()) {
                         Toast.makeText(requireContext(),
@@ -137,7 +137,7 @@ public class SettingsFragment extends Fragment {
 
 
     private void showChangePasswordDialog() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_change_password, null);
@@ -155,11 +155,11 @@ public class SettingsFragment extends Fragment {
         dialog.setOnShowListener(d -> {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                 String current = etCurrent != null && etCurrent.getText() != null
-                        ? etCurrent.getText().toString().trim() : "";
+                        ? TextHelpers.trimmed(etCurrent) : "";
                 String newPass = etNew != null && etNew.getText() != null
-                        ? etNew.getText().toString().trim() : "";
+                        ? TextHelpers.trimmed(etNew) : "";
                 String confirm = etConfirm != null && etConfirm.getText() != null
-                        ? etConfirm.getText().toString().trim() : "";
+                        ? TextHelpers.trimmed(etConfirm) : "";
 
                 if (current.isEmpty() || newPass.isEmpty() || confirm.isEmpty()) {
                     Toast.makeText(requireContext(),
@@ -225,7 +225,7 @@ public class SettingsFragment extends Fragment {
                 .setTitle("Sign Out")
                 .setMessage("Are you sure you want to sign out?")
                 .setPositiveButton("Sign Out", (dialog, which) -> {
-                    FirebaseAuth.getInstance().signOut();
+                    AuthHelpers.signOut();
                     Intent intent = new Intent(requireContext(), LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

@@ -202,7 +202,7 @@ public class CreateEventFragment extends Fragment {
             return;
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         String societyId = societyIds.get(selectedSocietyIndex);
@@ -216,7 +216,8 @@ public class CreateEventFragment extends Fragment {
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String organiser = doc.getString("fullName");
-                    if (organiser == null || (organiser == null || organiser.trim().isEmpty())) {
+
+                    if (organiser == null || TextHelpers.isBlank(organiser)) {
                         organiser = user.getEmail() != null ? user.getEmail() : "Admin";
                     }
                     writeEvent(name, description, location, dateTime,
@@ -261,6 +262,6 @@ public class CreateEventFragment extends Fragment {
 
     @NonNull
     private String text(@Nullable TextInputEditText et) {
-        return (et != null && et.getText() != null) ? et.getText().toString().trim() : "";
+        return (et != null && et.getText() != null) ? TextHelpers.trimmed(et) : "";
     }
 }

@@ -82,7 +82,7 @@ public class ChatConversationFragment extends Fragment {
         View btnSend = view.findViewById(R.id.btnSendMessage);
 
         btnSend.setOnClickListener(v -> {
-            String text = etMessage.getText().toString().trim();
+            String text = TextHelpers.trimmed(etMessage);
             if (text.isEmpty()) return;
             etMessage.setText("");
             sendMessage(text);
@@ -111,7 +111,7 @@ public class ChatConversationFragment extends Fragment {
 
     // real-time listener, updates whenever a new message is sent
     private void startListening() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null || societyId == null) return;
 
         final String myUid = user.getUid();
@@ -201,7 +201,7 @@ public class ChatConversationFragment extends Fragment {
     }
 
     private void sendMessage(@NonNull String text) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null || societyId == null) return;
 
         Map<String, Object> data = new HashMap<>();
@@ -228,7 +228,7 @@ public class ChatConversationFragment extends Fragment {
 
 
     private void resolveCurrentUserName(@NonNull Runnable onReady) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             onReady.run();
             return;
@@ -241,7 +241,8 @@ public class ChatConversationFragment extends Fragment {
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String name = doc.getString("fullName");
-                    if (name != null && !(name == null || name.trim().isEmpty())) {
+
+                    if (name != null && !TextHelpers.isBlank(name)) {
                         currentUserName = name.trim();
                     }
                     onReady.run();

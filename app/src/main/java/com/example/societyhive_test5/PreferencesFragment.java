@@ -58,7 +58,7 @@ public class PreferencesFragment extends Fragment {
         refreshTicks(root, themeKey, tickIds);
         refreshBorders(root, themeKey, circIds);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user != null) {
             Map<String, Object> update = new HashMap<>();
             update.put("themeKey", themeKey);

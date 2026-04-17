@@ -134,7 +134,7 @@ public class EventsFragment extends Fragment {
 
 
     private void loadAttendanceAndMerge() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             loadUserSocietiesAndFilter();
             return;
@@ -168,7 +168,7 @@ public class EventsFragment extends Fragment {
 
 
     private void loadUserSocietiesAndFilter() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             applyFilters();
             return;
@@ -201,7 +201,7 @@ public class EventsFragment extends Fragment {
 
 
     private void toggleAttendance(@NonNull Event event, boolean attending) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             Toast.makeText(requireContext(),
                     "Please log in to attend events.", Toast.LENGTH_SHORT).show();
@@ -415,6 +415,6 @@ public class EventsFragment extends Fragment {
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {
-        return (value != null && !(value == null || value.trim().isEmpty())) ? value.trim() : fallback;
+        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
     }
 }

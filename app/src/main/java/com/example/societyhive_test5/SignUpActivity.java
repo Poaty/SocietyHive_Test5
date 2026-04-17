@@ -42,10 +42,10 @@ public class SignUpActivity extends AppCompatActivity {
         TextView tvLogin = findViewById(R.id.tvSignUp);
 
         btnCreateAccount.setOnClickListener(v -> {
-            String fullName = etFullName.getText().toString().trim();
-            String email = etEmail.getText().toString().trim();
-            String password = etPassword.getText().toString().trim();
-            String confirmPassword = etConfirmPassword.getText().toString().trim();
+            String fullName = TextHelpers.trimmed(etFullName);
+            String email = TextHelpers.trimmed(etEmail);
+            String password = TextHelpers.trimmed(etPassword);
+            String confirmPassword = TextHelpers.trimmed(etConfirmPassword);
 
             // basic validation before hitting firebase
             if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {

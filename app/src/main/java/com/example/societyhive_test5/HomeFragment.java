@@ -54,7 +54,7 @@ public class HomeFragment extends Fragment {
         TextView tvWelcome = view.findViewById(R.id.tvWelcome);
         if (tvWelcome != null) tvWelcome.setText("Welcome back");
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment {
 
 
                     String fullName = doc.getString("fullName");
-                    if (tvWelcome != null && fullName != null && !(fullName == null || fullName.trim().isEmpty())) {
+                    if (tvWelcome != null && fullName != null && !TextHelpers.isBlank(fullName)) {
                         // just use first name so it doesnt get cut off on small screens
                     String firstName = fullName.trim().split("\\s+")[0];
                         tvWelcome.setText("Welcome, " + firstName);
@@ -292,6 +292,7 @@ public class HomeFragment extends Fragment {
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {
-        return (value != null && !(value == null || value.trim().isEmpty())) ? value.trim() : fallback;
+
+        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
     }
 }

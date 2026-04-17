@@ -75,7 +75,7 @@ public class GalleryFragment extends Fragment {
         ViewPager2 viewPager = view.findViewById(R.id.viewPagerGallery);
         FloatingActionButton fabUpload = view.findViewById(R.id.fabUpload);
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String uid = AuthHelpers.currentUser().getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // admin sees all societies, normal users only see what theyre in
@@ -152,7 +152,7 @@ public class GalleryFragment extends Fragment {
     }
 
     private void setupTabs(TabLayout tabLayout, ViewPager2 viewPager, FloatingActionButton fabUpload) {
-        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String currentUid = AuthHelpers.currentUser().getUid();
         GalleryPagerAdapter pagerAdapter =
                 new GalleryPagerAdapter(this, tabSocietyIds, tabSocietyColors, currentUid, isAdmin);
         viewPager.setAdapter(pagerAdapter);
@@ -187,7 +187,7 @@ public class GalleryFragment extends Fragment {
         if (!isAdded()) return;
         Toast.makeText(requireContext(), "Uploading…", Toast.LENGTH_SHORT).show();
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String uid = AuthHelpers.currentUser().getUid();
 
         MediaManager.get().upload(uri)
                 .unsigned(UPLOAD_PRESET)

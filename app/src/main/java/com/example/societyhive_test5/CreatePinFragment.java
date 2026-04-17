@@ -108,7 +108,7 @@ public class CreatePinFragment extends Fragment {
 
     private void attemptCreate() {
         String content = etPinContent.getText() != null
-                ? etPinContent.getText().toString().trim() : "";
+                ? TextHelpers.trimmed(etPinContent) : "";
 
         if (content.isEmpty()) {
             etPinContent.setError("Please write a pin message");
@@ -120,7 +120,7 @@ public class CreatePinFragment extends Fragment {
             return;
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         String societyId = societyIds.get(selectedSocietyIndex);

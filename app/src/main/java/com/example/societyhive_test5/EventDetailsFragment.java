@@ -130,7 +130,7 @@ public class EventDetailsFragment extends Fragment {
 
 
     private void loadAttendanceState() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
 
             updateAttendButton(false);
@@ -171,7 +171,7 @@ public class EventDetailsFragment extends Fragment {
 
 
     private void saveAttendance(boolean attending) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             Toast.makeText(requireContext(),
                     "Please log in to attend events.", Toast.LENGTH_SHORT).show();
@@ -219,6 +219,8 @@ public class EventDetailsFragment extends Fragment {
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {
-        return (value != null && !(value == null || value.trim().isEmpty())) ? value.trim() : fallback;
+
+        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
+
     }
 }

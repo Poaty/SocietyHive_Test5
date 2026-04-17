@@ -76,7 +76,7 @@ public class ProfileFragment extends Fragment {
                 NavHelpers.navigate(this, R.id.browseSocietiesFragment));
 
         view.findViewById(R.id.btnLogOut).setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
+            AuthHelpers.signOut();
             Intent intent = new Intent(requireActivity(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -87,7 +87,7 @@ public class ProfileFragment extends Fragment {
 
     // pulls user data and joined societies from firestore
     private void loadProfileFromFirestore() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         tvEmail.setText(user.getEmail() != null ? user.getEmail() : "");
@@ -141,7 +141,7 @@ public class ProfileFragment extends Fragment {
                     public void onSuccess(String requestId, Map resultData) {
                         if (!isAdded()) return;
                         String imageUrl = (String) resultData.get("secure_url");
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        FirebaseUser user = AuthHelpers.currentUser();
                         if (user == null || imageUrl == null) return;
 
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -187,7 +187,9 @@ public class ProfileFragment extends Fragment {
         adapter.updateList(societies);
         if (societyIds == null || societyIds.isEmpty()) return;
         for (String id : societyIds) {
-            if (id == null || (id == null || id.trim().isEmpty())) continue;
+
+            if (id == null || TextHelpers.isBlank(id)) continue;
+
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             CollectionReference societiesCollection = db.collection("societies");
             DocumentReference societyDocument = societiesCollection.document(id);
@@ -202,9 +204,11 @@ public class ProfileFragment extends Fragment {
         String colorHex = doc.getString("hexColor");
         String desc     = doc.getString("description");
         String iconUrl  = doc.getString("iconUrl");
-        if (name     == null || (name == null || name.trim().isEmpty()))     name     = "Unnamed Society";
-        if (colorHex == null || (colorHex == null || colorHex.trim().isEmpty())) colorHex = "#8D2E3A";
-        if (desc     == null || (desc == null || desc.trim().isEmpty()))     desc     = "";
+
+        if (name     == null || TextHelpers.isBlank(name))     name     = "Unnamed Society";
+        if (colorHex == null || TextHelpers.isBlank(colorHex)) colorHex = "#8D2E3A";
+        if (desc     == null || TextHelpers.isBlank(desc))     desc     = "";
+
         if (iconUrl  == null) iconUrl = "";
         societies.add(new Society(doc.getId(), name, desc, colorHex, iconUrl));
         adapter.updateList(societies);
@@ -262,7 +266,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void leaveSociety(@NonNull Society society) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
         // remove society id from the user's list
         FirebaseFirestore db = FirebaseFirestore.getInstance();
