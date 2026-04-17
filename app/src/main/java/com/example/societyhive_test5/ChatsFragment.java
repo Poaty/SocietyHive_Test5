@@ -80,6 +80,7 @@ public class ChatsFragment extends Fragment {
 
 
 
+    // admin sees all societies, regular users only see ones they joined
     private void loadChatsForUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
@@ -158,11 +159,12 @@ public class ChatsFragment extends Fragment {
         final String finalIconUrl = iconUrl;
 
 
+        // placeholder while we wait for the last message
         Chat placeholder = new Chat(societyId, finalName, "Loading…", "", finalColor, finalIconUrl);
         allChats.add(placeholder);
         checkAllLoaded(remaining);
 
-
+        // live listener so new messages update the preview without refresh
         com.google.firebase.firestore.ListenerRegistration reg =
                 db.collection("societies")
                         .document(societyId)
@@ -266,6 +268,7 @@ public class ChatsFragment extends Fragment {
 
 
 
+    // formats timestamp like whatsapp basically
     private String formatTimestamp(@Nullable com.google.firebase.Timestamp ts) {
         if (ts == null) return "";
 

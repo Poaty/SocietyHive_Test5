@@ -46,6 +46,7 @@ public class ChatConversationFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
+        // get args passed from wherever we navigated from
         String chatTitle = "Chat";
         String chatColor = "#8D2E3A";
         societyId = null;
@@ -106,6 +107,7 @@ public class ChatConversationFragment extends Fragment {
 
 
 
+    // real-time listener, updates whenever a new message is sent
     private void startListening() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null || societyId == null) return;
@@ -148,6 +150,7 @@ public class ChatConversationFragment extends Fragment {
 
 
 
+    // fetch profile pics for senders we havent seen before
     private void enrichWithPhotos(@NonNull List<Message> msgs) {
         java.util.Set<String> toFetch = new java.util.HashSet<>();
         for (Message m : msgs) {

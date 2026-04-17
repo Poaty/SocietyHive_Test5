@@ -70,6 +70,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoVie
                 .centerCrop()
                 .into(holder.ivPhoto);
 
+        // colour the card border based on which society the photo belongs to
         String colorHex = societyColorMap.containsKey(photo.getSocietyId())
                 ? societyColorMap.get(photo.getSocietyId())
                 : "#8D2E3A";
@@ -99,6 +100,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoVie
             return;
         }
 
+        // cache names so we dont look them up on every bind
         if (nameCache.containsKey(uid)) {
             holder.tvName.setText(nameCache.get(uid));
         } else {

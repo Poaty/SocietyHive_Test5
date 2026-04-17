@@ -77,6 +77,7 @@ public class PollsFragment extends Fragment {
 
 
 
+    // need to know what societies the user is in before we can filter polls
     private void loadUserSocietiesThenPolls() {
         if (progressPolls != null) progressPolls.setVisibility(View.VISIBLE);
         if (tvEmptyPolls != null) tvEmptyPolls.setVisibility(View.GONE);
@@ -103,6 +104,7 @@ public class PollsFragment extends Fragment {
                     }
 
 
+                    // only admins and society admins get the close/delete buttons
                     if (isAdmin || isSocietyAdmin) {
                         RecyclerView rvPolls = requireView().findViewById(R.id.rvPolls);
                         activeAdapter = new PollsAdapter(this::submitVote, this::deletePoll, this::closePoll);
@@ -327,6 +329,7 @@ public class PollsFragment extends Fragment {
 
 
 
+    // vote is stored as a doc with the uid as the key so you cant vote twice
     private void submitVote(@NonNull Poll poll, int optionIndex) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -382,6 +385,7 @@ public class PollsFragment extends Fragment {
                 });
     }
 
+    // closing just sets endsAt to a second ago so isClosed() returns true
     private void closePoll(@NonNull Poll poll) {
         com.google.firebase.Timestamp pastTime =
                 new com.google.firebase.Timestamp(com.google.firebase.Timestamp.now().getSeconds() - 1, 0);

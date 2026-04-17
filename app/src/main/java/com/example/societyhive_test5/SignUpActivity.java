@@ -45,6 +45,7 @@ public class SignUpActivity extends AppCompatActivity {
             String password = etPassword.getText().toString().trim();
             String confirmPassword = etConfirmPassword.getText().toString().trim();
 
+            // basic validation before hitting firebase
             if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                 Toast.makeText(this, "Fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
@@ -80,6 +81,7 @@ public class SignUpActivity extends AppCompatActivity {
                             return;
                         }
 
+                        // build the user document - everyone starts as member
                         Map<String, Object> userData = new HashMap<>();
                         userData.put("fullName", fullName);
                         userData.put("email", user.getEmail());
@@ -95,8 +97,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
 
 
-                                    mAuth.signOut();
-
+                                    mAuth.signOut(); // sign out so they have to log in properly
                                     startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
                                     finish();
                                 })

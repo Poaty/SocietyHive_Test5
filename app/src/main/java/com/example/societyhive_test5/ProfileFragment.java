@@ -67,6 +67,7 @@ public class ProfileFragment extends Fragment {
         adapter = new JoinedSocietyAdapter(new ArrayList<>(), this::showManageSheet);
         rv.setAdapter(adapter);
 
+        // tap the picture to change it
         ivProfilePicture.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
         view.findViewById(R.id.btnBrowseSocieties).setOnClickListener(v ->
@@ -82,6 +83,7 @@ public class ProfileFragment extends Fragment {
         loadProfileFromFirestore();
     }
 
+    // pulls user data and joined societies from firestore
     private void loadProfileFromFirestore() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
@@ -118,13 +120,14 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
+    // upload to cloudinary then save the url in firestore
     private void uploadProfilePicture(Uri uri) {
         Toast.makeText(requireContext(), "Uploading…", Toast.LENGTH_SHORT).show();
         try {
             Map<String, String> config = new HashMap<>();
             config.put("cloud_name", "dybgordqu");
             MediaManager.init(requireContext().getApplicationContext(), config);
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalStateException ignored) {}  // already initialised, fine
 
         MediaManager.get().upload(uri)
                 .unsigned("societyhive_gallery")
@@ -203,6 +206,7 @@ public class ProfileFragment extends Fragment {
         adapter.updateList(societies);
     }
 
+    // bottom sheet with chat/events/leave options for a society
     private void showManageSheet(@NonNull Society society) {
         BottomSheetDialog sheet = new BottomSheetDialog(requireContext());
         View sheetView = getLayoutInflater().inflate(R.layout.dialog_manage_society, null);
@@ -256,6 +260,7 @@ public class ProfileFragment extends Fragment {
     private void leaveSociety(@NonNull Society society) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
+        // remove society id from the user's list
         FirebaseFirestore.getInstance()
                 .collection("users").document(user.getUid())
                 .update("societyIds", FieldValue.arrayRemove(society.getId()))

@@ -119,6 +119,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             }
 
 
+            // show results once the user has voted or the poll is closed
             if ((hasVoted || closed) && !counts.isEmpty() && i < counts.size()) {
                 layoutResult.setVisibility(View.VISIBLE);
                 int voteCount = counts.get(i);

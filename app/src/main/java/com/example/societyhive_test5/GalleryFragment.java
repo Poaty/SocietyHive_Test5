@@ -49,6 +49,7 @@ public class GalleryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // init cloudinary - wrapped in try because it crashes if called twice
         try {
             Map<String, String> config = new HashMap<>();
             config.put("cloud_name", CLOUD_NAME);
@@ -75,6 +76,7 @@ public class GalleryFragment extends Fragment {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        // admin sees all societies, normal users only see what theyre in
         db.collection("users").document(uid).get().addOnSuccessListener(userDoc -> {
             if (!isAdded()) return;
             isAdmin = "admin".equals(userDoc.getString("role"));
@@ -173,6 +175,7 @@ public class GalleryFragment extends Fragment {
         });
     }
 
+    // upload to cloudinary then store the url + metadata in firestore
     private void uploadImage(Uri uri, String societyId) {
         if (!isAdded()) return;
         Toast.makeText(requireContext(), "Uploading…", Toast.LENGTH_SHORT).show();

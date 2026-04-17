@@ -67,6 +67,7 @@ public class Poll {
     public void setEndsAt(Timestamp endsAt) { this.endsAt = endsAt; }
 
 
+    // poll is closed if endsAt is in the past
     public boolean isClosed() {
         return endsAt != null && endsAt.toDate().before(new Date());
     }

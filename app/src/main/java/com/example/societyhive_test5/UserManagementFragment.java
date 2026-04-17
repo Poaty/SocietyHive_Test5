@@ -75,6 +75,7 @@ public class UserManagementFragment extends Fragment {
         loadUsers();
     }
 
+    // loads all users, filters to just this society if societyFilter is set
     private void loadUsers() {
         FirebaseFirestore.getInstance().collection("users").get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -139,6 +140,8 @@ public class UserManagementFragment extends Fragment {
         });
     }
 
+    // fetch pending requests then look up user and society names separately
+    // cant just show the ids or it looks terrible
     private void showJoinRequests() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -172,6 +175,7 @@ public class UserManagementFragment extends Fragment {
                 socNames.add("");
             }
 
+            // total * 2 because we do two lookups per request (user + society)
             AtomicInteger remaining = new AtomicInteger(total * 2);
 
             for (int i = 0; i < total; i++) {
@@ -229,6 +233,7 @@ public class UserManagementFragment extends Fragment {
     private void approveRequest(String reqId, String uid, String sid) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        // add the society to the user's list then mark request as approved
         db.collection("users").document(uid)
                 .update("societyIds", com.google.firebase.firestore.FieldValue.arrayUnion(sid))
                 .addOnSuccessListener(unused ->

@@ -22,9 +22,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-
-
-
+        // grab views
 
 
 
@@ -38,11 +36,13 @@ public class LoginActivity extends AppCompatActivity {
             String email = etEmail.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
 
+            // dont bother if fields are empty
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Enter email and password", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            // actually try to sign in
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (!task.isSuccessful()) {
@@ -58,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
+                        // load their saved theme before going to main screen
                         String uid = mAuth.getCurrentUser().getUid();
                         com.google.firebase.firestore.FirebaseFirestore.getInstance()
                                 .collection("users")

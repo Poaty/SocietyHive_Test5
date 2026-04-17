@@ -44,7 +44,7 @@ public class HomeFragment extends Fragment {
         announcementsAdapter = new AnnouncementsAdapter();
         rvAnnouncements.setAdapter(announcementsAdapter);
 
-        wireTiles(view);
+        wireTiles(view); // hook up all the nav tiles first
         loadUserData(view);
     }
 
@@ -65,13 +65,15 @@ public class HomeFragment extends Fragment {
 
                     String fullName = doc.getString("fullName");
                     if (tvWelcome != null && fullName != null && !fullName.trim().isEmpty()) {
-                        String firstName = fullName.trim().split("\\s+")[0];
+                        // just use first name so it doesnt get cut off on small screens
+                    String firstName = fullName.trim().split("\\s+")[0];
                         tvWelcome.setText("Welcome, " + firstName);
                     } else if (tvWelcome != null) {
                         tvWelcome.setText("Welcome");
                     }
 
 
+                    // show or hide admin panel based on role
                     String role = doc.getString("role");
                     isAdmin = "admin".equalsIgnoreCase(role);
                     showAdminSection(view, isAdmin);
@@ -157,6 +159,7 @@ public class HomeFragment extends Fragment {
 
 
 
+    // fetches pinned announcements from firestore
     private void loadAnnouncements(@NonNull View view) {
         View progress = view.findViewById(R.id.progressPins);
         if (progress != null) progress.setVisibility(View.VISIBLE);
@@ -273,6 +276,7 @@ public class HomeFragment extends Fragment {
         wire(view, R.id.tileCreateSociety,  R.id.createSocietyFragment);
     }
 
+    // helper so i dont have to write the same onclick 10 times
     private void wire(@NonNull View root, int tileId, int destId) {
         View tile = root.findViewById(tileId);
         if (tile != null) tile.setOnClickListener(v ->
