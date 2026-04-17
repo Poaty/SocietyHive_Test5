@@ -116,10 +116,11 @@ public class ChatConversationFragment extends Fragment {
 
         final String myUid = user.getUid();
 
-        messageListener = FirebaseFirestore.getInstance()
-                .collection("societies")
-                .document(societyId)
-                .collection("messages")
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        DocumentReference societyDocument = societiesCollection.document(societyId);
+        CollectionReference messagesCollection = societyDocument.collection("messages");
+        messageListener = messagesCollection
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .addSnapshotListener((snapshots, error) -> {
                     if (!isAdded()) return;
@@ -233,13 +234,14 @@ public class ChatConversationFragment extends Fragment {
             return;
         }
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String name = doc.getString("fullName");
+
                     if (name != null && !TextHelpers.isBlank(name)) {
                         currentUserName = name.trim();
                     }

@@ -292,6 +292,7 @@ public class HomeFragment extends Fragment {
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {
+
         return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
     }
 }

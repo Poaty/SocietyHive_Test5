@@ -216,6 +216,7 @@ public class CreateEventFragment extends Fragment {
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String organiser = doc.getString("fullName");
+
                     if (organiser == null || TextHelpers.isBlank(organiser)) {
                         organiser = user.getEmail() != null ? user.getEmail() : "Admin";
                     }

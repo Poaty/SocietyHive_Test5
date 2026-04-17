@@ -187,7 +187,9 @@ public class ProfileFragment extends Fragment {
         adapter.updateList(societies);
         if (societyIds == null || societyIds.isEmpty()) return;
         for (String id : societyIds) {
+
             if (id == null || TextHelpers.isBlank(id)) continue;
+
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             CollectionReference societiesCollection = db.collection("societies");
             DocumentReference societyDocument = societiesCollection.document(id);
@@ -202,9 +204,11 @@ public class ProfileFragment extends Fragment {
         String colorHex = doc.getString("hexColor");
         String desc     = doc.getString("description");
         String iconUrl  = doc.getString("iconUrl");
+
         if (name     == null || TextHelpers.isBlank(name))     name     = "Unnamed Society";
         if (colorHex == null || TextHelpers.isBlank(colorHex)) colorHex = "#8D2E3A";
         if (desc     == null || TextHelpers.isBlank(desc))     desc     = "";
+
         if (iconUrl  == null) iconUrl = "";
         societies.add(new Society(doc.getId(), name, desc, colorHex, iconUrl));
         adapter.updateList(societies);

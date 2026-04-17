@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -105,8 +107,10 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.PhotoVie
             holder.tvName.setText(nameCache.get(uid));
         } else {
             holder.tvName.setText("");
-            FirebaseFirestore.getInstance()
-                    .collection("users").document(uid).get()
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            CollectionReference usersCollection = db.collection("users");
+            DocumentReference userDocument = usersCollection.document(uid);
+            userDocument.get()
                     .addOnSuccessListener(doc -> {
                         String name = doc.getString("fullName");
                         if (name == null || name.isEmpty()) name = "Unknown";
