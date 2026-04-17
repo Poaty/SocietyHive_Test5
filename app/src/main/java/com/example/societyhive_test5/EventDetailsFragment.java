@@ -1,7 +1,9 @@
 package com.example.societyhive_test5;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -10,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,6 +20,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.zxing.BarcodeFormat;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +37,8 @@ public class EventDetailsFragment extends Fragment {
     private TextView tvOrganiser;
     private TextView tvDescription;
     private MaterialButton btnAttend;
+    private ImageView ivQrCode;
+    private MaterialCardView cardQr;
 
 
     private String eventId;
@@ -57,6 +64,8 @@ public class EventDetailsFragment extends Fragment {
         tvOrganiser   = view.findViewById(R.id.tvEventOrganiser);
         tvDescription = view.findViewById(R.id.tvEventDescription);
         btnAttend     = view.findViewById(R.id.btnAttendDetails);
+        ivQrCode      = view.findViewById(R.id.ivQrCode);
+        cardQr        = view.findViewById(R.id.cardQr);
 
         Bundle args = getArguments();
         eventId = args != null ? args.getString("eventId") : null;
@@ -101,6 +110,17 @@ public class EventDetailsFragment extends Fragment {
         tvMeta.setText(dateTime + "  •  " + location);
         tvOrganiser.setText("Organised by " + organiser);
         tvDescription.setText(desc);
+        generateQrCode();
+    }
+
+    private void generateQrCode() {
+        if (eventId == null || ivQrCode == null || cardQr == null) return;
+        try {
+            BarcodeEncoder encoder = new BarcodeEncoder();
+            Bitmap bitmap = encoder.encodeBitmap(eventId, BarcodeFormat.QR_CODE, 400, 400);
+            ivQrCode.setImageBitmap(bitmap);
+            cardQr.setVisibility(View.VISIBLE);
+        } catch (Exception ignored) {}
     }
 
 

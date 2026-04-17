@@ -156,18 +156,20 @@ public class UserManagementFragment extends Fragment {
             }
 
             int total = snap.size();
-            List<String> labels = new ArrayList<>(total);
-            List<String> docIds = new ArrayList<>(total);
-            List<String> uids   = new ArrayList<>(total);
-            List<String> sids   = new ArrayList<>(total);
+            List<String> docIds    = new ArrayList<>(total);
+            List<String> uids      = new ArrayList<>(total);
+            List<String> sids      = new ArrayList<>(total);
+            List<String> userNames = new ArrayList<>(total);
+            List<String> socNames  = new ArrayList<>(total);
 
             for (QueryDocumentSnapshot doc : snap) {
                 String uid = doc.getString("userId");
                 String sid = doc.getString("societyId");
-                labels.add("");
                 docIds.add(doc.getId());
                 uids.add(uid != null ? uid : "");
                 sids.add(sid != null ? sid : "");
+                userNames.add("");
+                socNames.add("");
             }
 
             AtomicInteger remaining = new AtomicInteger(total * 2);
@@ -178,37 +180,39 @@ public class UserManagementFragment extends Fragment {
                 db.collection("users").document(uids.get(idx)).get()
                         .addOnSuccessListener(userDoc -> {
                             String fullName = userDoc.getString("fullName");
-                            String[] parts = labels.get(idx).split(" → ");
-                            String society = parts.length > 1 ? parts[1] : "…";
-                            labels.set(idx, (fullName != null && !fullName.isEmpty() ? fullName : uids.get(idx)) + " → " + society);
-                            if (remaining.decrementAndGet() == 0) showRequestsDialog(labels, docIds, uids, sids);
+                            userNames.set(idx, (fullName != null && !fullName.isEmpty()) ? fullName : uids.get(idx));
+                            if (remaining.decrementAndGet() == 0) showRequestsDialog(userNames, socNames, docIds, uids, sids);
                         })
                         .addOnFailureListener(e -> {
-                            if (remaining.decrementAndGet() == 0) showRequestsDialog(labels, docIds, uids, sids);
+                            userNames.set(idx, uids.get(idx));
+                            if (remaining.decrementAndGet() == 0) showRequestsDialog(userNames, socNames, docIds, uids, sids);
                         });
 
                 db.collection("societies").document(sids.get(idx)).get()
                         .addOnSuccessListener(socDoc -> {
                             String socName = socDoc.getString("name");
-                            String[] parts = labels.get(idx).split(" → ");
-                            String user = parts.length > 0 ? parts[0] : "…";
-                            labels.set(idx, user + " → " + (socName != null && !socName.isEmpty() ? socName : sids.get(idx)));
-                            if (remaining.decrementAndGet() == 0) showRequestsDialog(labels, docIds, uids, sids);
+                            socNames.set(idx, (socName != null && !socName.isEmpty()) ? socName : sids.get(idx));
+                            if (remaining.decrementAndGet() == 0) showRequestsDialog(userNames, socNames, docIds, uids, sids);
                         })
                         .addOnFailureListener(e -> {
-                            if (remaining.decrementAndGet() == 0) showRequestsDialog(labels, docIds, uids, sids);
+                            socNames.set(idx, sids.get(idx));
+                            if (remaining.decrementAndGet() == 0) showRequestsDialog(userNames, socNames, docIds, uids, sids);
                         });
             }
         });
     }
 
-    private void showRequestsDialog(List<String> labels, List<String> docIds, List<String> uids, List<String> sids) {
+    private void showRequestsDialog(List<String> userNames, List<String> socNames,
+                                    List<String> docIds, List<String> uids, List<String> sids) {
         if (!isAdded()) return;
-        String[] items = labels.toArray(new String[0]);
+        String[] items = new String[docIds.size()];
+        for (int i = 0; i < items.length; i++) {
+            items[i] = userNames.get(i) + " → " + socNames.get(i);
+        }
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Pending Join Requests")
                 .setItems(items, (dialog, which) ->
-                        showApproveRejectDialog(docIds.get(which), uids.get(which), sids.get(which), labels.get(which)))
+                        showApproveRejectDialog(docIds.get(which), uids.get(which), sids.get(which), items[which]))
                 .setNegativeButton("Close", null)
                 .show();
     }
