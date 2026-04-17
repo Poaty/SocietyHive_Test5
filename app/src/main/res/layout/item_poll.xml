@@ -110,6 +110,19 @@
             android:layout_marginTop="12dp">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnClosePoll"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="Close"
+                android:textAllCaps="false"
+                android:textColor="?attr/colorOnPrimary"
+                app:strokeColor="?attr/colorOnPrimary"
+                app:cornerRadius="24dp"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDelete"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"

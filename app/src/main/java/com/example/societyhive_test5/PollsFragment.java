@@ -65,8 +65,8 @@ public class PollsFragment extends Fragment {
         rvClosedPolls.setHasFixedSize(false);
 
 
-        activeAdapter = new PollsAdapter(this::submitVote, null);
-        closedAdapter = new PollsAdapter(this::submitVote, null);
+        activeAdapter = new PollsAdapter(this::submitVote, null, null);
+        closedAdapter = new PollsAdapter(this::submitVote, null, null);
         rvPolls.setAdapter(activeAdapter);
         rvClosedPolls.setAdapter(closedAdapter);
 
@@ -105,8 +105,8 @@ public class PollsFragment extends Fragment {
 
                     if (isAdmin || isSocietyAdmin) {
                         RecyclerView rvPolls = requireView().findViewById(R.id.rvPolls);
-                        activeAdapter = new PollsAdapter(this::submitVote, this::deletePoll);
-                        closedAdapter = new PollsAdapter(this::submitVote, this::deletePoll);
+                        activeAdapter = new PollsAdapter(this::submitVote, this::deletePoll, this::closePoll);
+                        closedAdapter = new PollsAdapter(this::submitVote, this::deletePoll, null);
                         rvPolls.setAdapter(activeAdapter);
                         rvClosedPolls.setAdapter(closedAdapter);
                     }
@@ -379,6 +379,27 @@ public class PollsFragment extends Fragment {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
                             "Failed to delete poll: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void closePoll(@NonNull Poll poll) {
+        com.google.firebase.Timestamp pastTime =
+                new com.google.firebase.Timestamp(com.google.firebase.Timestamp.now().getSeconds() - 1, 0);
+        FirebaseFirestore.getInstance()
+                .collection("polls").document(poll.getId())
+                .update("endsAt", pastTime)
+                .addOnSuccessListener(unused -> {
+                    if (!isAdded()) return;
+                    activePolls.remove(poll);
+                    poll.setEndsAt(pastTime);
+                    if (isAdmin || isSocietyAdmin) closedPolls.add(poll);
+                    publishPolls();
+                    Toast.makeText(requireContext(), "Poll closed.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    if (!isAdded()) return;
+                    Toast.makeText(requireContext(),
+                            "Failed to close poll: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 

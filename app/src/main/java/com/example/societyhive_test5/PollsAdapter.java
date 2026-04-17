@@ -29,13 +29,21 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
         void onDelete(Poll poll);
     }
 
+    public interface CloseListener {
+        void onClose(Poll poll);
+    }
+
     private final List<Poll> polls = new ArrayList<>();
     private final VoteListener voteListener;
     @Nullable private final DeleteListener deleteListener;
+    @Nullable private final CloseListener closeListener;
 
-    public PollsAdapter(@NonNull VoteListener voteListener, @Nullable DeleteListener deleteListener) {
-        this.voteListener = voteListener;
+    public PollsAdapter(@NonNull VoteListener voteListener,
+                        @Nullable DeleteListener deleteListener,
+                        @Nullable CloseListener closeListener) {
+        this.voteListener   = voteListener;
         this.deleteListener = deleteListener;
+        this.closeListener  = closeListener;
     }
 
     @NonNull
@@ -147,6 +155,13 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
         }
 
 
+        if (closeListener != null && !closed) {
+            holder.btnClose.setVisibility(View.VISIBLE);
+            holder.btnClose.setOnClickListener(v -> closeListener.onClose(poll));
+        } else {
+            holder.btnClose.setVisibility(View.GONE);
+        }
+
         if (deleteListener != null) {
             holder.btnDelete.setVisibility(View.VISIBLE);
             holder.btnDelete.setOnClickListener(v -> deleteListener.onDelete(poll));
@@ -173,6 +188,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
         final LinearLayout optionsContainer;
         final TextView tvTotalVotes;
         final MaterialButton btnVote;
+        final MaterialButton btnClose;
         final MaterialButton btnDelete;
 
         ViewHolder(@NonNull View itemView) {
@@ -185,6 +201,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             optionsContainer = itemView.findViewById(R.id.optionsContainer);
             tvTotalVotes     = itemView.findViewById(R.id.tvTotalVotes);
             btnVote          = itemView.findViewById(R.id.btnVote);
+            btnClose         = itemView.findViewById(R.id.btnClosePoll);
             btnDelete        = itemView.findViewById(R.id.btnDelete);
         }
     }
