@@ -24,6 +24,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -126,9 +127,9 @@ public class CreatePollFragment extends Fragment {
     }
 
     private void loadSocieties() {
-        FirebaseFirestore.getInstance()
-                .collection("societies")
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference societiesCollection = db.collection("societies");
+        societiesCollection.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     societyIds.clear();
@@ -203,7 +204,7 @@ public class CreatePollFragment extends Fragment {
             return;
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         String societyId = societyIds.get(selectedSocietyIndex);
@@ -220,13 +221,13 @@ public class CreatePollFragment extends Fragment {
             data.put("endsAt", new Timestamp(closeDateCal.getTime())); // optional, poll stays open forever if not set
         }
 
-        FirebaseFirestore.getInstance()
-                .collection("polls")
-                .add(data)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference pollsCollection = db.collection("polls");
+        pollsCollection.add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(), "Poll created!", Toast.LENGTH_SHORT).show();
-                    NavHostFragment.findNavController(this).navigateUp();
+                    NavHelpers.navigateUp(this);
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
@@ -237,6 +238,6 @@ public class CreatePollFragment extends Fragment {
 
     @NonNull
     private String text(@Nullable TextInputEditText et) {
-        return (et != null && et.getText() != null) ? et.getText().toString().trim() : "";
+        return (et != null && et.getText() != null) ? TextHelpers.trimmed(et) : "";
     }
 }

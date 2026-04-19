@@ -58,14 +58,14 @@ public class PreferencesFragment extends Fragment {
         refreshTicks(root, themeKey, tickIds);
         refreshBorders(root, themeKey, circIds);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user != null) {
             Map<String, Object> update = new HashMap<>();
             update.put("themeKey", themeKey);
-            FirebaseFirestore.getInstance()
-                    .collection("users")
-                    .document(user.getUid())
-                    .update(update);
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            com.google.firebase.firestore.CollectionReference usersCollection = db.collection("users");
+            com.google.firebase.firestore.DocumentReference userDocument = usersCollection.document(user.getUid());
+            userDocument.update(update);
         }
 
         requireActivity().recreate();

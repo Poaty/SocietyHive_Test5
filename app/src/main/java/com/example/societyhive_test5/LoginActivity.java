@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -33,8 +35,8 @@ public class LoginActivity extends AppCompatActivity {
         TextView tvSignUp = findViewById(R.id.tvSignUp);
 
         btnLogin.setOnClickListener(v -> {
-            String email = etEmail.getText().toString().trim();
-            String password = etPassword.getText().toString().trim();
+            String email = TextHelpers.trimmed(etEmail);
+            String password = TextHelpers.trimmed(etPassword);
 
             // dont bother if fields are empty
             if (email.isEmpty() || password.isEmpty()) {
@@ -60,10 +62,11 @@ public class LoginActivity extends AppCompatActivity {
 
                         // load their saved theme before going to main screen
                         String uid = mAuth.getCurrentUser().getUid();
-                        com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                                .collection("users")
-                                .document(uid)
-                                .get()
+                        com.google.firebase.firestore.FirebaseFirestore db =
+                                com.google.firebase.firestore.FirebaseFirestore.getInstance();
+                        CollectionReference usersCollection = db.collection("users");
+                        DocumentReference userDocument = usersCollection.document(uid);
+                        userDocument.get()
                                 .addOnCompleteListener(docTask -> {
                                     if (docTask.isSuccessful()
                                             && docTask.getResult() != null

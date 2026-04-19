@@ -26,6 +26,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -71,10 +73,10 @@ public class ProfileFragment extends Fragment {
         ivProfilePicture.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
         view.findViewById(R.id.btnBrowseSocieties).setOnClickListener(v ->
-                NavHostFragment.findNavController(this).navigate(R.id.browseSocietiesFragment));
+                NavHelpers.navigate(this, R.id.browseSocietiesFragment));
 
         view.findViewById(R.id.btnLogOut).setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
+            AuthHelpers.signOut();
             Intent intent = new Intent(requireActivity(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -85,15 +87,15 @@ public class ProfileFragment extends Fragment {
 
     // pulls user data and joined societies from firestore
     private void loadProfileFromFirestore() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         tvEmail.setText(user.getEmail() != null ? user.getEmail() : "");
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener(document -> {
                     if (!isAdded() || !document.exists()) return;
 
@@ -139,13 +141,13 @@ public class ProfileFragment extends Fragment {
                     public void onSuccess(String requestId, Map resultData) {
                         if (!isAdded()) return;
                         String imageUrl = (String) resultData.get("secure_url");
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        FirebaseUser user = AuthHelpers.currentUser();
                         if (user == null || imageUrl == null) return;
 
-                        FirebaseFirestore.getInstance()
-                                .collection("users")
-                                .document(user.getUid())
-                                .update("profileImageUrl", imageUrl)
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        CollectionReference usersCollection = db.collection("users");
+                        DocumentReference userDocument = usersCollection.document(user.getUid());
+                        userDocument.update("profileImageUrl", imageUrl)
                                 .addOnSuccessListener(unused -> {
                                     if (!isAdded()) return;
                                     loadAvatar(imageUrl);
@@ -186,9 +188,13 @@ public class ProfileFragment extends Fragment {
         adapter.updateList(societies);
         if (societyIds == null || societyIds.isEmpty()) return;
         for (String id : societyIds) {
-            if (id == null || id.trim().isEmpty()) continue;
-            FirebaseFirestore.getInstance()
-                    .collection("societies").document(id).get()
+
+            if (id == null || TextHelpers.isBlank(id)) continue;
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            CollectionReference societiesCollection = db.collection("societies");
+            DocumentReference societyDocument = societiesCollection.document(id);
+            societyDocument.get()
                     .addOnSuccessListener(this::addSocietyIfValid);
         }
     }
@@ -200,9 +206,11 @@ public class ProfileFragment extends Fragment {
         String colorHex = doc.getString("hexColor");
         String desc     = doc.getString("description");
         String iconUrl  = doc.getString("iconUrl");
-        if (name     == null || name.trim().isEmpty())     name     = "Unnamed Society";
-        if (colorHex == null || colorHex.trim().isEmpty()) colorHex = "#8D2E3A";
-        if (desc     == null || desc.trim().isEmpty())     desc     = "";
+
+        if (name     == null || TextHelpers.isBlank(name))     name     = "Unnamed Society";
+        if (colorHex == null || TextHelpers.isBlank(colorHex)) colorHex = "#8D2E3A";
+        if (desc     == null || TextHelpers.isBlank(desc))     desc     = "";
+
         if (iconUrl  == null) iconUrl = "";
         societies.add(new Society(doc.getId(), name, desc, colorHex, iconUrl));
         adapter.updateList(societies);
@@ -232,13 +240,13 @@ public class ProfileFragment extends Fragment {
             b.putString("societyId", society.getId());
             b.putString("chatTitle", society.getName());
             b.putString("chatColor", society.getColorHex());
-            NavHostFragment.findNavController(this).navigate(R.id.chatConversationFragment, b);
+            NavHelpers.navigate(this, R.id.chatConversationFragment, b);
         });
 
         View rowEvents = sheetView.findViewById(R.id.rowViewEvents);
         if (rowEvents != null) rowEvents.setOnClickListener(v -> {
             sheet.dismiss();
-            NavHostFragment.findNavController(this).navigate(R.id.eventsFragment);
+            NavHelpers.navigate(this, R.id.eventsFragment);
         });
 
         View rowLeave = sheetView.findViewById(R.id.rowLeaveSociety);
@@ -260,12 +268,13 @@ public class ProfileFragment extends Fragment {
     }
 
     private void leaveSociety(@NonNull Society society) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
         // remove society id from the user's list
-        FirebaseFirestore.getInstance()
-                .collection("users").document(user.getUid())
-                .update("societyIds", FieldValue.arrayRemove(society.getId()))
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.update("societyIds", FieldValue.arrayRemove(society.getId()))
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),

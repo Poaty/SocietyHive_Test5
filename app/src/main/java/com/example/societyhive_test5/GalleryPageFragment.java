@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -86,11 +88,12 @@ public class GalleryPageFragment extends Fragment {
         TextView tvEmpty = view.findViewById(R.id.tvEmptyGallery);
 
         adapter = new GalleryAdapter(currentUid, isAdmin, societyColorMap);
-        adapter.setDeleteListener(photo ->
-                FirebaseFirestore.getInstance()
-                        .collection("gallery")
-                        .document(photo.getId())
-                        .delete());
+        adapter.setDeleteListener(photo -> {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            CollectionReference galleryCollection = db.collection("gallery");
+            DocumentReference photoDocument = galleryCollection.document(photo.getId());
+            photoDocument.delete();
+        });
 
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         rv.setAdapter(adapter);

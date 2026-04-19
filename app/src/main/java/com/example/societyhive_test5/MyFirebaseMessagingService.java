@@ -9,6 +9,8 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -29,20 +31,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
     static void saveTokenToFirestore(String token) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null || token == null) return;
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .update("fcmToken", token)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.update("fcmToken", token)
                 .addOnFailureListener(e -> {
 
                     java.util.Map<String, Object> data = new java.util.HashMap<>();
                     data.put("fcmToken", token);
-                    FirebaseFirestore.getInstance()
-                            .collection("users")
-                            .document(user.getUid())
-                            .set(data, com.google.firebase.firestore.SetOptions.merge());
+                    userDocument.set(data, com.google.firebase.firestore.SetOptions.merge());
                 });
     }
 

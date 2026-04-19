@@ -20,6 +20,8 @@ import com.google.android.material.button.MaterialButton;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -73,21 +75,24 @@ public class BrowseSocietiesFragment extends Fragment {
 
     // shows all societies the user hasnt joined yet, with pending state if they already requested
     private void loadSocieties() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // get joined societies first so we can filter them out
-        db.collection("users").document(user.getUid()).get()
+
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener(userDoc -> {
                     if (!isAdded()) return;
 
                     List<String> joined = (List<String>) userDoc.get("societyIds");
                     Set<String> joinedSet = joined != null ? new HashSet<>(joined) : new HashSet<>();
 
-                    // also need to check any pending requests so button shows the right state
-                    db.collection("joinRequests")
+
+                    CollectionReference joinRequestsCollection = db.collection("joinRequests");
+                    joinRequestsCollection
                             .whereEqualTo("userId", user.getUid())
                             .whereEqualTo("status", "pending")
                             .get()
@@ -101,7 +106,8 @@ public class BrowseSocietiesFragment extends Fragment {
                                 }
 
 
-                                db.collection("societies").get()
+                                CollectionReference societiesCollection = db.collection("societies");
+                                societiesCollection.get()
                                         .addOnSuccessListener(societiesSnap -> {
                                             if (!isAdded()) return;
                                             rows.clear();
@@ -141,7 +147,7 @@ public class BrowseSocietiesFragment extends Fragment {
     }
 
     private void submitRequest(SocietyRow row, MaterialButton btn) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         // write the join request, admin will see it in user management
@@ -151,9 +157,9 @@ public class BrowseSocietiesFragment extends Fragment {
         data.put("status",    "pending");
         data.put("createdAt", Timestamp.now());
 
-        FirebaseFirestore.getInstance()
-                .collection("joinRequests")
-                .add(data)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference joinRequestsCollection = db.collection("joinRequests");
+        joinRequestsCollection.add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
                     row.requested = true;

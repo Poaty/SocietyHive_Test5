@@ -17,6 +17,7 @@ import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -83,10 +84,10 @@ public class EventDetailsFragment extends Fragment {
 
 
     private void loadEvent() {
-        FirebaseFirestore.getInstance()
-                .collection("events")
-                .document(eventId)
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
+        DocumentReference eventDocument = eventsCollection.document(eventId);
+        eventDocument.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded() || !doc.exists()) return;
                     bindEvent(doc);
@@ -130,7 +131,7 @@ public class EventDetailsFragment extends Fragment {
 
     // check if theyre already attending before wiring the button
     private void loadAttendanceState() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             // not logged in, still show the button but tapping will prompt login
             updateAttendButton(false);
@@ -138,12 +139,12 @@ public class EventDetailsFragment extends Fragment {
             return;
         }
 
-        FirebaseFirestore.getInstance()
-                .collection(ATTENDANCE_COLLECTION)
-                .document(user.getUid())
-                .collection(ATTENDING_SUB)
-                .document(eventId)
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference attendanceCollection = db.collection(ATTENDANCE_COLLECTION);
+        DocumentReference userAttendanceDocument = attendanceCollection.document(user.getUid());
+        CollectionReference attendingEventsCollection = userAttendanceDocument.collection(ATTENDING_SUB);
+        DocumentReference eventAttendanceDocument = attendingEventsCollection.document(eventId);
+        eventAttendanceDocument.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     isAttending = doc.exists();
@@ -171,7 +172,7 @@ public class EventDetailsFragment extends Fragment {
 
 
     private void saveAttendance(boolean attending) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             Toast.makeText(requireContext(),
                     "Please log in to attend events.", Toast.LENGTH_SHORT).show();
@@ -180,11 +181,11 @@ public class EventDetailsFragment extends Fragment {
             return;
         }
 
-        DocumentReference ref = FirebaseFirestore.getInstance()
-                .collection(ATTENDANCE_COLLECTION)
-                .document(user.getUid())
-                .collection(ATTENDING_SUB)
-                .document(eventId);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference attendanceCollection = db.collection(ATTENDANCE_COLLECTION);
+        DocumentReference userAttendanceDocument = attendanceCollection.document(user.getUid());
+        CollectionReference attendingEventsCollection = userAttendanceDocument.collection(ATTENDING_SUB);
+        DocumentReference ref = attendingEventsCollection.document(eventId);
 
         if (attending) {
             Map<String, Object> data = new HashMap<>();
@@ -219,6 +220,8 @@ public class EventDetailsFragment extends Fragment {
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {
-        return (value != null && !value.trim().isEmpty()) ? value.trim() : fallback;
+
+        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
+
     }
 }

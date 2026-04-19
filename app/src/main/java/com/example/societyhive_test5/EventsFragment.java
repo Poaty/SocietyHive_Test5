@@ -17,6 +17,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -79,7 +80,7 @@ public class EventsFragment extends Fragment {
         hookChips(view);
 
         view.findViewById(R.id.btnCalendar).setOnClickListener(v ->
-                NavHostFragment.findNavController(this).navigate(R.id.calendarFragment));
+                NavHelpers.navigate(this, R.id.calendarFragment));
 
         loadEventsFromFirestore();
     }
@@ -91,9 +92,9 @@ public class EventsFragment extends Fragment {
     // grab all events then layer in attendance state and society filtering
     private void loadEventsFromFirestore() {
         if (progressEvents != null) progressEvents.setVisibility(View.VISIBLE);
-        FirebaseFirestore.getInstance()
-                .collection("events")
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
+        eventsCollection.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     if (progressEvents != null) progressEvents.setVisibility(View.GONE);
@@ -134,17 +135,17 @@ public class EventsFragment extends Fragment {
 
 
     private void loadAttendanceAndMerge() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             loadUserSocietiesAndFilter();
             return;
         }
 
-        FirebaseFirestore.getInstance()
-                .collection(ATTENDANCE_COLLECTION)
-                .document(user.getUid())
-                .collection(ATTENDING_SUB)
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference attendanceCollection = db.collection(ATTENDANCE_COLLECTION);
+        DocumentReference userAttendanceDocument = attendanceCollection.document(user.getUid());
+        CollectionReference attendingEventsCollection = userAttendanceDocument.collection(ATTENDING_SUB);
+        attendingEventsCollection.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     Set<String> attendingIds = new HashSet<>();
@@ -168,16 +169,16 @@ public class EventsFragment extends Fragment {
 
 
     private void loadUserSocietiesAndFilter() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             applyFilters();
             return;
         }
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument.get()
                 .addOnSuccessListener((DocumentSnapshot doc) -> {
                     if (!isAdded()) return;
                     isAdmin = "admin".equalsIgnoreCase(doc.getString("role"));
@@ -202,7 +203,7 @@ public class EventsFragment extends Fragment {
 
     // optimistic update - flip the state in ui first, revert if save fails
     private void toggleAttendance(@NonNull Event event, boolean attending) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             Toast.makeText(requireContext(),
                     "Please log in to attend events.", Toast.LENGTH_SHORT).show();
@@ -211,11 +212,11 @@ public class EventsFragment extends Fragment {
             return;
         }
 
-        DocumentReference ref = FirebaseFirestore.getInstance()
-                .collection(ATTENDANCE_COLLECTION)
-                .document(user.getUid())
-                .collection(ATTENDING_SUB)
-                .document(event.getId());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference attendanceCollection = db.collection(ATTENDANCE_COLLECTION);
+        DocumentReference userAttendanceDocument = attendanceCollection.document(user.getUid());
+        CollectionReference attendingEventsCollection = userAttendanceDocument.collection(ATTENDING_SUB);
+        DocumentReference ref = attendingEventsCollection.document(event.getId());
 
         if (attending) {
             Map<String, Object> data = new HashMap<>();
@@ -418,6 +419,6 @@ public class EventsFragment extends Fragment {
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {
-        return (value != null && !value.trim().isEmpty()) ? value.trim() : fallback;
+        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
     }
 }

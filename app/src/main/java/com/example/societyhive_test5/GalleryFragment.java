@@ -20,6 +20,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -73,16 +75,19 @@ public class GalleryFragment extends Fragment {
         ViewPager2 viewPager = view.findViewById(R.id.viewPagerGallery);
         FloatingActionButton fabUpload = view.findViewById(R.id.fabUpload);
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String uid = AuthHelpers.currentUser().getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // admin sees all societies, normal users only see what theyre in
-        db.collection("users").document(uid).get().addOnSuccessListener(userDoc -> {
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(uid);
+        userDocument.get().addOnSuccessListener(userDoc -> {
             if (!isAdded()) return;
             isAdmin = "admin".equals(userDoc.getString("role"));
 
             if (isAdmin) {
-                db.collection("societies").get().addOnSuccessListener(snap -> {
+                CollectionReference societiesCollection = db.collection("societies");
+                societiesCollection.get().addOnSuccessListener(snap -> {
                     if (!isAdded()) return;
                     tabSocietyIds.add("");
                     tabSocietyNames.add("All");
@@ -123,7 +128,9 @@ public class GalleryFragment extends Fragment {
                 Map<String, String> colorMap = new HashMap<>();
 
                 for (String id : ids) {
-                    db.collection("societies").document(id).get().addOnCompleteListener(task -> {
+                    CollectionReference societiesCollection = db.collection("societies");
+                    DocumentReference societyDocument = societiesCollection.document(id);
+                    societyDocument.get().addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             String n = task.getResult().getString("name");
                             if (n != null) nameMap.put(id, n);
@@ -146,7 +153,7 @@ public class GalleryFragment extends Fragment {
 
     // wires up the tabs and hides the fab on the All tab (cant upload to all)
     private void setupTabs(TabLayout tabLayout, ViewPager2 viewPager, FloatingActionButton fabUpload) {
-        String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String currentUid = AuthHelpers.currentUser().getUid();
         GalleryPagerAdapter pagerAdapter =
                 new GalleryPagerAdapter(this, tabSocietyIds, tabSocietyColors, currentUid, isAdmin);
         viewPager.setAdapter(pagerAdapter);
@@ -181,7 +188,7 @@ public class GalleryFragment extends Fragment {
         if (!isAdded()) return;
         Toast.makeText(requireContext(), "Uploading…", Toast.LENGTH_SHORT).show();
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String uid = AuthHelpers.currentUser().getUid();
 
         MediaManager.get().upload(uri)
                 .unsigned(UPLOAD_PRESET)
@@ -200,7 +207,9 @@ public class GalleryFragment extends Fragment {
                         photo.put("uploadedBy", uid);
                         photo.put("createdAt", Timestamp.now());
 
-                        FirebaseFirestore.getInstance().collection("gallery").add(photo)
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        CollectionReference galleryCollection = db.collection("gallery");
+                        galleryCollection.add(photo)
                                 .addOnSuccessListener(ref ->
                                         requireActivity().runOnUiThread(() ->
                                                 Toast.makeText(requireContext(),

@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -52,19 +54,20 @@ public class HomeFragment extends Fragment {
         TextView tvWelcome = view.findViewById(R.id.tvWelcome);
         if (tvWelcome != null) tvWelcome.setText("Welcome back");
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocument = usersCollection.document(user.getUid());
+        userDocument
                 .get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
 
 
                     String fullName = doc.getString("fullName");
-                    if (tvWelcome != null && fullName != null && !fullName.trim().isEmpty()) {
+                    if (tvWelcome != null && fullName != null && !TextHelpers.isBlank(fullName)) {
                         // just use first name so it doesnt get cut off on small screens
                     String firstName = fullName.trim().split("\\s+")[0];
                         tvWelcome.setText("Welcome, " + firstName);
@@ -120,7 +123,7 @@ public class HomeFragment extends Fragment {
         if (tilePin != null) tilePin.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putString("preSelectedSocietyId", societyId);
-            NavHostFragment.findNavController(this).navigate(R.id.createPinFragment, args);
+            NavHelpers.navigate(this, R.id.createPinFragment, args);
         });
 
 
@@ -128,7 +131,7 @@ public class HomeFragment extends Fragment {
         if (tileEvent != null) tileEvent.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putString("preSelectedSocietyId", societyId);
-            NavHostFragment.findNavController(this).navigate(R.id.createEventFragment, args);
+            NavHelpers.navigate(this, R.id.createEventFragment, args);
         });
 
 
@@ -136,7 +139,7 @@ public class HomeFragment extends Fragment {
         if (tilePoll != null) tilePoll.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putString("preSelectedSocietyId", societyId);
-            NavHostFragment.findNavController(this).navigate(R.id.createPollFragment, args);
+            NavHelpers.navigate(this, R.id.createPollFragment, args);
         });
 
 
@@ -144,7 +147,7 @@ public class HomeFragment extends Fragment {
         if (tileMembers != null) tileMembers.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putString("societyFilter", societyId);
-            NavHostFragment.findNavController(this).navigate(R.id.userManagementFragment, args);
+            NavHelpers.navigate(this, R.id.userManagementFragment, args);
         });
 
 
@@ -152,7 +155,7 @@ public class HomeFragment extends Fragment {
         if (tileEditSociety != null) tileEditSociety.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putString("preSelectedSocietyId", societyId);
-            NavHostFragment.findNavController(this).navigate(R.id.editSocietyFragment, args);
+            NavHelpers.navigate(this, R.id.editSocietyFragment, args);
         });
     }
 
@@ -165,9 +168,9 @@ public class HomeFragment extends Fragment {
         View progress = view.findViewById(R.id.progressPins);
         if (progress != null) progress.setVisibility(View.VISIBLE);
 
-        FirebaseFirestore.getInstance()
-                .collection("pins")
-                .get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference pinsCollection = db.collection("pins");
+        pinsCollection.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     if (progress != null) progress.setVisibility(View.GONE);
@@ -208,7 +211,10 @@ public class HomeFragment extends Fragment {
         final Map<String, String> nameMap = new HashMap<>();
 
         for (String sid : ids) {
-            FirebaseFirestore.getInstance().collection("societies").document(sid).get()
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            CollectionReference societiesCollection = db.collection("societies");
+            DocumentReference societyDocument = societiesCollection.document(sid);
+            societyDocument.get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             String name = task.getResult().getString("name");
@@ -246,9 +252,10 @@ public class HomeFragment extends Fragment {
 
     // remove from list without reloading the whole thing
     private void deletePin(@NonNull String pinId, @NonNull View view) {
-        FirebaseFirestore.getInstance()
-                .collection("pins").document(pinId)
-                .delete()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference pinsCollection = db.collection("pins");
+        DocumentReference pinDocument = pinsCollection.document(pinId);
+        pinDocument.delete()
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     announcements.removeIf(a -> a.getId().equals(pinId));
@@ -282,11 +289,12 @@ public class HomeFragment extends Fragment {
     private void wire(@NonNull View root, int tileId, int destId) {
         View tile = root.findViewById(tileId);
         if (tile != null) tile.setOnClickListener(v ->
-                NavHostFragment.findNavController(this).navigate(destId));
+                NavHelpers.navigate(this, destId));
     }
 
     @NonNull
     private String safeString(@Nullable String value, @NonNull String fallback) {
-        return (value != null && !value.trim().isEmpty()) ? value.trim() : fallback;
+
+        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
     }
 }
