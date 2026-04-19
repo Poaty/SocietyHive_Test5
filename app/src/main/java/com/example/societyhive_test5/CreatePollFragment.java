@@ -62,13 +62,13 @@ public class CreatePollFragment extends Fragment {
         optionsContainer = view.findViewById(R.id.optionsContainer);
         actvSociety      = view.findViewById(R.id.actvSociety);
 
-        etCloseDate.setOnClickListener(v -> showDatePicker());
+        etCloseDate.setOnClickListener(v -> showDatePicker()); // tap to open calendar
 
         MaterialButton btnAddOption  = view.findViewById(R.id.btnAddOption);
         MaterialButton btnCreatePoll = view.findViewById(R.id.btnCreatePoll);
 
 
-        addOptionField();
+        addOptionField(); // start with 2 option fields
         addOptionField();
 
         btnAddOption.setOnClickListener(v -> addOptionField());
@@ -83,6 +83,7 @@ public class CreatePollFragment extends Fragment {
 
 
 
+    // shows date picker, sets time to end of day (23:59) so the whole day counts
     private void showDatePicker() {
         Calendar start = closeDateCal != null ? closeDateCal : Calendar.getInstance();
         DatePickerDialog dialog = new DatePickerDialog(
@@ -173,6 +174,7 @@ public class CreatePollFragment extends Fragment {
 
 
 
+    // validate everything then push to firestore
     private void attemptCreate() {
         String title    = text(etTitle);
         String question = text(etQuestion);
@@ -216,7 +218,7 @@ public class CreatePollFragment extends Fragment {
         data.put("createdBy", user.getUid());
         data.put("createdAt", Timestamp.now());
         if (closeDateCal != null) {
-            data.put("endsAt", new Timestamp(closeDateCal.getTime()));
+            data.put("endsAt", new Timestamp(closeDateCal.getTime())); // optional, poll stays open forever if not set
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();

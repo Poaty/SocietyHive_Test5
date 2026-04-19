@@ -73,6 +73,7 @@ public class BrowseSocietiesFragment extends Fragment {
 
 
 
+    // shows all societies the user hasnt joined yet, with pending state if they already requested
     private void loadSocieties() {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
@@ -149,6 +150,7 @@ public class BrowseSocietiesFragment extends Fragment {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
+        // write the join request, admin will see it in user management
         Map<String, Object> data = new HashMap<>();
         data.put("userId",    user.getUid());
         data.put("societyId", row.id);
@@ -236,6 +238,7 @@ public class BrowseSocietiesFragment extends Fragment {
                     ivIcon.setImageResource(R.drawable.ic_profile);
                 }
 
+                // disable the button if they already sent a request
                 if (row.requested) {
                     btnRequest.setText("Requested");
                     btnRequest.setEnabled(false);

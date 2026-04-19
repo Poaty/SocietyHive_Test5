@@ -175,6 +175,7 @@ public class ProfileFragment extends Fragment {
                 .dispatch();
     }
 
+    // glide handles the circle crop, no need to do it manually
     private void loadAvatar(String url) {
         ivProfilePicture.setPadding(0, 0, 0, 0);
         ivProfilePicture.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
@@ -198,6 +199,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    // called once per society doc, adds to list and refreshes adapter each time
     private void addSocietyIfValid(@NonNull DocumentSnapshot doc) {
         if (!isAdded() || !doc.exists()) return;
         String name     = doc.getString("name");

@@ -69,6 +69,7 @@ public class ChatsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
 
+        // clean up listeners so they dont fire after the view is gone
         for (com.google.firebase.firestore.ListenerRegistration reg : listeners) {
             reg.remove();
         }
@@ -207,6 +208,7 @@ public class ChatsFragment extends Fragment {
     }
 
 
+    // replace or append - needed because listeners fire at different times
     private void updateChatPreview(String societyId, String name,
                                    String preview, String time, String color, String iconUrl) {
         for (int i = 0; i < allChats.size(); i++) {

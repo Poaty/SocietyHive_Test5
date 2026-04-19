@@ -107,7 +107,7 @@ public class PollsAdapter extends RecyclerView.Adapter<PollsAdapter.ViewHolder> 
             tvText.setText(options.get(i));
 
             boolean isVotedOption    = hasVoted && poll.getVotedOptionIndex() == i;
-            boolean isSelectedOption = !hasVoted && !closed && poll.getSelectedOptionIndex() == i;
+            boolean isSelectedOption = !hasVoted && !closed && poll.getSelectedOptionIndex() == i; // tapped but not yet submitted
 
             if (isVotedOption || isSelectedOption) {
                 ivCheckbox.setImageResource(R.drawable.ic_check);

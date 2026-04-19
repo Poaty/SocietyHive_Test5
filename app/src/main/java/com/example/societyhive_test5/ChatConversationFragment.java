@@ -204,6 +204,7 @@ public class ChatConversationFragment extends Fragment {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null || societyId == null) return;
 
+        // listener above picks this up and updates the UI automatically
         Map<String, Object> data = new HashMap<>();
         data.put("text", text);
         data.put("senderId", user.getUid());
@@ -227,6 +228,7 @@ public class ChatConversationFragment extends Fragment {
 
 
 
+    // get their name so messages show properly - onReady fires when done
     private void resolveCurrentUserName(@NonNull Runnable onReady) {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {

@@ -86,6 +86,7 @@ public class CreateEventFragment extends Fragment {
 
 
 
+    // date then time, chained together
     private void showDatePicker() {
         Calendar cal = Calendar.getInstance();
         new DatePickerDialog(requireContext(), (datePicker, year, month, day) -> {
@@ -231,6 +232,7 @@ public class CreateEventFragment extends Fragment {
                 });
     }
 
+    // actually write the event document
     private void writeEvent(String name, String description, String location,
                             String dateTime, String organiser,
                             String societyId, boolean isPublic, String uid) {

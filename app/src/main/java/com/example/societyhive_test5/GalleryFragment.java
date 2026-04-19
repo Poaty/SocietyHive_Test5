@@ -151,6 +151,7 @@ public class GalleryFragment extends Fragment {
         });
     }
 
+    // wires up the tabs and hides the fab on the All tab (cant upload to all)
     private void setupTabs(TabLayout tabLayout, ViewPager2 viewPager, FloatingActionButton fabUpload) {
         String currentUid = AuthHelpers.currentUser().getUid();
         GalleryPagerAdapter pagerAdapter =

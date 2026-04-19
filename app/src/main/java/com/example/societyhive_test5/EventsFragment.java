@@ -89,6 +89,7 @@ public class EventsFragment extends Fragment {
 
 
 
+    // grab all events then layer in attendance state and society filtering
     private void loadEventsFromFirestore() {
         if (progressEvents != null) progressEvents.setVisibility(View.VISIBLE);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -114,7 +115,7 @@ public class EventsFragment extends Fragment {
                         ));
                     }
 
-                    if (allEvents.isEmpty()) seedDummyEvents();
+                    if (allEvents.isEmpty()) seedDummyEvents(); // fallback so screen isnt empty
 
                     loadAttendanceAndMerge();
                 })
@@ -200,6 +201,7 @@ public class EventsFragment extends Fragment {
 
 
 
+    // optimistic update - flip the state in ui first, revert if save fails
     private void toggleAttendance(@NonNull Event event, boolean attending) {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
@@ -245,6 +247,7 @@ public class EventsFragment extends Fragment {
 
 
 
+    // placeholder events if firestore is empty or hasnt loaded - TODO remove eventually
     private void seedDummyEvents() {
         allEvents.add(new Event(
                 "e1",
@@ -400,6 +403,7 @@ public class EventsFragment extends Fragment {
     }
 
 
+    // splits out the date from "15-Nov-2025 • 18:00" format for chip filtering
     @Nullable
     private static Date parseEventDate(@Nullable String dateTime) {
         if (dateTime == null || dateTime.isEmpty()) return null;

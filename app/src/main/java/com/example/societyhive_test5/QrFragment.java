@@ -37,6 +37,7 @@ public class QrFragment extends Fragment {
                 }
             });
 
+    // fires every time a qr code is successfully decoded
     private final BarcodeCallback barcodeCallback = result -> {
         if (result != null && result.getText() != null) {
             onQrDetected(result.getText());
@@ -82,9 +83,10 @@ public class QrFragment extends Fragment {
     }
 
     private void onQrDetected(@NonNull String eventId) {
-        if (hasNavigated) return;
+        if (hasNavigated) return; // guard against double-firing from rapid scans
         hasNavigated = true;
 
+        // take the user straight to the event details
         Bundle args = new Bundle();
         args.putString("eventId", eventId);
         NavHostFragment.findNavController(this)
