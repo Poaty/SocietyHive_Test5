@@ -16,6 +16,7 @@
         android:textStyle="bold"
         android:textColor="?attr/colorOnPrimaryContainer" />
 
+    <!-- alpha 0.7 on the subtitle keeps it readable as supporting text without competing with the heading -->
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="match_parent"
@@ -28,6 +29,7 @@
         android:textColor="?attr/colorOnPrimaryContainer"
         android:alpha="0.7" />
 
+    <!-- layout_weight=1 and the empty-state TextView share the same weight slot so they never overlap -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBrowseSocieties"
         android:layout_width="match_parent"

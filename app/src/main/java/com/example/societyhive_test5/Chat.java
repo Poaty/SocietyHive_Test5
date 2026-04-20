@@ -10,6 +10,7 @@ public class Chat {
     private final String societyColor;
     private String iconUrl;
 
+    // short constructor for when the icon hasn't loaded yet — iconUrl defaults to ""
     public Chat(@NonNull String id,
                 @NonNull String title,
                 @NonNull String lastMessage,

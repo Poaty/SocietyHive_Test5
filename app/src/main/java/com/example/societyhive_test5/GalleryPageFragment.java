@@ -103,6 +103,7 @@ public class GalleryPageFragment extends Fragment {
 
     private void listenPhotos(TextView tvEmpty) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // empty societyId means this is the "All" tab — show photos from every society the user can see
         Query query = societyId.isEmpty()
                 ? db.collection("gallery")
                 : db.collection("gallery").whereEqualTo("societyId", societyId);

@@ -31,6 +31,7 @@
             android:textStyle="bold" />
 
 
+        <!-- pill-shaped card (cornerRadius=36dp) wrapping the TextInputLayout so we can control the full background and icon padding together -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardEmail"
             android:layout_width="match_parent"
@@ -135,6 +136,7 @@
             app:cornerRadius="28dp" />
 
 
+        <!-- inline sign-up prompt avoids a second screen just to navigate away; keeps friction low for new users -->
         <LinearLayout
             android:id="@+id/rowSignUp"
             android:layout_width="wrap_content"

@@ -71,6 +71,7 @@
                 </LinearLayout>
 
 
+                <!-- society picker comes before the detail fields so the form populates with existing data once one is chosen -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilSociety"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -171,6 +172,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
+                <!-- colour swatch defaults to the current society colour; updated in real time as the admin edits the hex -->
                 <View
                     android:id="@+id/colorSwatch"
                     android:layout_width="match_parent"

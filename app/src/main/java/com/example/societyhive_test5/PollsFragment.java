@@ -85,7 +85,7 @@ public class PollsFragment extends Fragment {
         if (tvEmptyPolls != null) tvEmptyPolls.setVisibility(View.GONE);
 
         FirebaseUser user = AuthHelpers.currentUser();
-        if (user == null) { loadPolls(); return; }
+        if (user == null) { fetchActivePolls(); return; }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference usersCollection = db.collection("users");
@@ -117,24 +117,20 @@ public class PollsFragment extends Fragment {
                         rvClosedPolls.setAdapter(closedAdapter);
                     }
 
-                    loadPolls();
+                    fetchActivePolls();
                 })
-                .addOnFailureListener(e -> { if (isAdded()) loadPolls(); });
+                .addOnFailureListener(e -> { if (isAdded()) fetchActivePolls(); });
     }
 
 
-
-
-
-    private void loadPolls() {
+    private void fetchActivePolls() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference pollsCollection = db.collection("polls");
-        pollsCollection
-                .whereEqualTo("isActive", true)
+        CollectionReference polls = db.collection("polls");
+        polls.whereEqualTo("isActive", true)
                 .orderBy("createdAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    if (!isAdded()) return;
+                    if (getContext() == null) return;
                     activePolls.clear();
                     closedPolls.clear();
 
@@ -148,8 +144,8 @@ public class PollsFragment extends Fragment {
 
                         Poll poll = new Poll();
                         poll.setId(doc.getId());
-                        poll.setTitle(safeString(doc.getString("title"), "Untitled Poll"));
-                        poll.setQuestion(safeString(doc.getString("question"), ""));
+                        poll.setTitle(safe(doc.getString("title"), "Untitled Poll"));
+                        poll.setQuestion(safe(doc.getString("question"), ""));
                         poll.setActive(true);
                         poll.setSocietyId(societyId != null ? societyId : "");
                         poll.setEndsAt(doc.getTimestamp("endsAt"));
@@ -181,7 +177,7 @@ public class PollsFragment extends Fragment {
                         tvEmptyPolls.setText("Could not load polls.");
                         tvEmptyPolls.setVisibility(View.VISIBLE);
                     }
-                    Toast.makeText(requireContext(), "Could not load polls.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "failed to load polls", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -189,22 +185,21 @@ public class PollsFragment extends Fragment {
 
 
 
-    // collect unique society ids from all polls then look them up in one go
+    // resolve society names in one pass before rendering so the adapter doesn't show raw ids
     private void fetchSocietyNamesThenVotes() {
         Set<String> ids = new HashSet<>();
         for (Poll p : activePolls) if (!p.getSocietyId().isEmpty()) ids.add(p.getSocietyId());
         for (Poll p : closedPolls) if (!p.getSocietyId().isEmpty()) ids.add(p.getSocietyId());
 
-        if (ids.isEmpty()) { loadAllVotes(); return; }
+        if (ids.isEmpty()) { tallyCastVotes(); return; }
 
         final int[] remaining = {ids.size()};
         final Map<String, String> nameMap = new HashMap<>();
 
         for (String sid : ids) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            CollectionReference societiesCollection = db.collection("societies");
-            DocumentReference societyDocument = societiesCollection.document(sid);
-            societyDocument.get()
+            DocumentReference socRef = db.collection("societies").document(sid);
+            socRef.get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             String name = task.getResult().getString("name");
@@ -220,7 +215,7 @@ public class PollsFragment extends Fragment {
                                 String n = nameMap.get(p.getSocietyId());
                                 if (n != null) p.setSocietyName(n);
                             }
-                            if (isAdded()) loadAllVotes();
+                            if (isAdded()) tallyCastVotes();
                         }
                     });
         }
@@ -230,8 +225,7 @@ public class PollsFragment extends Fragment {
 
 
 
-    // get votes for all polls at once so we can show counts and highlight which one they picked
-    private void loadAllVotes() {
+    private void tallyCastVotes() {
         List<Poll> all = new ArrayList<>(activePolls);
         all.addAll(closedPolls);
 
@@ -246,9 +240,8 @@ public class PollsFragment extends Fragment {
 
         for (Poll poll : all) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            CollectionReference pollsCollection = db.collection("polls");
-            DocumentReference pollDocument = pollsCollection.document(poll.getId());
-            CollectionReference votesCollection = pollDocument.collection("votes");
+            DocumentReference pollRef = db.collection("polls").document(poll.getId());
+            CollectionReference votesCollection = pollRef.collection("votes");
             votesCollection.get()
                     .addOnCompleteListener(task -> {
                         if (!isAdded()) { finishOne(remaining); return; }
@@ -350,11 +343,9 @@ public class PollsFragment extends Fragment {
         voteData.put("votedAt", Timestamp.now());
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference pollsCollection = db.collection("polls");
-        DocumentReference pollDocument = pollsCollection.document(poll.getId());
-        CollectionReference votesCollection = pollDocument.collection("votes");
-        DocumentReference userVoteDocument = votesCollection.document(user.getUid());
-        userVoteDocument.set(voteData)
+        DocumentReference pollRef = db.collection("polls").document(poll.getId());
+        DocumentReference voteRef = pollRef.collection("votes").document(user.getUid());
+        voteRef.set(voteData)
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     List<Integer> counts = new ArrayList<>(poll.getVoteCounts());
@@ -365,7 +356,7 @@ public class PollsFragment extends Fragment {
                     poll.setHasVoted(true);
                     poll.setVotedOptionIndex(optionIndex);
                     activeAdapter.notifyDataSetChanged();
-                    Toast.makeText(requireContext(), "Vote recorded!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireActivity(), "Vote recorded!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
@@ -379,9 +370,8 @@ public class PollsFragment extends Fragment {
 
     private void deletePoll(@NonNull Poll poll) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference pollsCollection = db.collection("polls");
-        DocumentReference pollDocument = pollsCollection.document(poll.getId());
-        pollDocument.delete()
+        DocumentReference pollRef = db.collection("polls").document(poll.getId());
+        pollRef.delete()
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     activePolls.remove(poll);
@@ -390,7 +380,7 @@ public class PollsFragment extends Fragment {
                     Toast.makeText(requireContext(), "Poll deleted.", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    if (!isAdded()) return;
+                    if (!isAdded() || getView() == null) return;
                     Toast.makeText(requireContext(),
                             "Failed to delete poll: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
@@ -401,9 +391,9 @@ public class PollsFragment extends Fragment {
         com.google.firebase.Timestamp pastTime =
                 new com.google.firebase.Timestamp(com.google.firebase.Timestamp.now().getSeconds() - 1, 0);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference pollsCollection = db.collection("polls");
-        DocumentReference pollDocument = pollsCollection.document(poll.getId());
-        pollDocument.update("endsAt", pastTime)
+        CollectionReference col = db.collection("polls");
+        DocumentReference ref = col.document(poll.getId());
+        ref.update("endsAt", pastTime)
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     activePolls.remove(poll);
@@ -422,8 +412,8 @@ public class PollsFragment extends Fragment {
 
 
     @NonNull
-    private String safeString(@Nullable String value, @NonNull String fallback) {
-
-        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
+    private String safe(@Nullable String value, String fallback) {
+        String v = value != null ? value.trim() : null;
+        return (v == null || v.isEmpty()) ? fallback : v;
     }
 }

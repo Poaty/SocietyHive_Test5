@@ -114,6 +114,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
+                <!-- date field is focusable=false to prevent the keyboard from opening; a DatePicker dialog is shown on click instead -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilDateTime"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -201,6 +202,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
+                <!-- backgroundTint colorOnPrimary inverts the button colour against the primary card — white button on dark card -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCreateEvent"
                     android:layout_width="wrap_content"

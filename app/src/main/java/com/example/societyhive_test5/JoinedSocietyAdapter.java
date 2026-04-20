@@ -99,7 +99,7 @@ public class JoinedSocietyAdapter extends RecyclerView.Adapter<JoinedSocietyAdap
             }
 
             btnManage.setOnClickListener(v -> listener.onManageClick(society));
-            itemView.setOnClickListener(v -> listener.onManageClick(society));
+            itemView.setOnClickListener(v -> listener.onManageClick(society)); // tapping the row feels more natural than hunting for the button
         }
     }
 }

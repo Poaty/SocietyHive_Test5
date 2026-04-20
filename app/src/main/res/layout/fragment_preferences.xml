@@ -62,6 +62,7 @@
                 android:orientation="vertical">
 
 
+                <!-- 72dp row height matches the profile and settings rows so all swipe-able items feel consistent -->
                 <LinearLayout
                     android:id="@+id/swatchCrimson"
                     android:layout_width="match_parent"
@@ -88,6 +89,7 @@
                         android:textColor="?attr/colorOnPrimary"
                         android:textSize="16sp" />
 
+                    <!-- Crimson tick starts visible because it's the default theme — code sets others to invisible -->
                     <ImageView
                         android:id="@+id/tickCrimson"
                         android:layout_width="22dp"

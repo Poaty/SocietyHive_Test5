@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+            // guard against double-tapping a nav item triggering two navigations at once
             final boolean[] isNavigating = {false};
 
             bottomNav.setOnItemSelectedListener(item -> {

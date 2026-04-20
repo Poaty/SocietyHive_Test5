@@ -16,8 +16,8 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        // 1.5s gives the splash logo time to render before we check auth state and redirect
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-
 
             Class<?> destination = AuthHelpers.currentUser() != null
                     ? MainActivity.class

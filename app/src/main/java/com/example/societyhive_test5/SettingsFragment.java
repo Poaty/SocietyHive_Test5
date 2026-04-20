@@ -32,7 +32,7 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        loadAccountInfo(view);
+        fetchAccountDetails(view);
 
         view.findViewById(R.id.rowEditName).setOnClickListener(v -> showEditNameDialog());
         view.findViewById(R.id.rowChangePassword).setOnClickListener(v -> showChangePasswordDialog());
@@ -40,10 +40,7 @@ public class SettingsFragment extends Fragment {
     }
 
 
-
-
-
-    private void loadAccountInfo(@NonNull View view) {
+    private void fetchAccountDetails(@NonNull View view) {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
@@ -51,9 +48,8 @@ public class SettingsFragment extends Fragment {
         if (tvName == null) return;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(user.getUid());
-        userDocument.get()
+        DocumentReference userDoc = db.collection("users").document(user.getUid());
+        userDoc.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String name = doc.getString("fullName");
@@ -78,11 +74,11 @@ public class SettingsFragment extends Fragment {
 
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(user.getUid());
-        userDocument.get()
+        CollectionReference col = db.collection("users");
+        DocumentReference userRef = col.document(user.getUid());
+        userRef.get()
                 .addOnSuccessListener(doc -> {
-                    if (!isAdded()) return;
+                    if (getContext() == null) return;
                     String current = doc.getString("fullName");
                     if (current != null && et != null) et.setText(current);
                 });
@@ -107,17 +103,16 @@ public class SettingsFragment extends Fragment {
                 .show();
     }
 
-    private void saveDisplayName(@NonNull String uid, @NonNull String name) {
+    private void saveDisplayName(@NonNull String uid, String name) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(uid);
+        DocumentReference userDocument = db.collection("users").document(uid);
         userDocument.update("fullName", name)
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(),
+                    Toast.makeText(requireActivity(),
                             "Name updated", Toast.LENGTH_SHORT).show();
 
-
+                    // update the label in place so it doesn't need a full reload
                     View v = getView();
                     if (v != null) {
                         TextView tv = v.findViewById(R.id.tvCurrentName);
@@ -127,7 +122,7 @@ public class SettingsFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
-                            "Failed to update name: " + e.getMessage(),
+                            "update failed: " + e.getMessage(),
                             Toast.LENGTH_LONG).show();
                 });
     }
@@ -203,7 +198,7 @@ public class SettingsFragment extends Fragment {
                                     Toast.LENGTH_SHORT).show();
                         })
                         .addOnFailureListener(e -> {
-                            if (!isAdded()) return;
+                            if (getContext() == null) return;
                             Toast.makeText(requireContext(),
                                     "Failed to update password: " + e.getMessage(),
                                     Toast.LENGTH_LONG).show();

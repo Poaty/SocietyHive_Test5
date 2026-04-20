@@ -7,7 +7,7 @@ public class Society {
     private final String name;
     private final String subtitle;
     private final String colorHex;
-    private String iconUrl;
+    private String iconUrl; // not final — can be updated if the admin uploads a new icon later
 
     public Society(@NonNull String id,
                    @NonNull String name,

@@ -15,6 +15,7 @@
     app:strokeWidth="2dp"
     app:strokeColor="#8D2E3A">
 
+    <!-- cardElevation=0 because the stroke already provides enough visual separation from the background -->
     <View
         android:id="@+id/viewSocietyAccent"
         android:layout_width="0dp"
@@ -53,6 +54,7 @@
                 android:textSize="16sp"
                 android:textColor="?attr/colorOnSurface" />
 
+            <!-- subtitle is populated with the role or member count from the adapter, kept empty here -->
             <TextView
                 android:id="@+id/tvSocietySubtitle"
                 android:layout_width="wrap_content"

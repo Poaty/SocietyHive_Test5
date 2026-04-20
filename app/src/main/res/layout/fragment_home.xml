@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:paddingBottom="24dp">
 
-
+        <!-- 70dp top margin keeps the title clear of the status bar without fitsSystemWindows complexity -->
         <TextView
             android:id="@+id/tvWelcome"
             android:layout_width="wrap_content"
@@ -47,6 +47,7 @@
             android:layout_marginTop="18dp"
             android:visibility="gone" />
 
+        <!-- nestedScrollingEnabled false so the RecyclerView doesn't fight for scroll inside the outer NestedScrollView -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvAnnouncements"
             android:layout_width="match_parent"
@@ -70,6 +71,7 @@
             android:layout_marginTop="18dp" />
 
 
+        <!-- single card wrapping the grid so tiles share a rounded surface rather than floating individually -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardDashboard"
             android:layout_width="match_parent"

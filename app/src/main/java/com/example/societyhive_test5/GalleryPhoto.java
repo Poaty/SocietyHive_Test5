@@ -6,7 +6,7 @@ public class GalleryPhoto {
     private String id;
     private String societyId;
     private String imageUrl;
-    private String uploadedBy;
+    private String uploadedBy; // uid, not name — we resolve the display name in the adapter
     private Timestamp createdAt;
 
     public GalleryPhoto() {}

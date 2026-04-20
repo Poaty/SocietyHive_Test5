@@ -7,6 +7,7 @@
     android:paddingTop="6dp"
     android:paddingBottom="6dp">
 
+    <!-- 60dp left margin keeps the sent bubble right-aligned without needing RTL layout tricks -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

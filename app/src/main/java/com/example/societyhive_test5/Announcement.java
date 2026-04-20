@@ -8,7 +8,7 @@ public class Announcement {
     private String title;
     private String content;
     private String societyId;
-    private String societyName;
+    private String societyName; // denormalised from the societies collection so we don't need a second read on every bind
     private String createdBy;
     private Timestamp createdAt;
 

@@ -14,7 +14,7 @@ public class Event {
 
 
     private boolean attending;
-    private boolean expanded;
+    private boolean expanded; // ui-only state, not persisted — just tracks whether the card is expanded in the list
 
 
     public Event() {}

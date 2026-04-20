@@ -38,6 +38,7 @@
                 android:textStyle="bold"
                 android:visibility="gone" />
 
+            <!-- delete button is gone by default — shown only when the current user has admin permissions -->
             <ImageButton
                 android:id="@+id/btnDeletePin"
                 android:layout_width="32dp"
@@ -60,6 +61,7 @@
             android:textSize="15sp" />
 
 
+        <!-- alpha 0.6 on the timestamp keeps it readable without competing with the pin body text -->
         <TextView
             android:id="@+id/tvAnnouncementTimestamp"
             android:layout_width="match_parent"

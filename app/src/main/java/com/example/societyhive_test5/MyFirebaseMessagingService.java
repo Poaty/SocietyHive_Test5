@@ -38,7 +38,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         DocumentReference userDocument = usersCollection.document(user.getUid());
         userDocument.update("fcmToken", token)
                 .addOnFailureListener(e -> {
-
+                    // update() fails if the doc doesn't exist yet, so fall back to a merge set
                     java.util.Map<String, Object> data = new java.util.HashMap<>();
                     data.put("fcmToken", token);
                     userDocument.set(data, com.google.firebase.firestore.SetOptions.merge());

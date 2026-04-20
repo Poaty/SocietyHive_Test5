@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- FrameLayout root so the progress bar and empty-state text can float over the scroll content without pushing it down -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -27,6 +28,7 @@
                 android:clipToPadding="false" />
 
 
+            <!-- closed polls section starts hidden — shown from code once the query returns results -->
             <TextView
                 android:id="@+id/tvClosedPollsLabel"
                 android:layout_width="wrap_content"

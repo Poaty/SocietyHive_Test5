@@ -15,6 +15,7 @@
     app:strokeWidth="2dp"
     app:strokeColor="#8D2E3A">
 
+    <!-- accent view is sized 0dp and hidden — it existed in an earlier design and kept in case per-society colouring comes back -->
     <View
         android:id="@+id/viewAccent"
         android:layout_width="0dp"
@@ -63,6 +64,7 @@
 
         </LinearLayout>
 
+        <!-- OutlinedButton keeps the join action visible without the strong fill that a primary button would imply -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRequestJoin"
             style="@style/Widget.Material3.Button.OutlinedButton"

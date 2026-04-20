@@ -12,7 +12,7 @@ public class Message {
     private com.google.firebase.Timestamp timestamp;
 
 
-    private boolean sentByMe;
+    private boolean sentByMe; // set when loading from firestore, not stored — we just compare senderId to the current user
     private String senderPhotoUrl;
 
 

@@ -82,14 +82,15 @@ public class ProfileFragment extends Fragment {
             startActivity(intent);
         });
 
-        loadProfileFromFirestore();
+        fetchProfileData();
     }
 
     // pulls user data and joined societies from firestore
-    private void loadProfileFromFirestore() {
+    private void fetchProfileData() {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
+        // show the auth email immediately — the firestore one might be slightly different if they changed it
         tvEmail.setText(user.getEmail() != null ? user.getEmail() : "");
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -113,12 +114,12 @@ public class ProfileFragment extends Fragment {
                     }
 
                     List<String> societyIds = (List<String>) document.get("societyIds");
-                    loadSocieties(societyIds);
+                    renderSocietyBadges(societyIds);
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(),
-                            "Failed to load profile", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireActivity(),
+                            "couldn't load profile", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -139,15 +140,14 @@ public class ProfileFragment extends Fragment {
 
                     @Override
                     public void onSuccess(String requestId, Map resultData) {
-                        if (!isAdded()) return;
+                        if (getContext() == null) return;
                         String imageUrl = (String) resultData.get("secure_url");
                         FirebaseUser user = AuthHelpers.currentUser();
                         if (user == null || imageUrl == null) return;
 
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        CollectionReference usersCollection = db.collection("users");
-                        DocumentReference userDocument = usersCollection.document(user.getUid());
-                        userDocument.update("profileImageUrl", imageUrl)
+                        DocumentReference userRef = db.collection("users").document(user.getUid());
+                        userRef.update("profileImageUrl", imageUrl)
                                 .addOnSuccessListener(unused -> {
                                     if (!isAdded()) return;
                                     loadAvatar(imageUrl);
@@ -164,7 +164,7 @@ public class ProfileFragment extends Fragment {
 
                     @Override
                     public void onError(String requestId, ErrorInfo error) {
-                        if (!isAdded()) return;
+                        if (getContext() == null) return;
                         Toast.makeText(requireContext(),
                                 "Upload failed: " + error.getDescription(),
                                 Toast.LENGTH_LONG).show();
@@ -183,7 +183,7 @@ public class ProfileFragment extends Fragment {
         Glide.with(this).load(url).circleCrop().into(ivProfilePicture);
     }
 
-    private void loadSocieties(@Nullable List<String> societyIds) {
+    private void renderSocietyBadges(@Nullable List<String> societyIds) {
         societies.clear();
         adapter.updateList(societies);
         if (societyIds == null || societyIds.isEmpty()) return;
@@ -192,10 +192,8 @@ public class ProfileFragment extends Fragment {
             if (id == null || TextHelpers.isBlank(id)) continue;
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            CollectionReference societiesCollection = db.collection("societies");
-            DocumentReference societyDocument = societiesCollection.document(id);
-            societyDocument.get()
-                    .addOnSuccessListener(this::addSocietyIfValid);
+            DocumentReference socRef = db.collection("societies").document(id);
+            socRef.get().addOnSuccessListener(this::addSocietyIfValid);
         }
     }
 
@@ -272,9 +270,9 @@ public class ProfileFragment extends Fragment {
         if (user == null) return;
         // remove society id from the user's list
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(user.getUid());
-        userDocument.update("societyIds", FieldValue.arrayRemove(society.getId()))
+        CollectionReference col = db.collection("users");
+        DocumentReference ref = col.document(user.getUid());
+        ref.update("societyIds", FieldValue.arrayRemove(society.getId()))
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
@@ -284,7 +282,7 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
-    private String capitalize(@NonNull String s) {
+    private String capitalize(String s) {
         return s.isEmpty() ? s : s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 }

@@ -29,6 +29,7 @@ public class GalleryPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
+        // build the full id→color map from all tabs so each page knows the colours for cross-society photos
         List<String> realIds    = new ArrayList<>();
         List<String> realColors = new ArrayList<>();
         for (int i = 0; i < tabSocietyIds.size(); i++) {

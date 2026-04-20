@@ -37,7 +37,7 @@ public final class ThemeHelper {
         switch (key) {
             case "ocean":  return R.style.Theme_SocietyHive_Ocean;
             case "violet": return R.style.Theme_SocietyHive_Violet;
-            default:       return R.style.Theme_SocietyHive_Crimson;
+            default:       return R.style.Theme_SocietyHive_Crimson; // crimson is the default brand colour
         }
     }
 }

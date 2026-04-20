@@ -54,6 +54,7 @@
             app:tint="?attr/colorOnSurfaceVariant"
             android:contentDescription="Expand" />
 
+        <!-- attending badge uses the same drawable as the calendar icon background to stay visually consistent -->
         <TextView
             android:id="@+id/tvAttendingIndicator"
             android:layout_width="wrap_content"
@@ -69,6 +70,7 @@
             android:textStyle="bold"
             android:visibility="gone" />
 
+        <!-- visibility gone by default — the adapter toggles it when the user taps the chevron -->
         <LinearLayout
             android:id="@+id/layoutExpanded"
             android:layout_width="match_parent"

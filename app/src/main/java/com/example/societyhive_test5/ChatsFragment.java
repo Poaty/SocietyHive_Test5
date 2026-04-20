@@ -3,6 +3,7 @@ package com.example.societyhive_test5;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,15 +12,15 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,8 +30,8 @@ public class ChatsFragment extends Fragment {
     private final List<Chat> allChats = new ArrayList<>();
     private final List<Chat> filteredChats = new ArrayList<>();
     private ChatAdapter adapter;
-    private View rootView;
-
+    // held as a field so filterAndRefresh doesn't need to re-find it on every keystroke
+    private EditText etSearch;
 
     private final List<com.google.firebase.firestore.ListenerRegistration> listeners =
             new ArrayList<>();
@@ -42,7 +43,6 @@ public class ChatsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable android.os.Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        rootView = view;
 
         RecyclerView rv = view.findViewById(R.id.rvChats);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -61,28 +61,38 @@ public class ChatsFragment extends Fragment {
         );
 
         rv.setAdapter(adapter);
-        hookSearch(view);
-        loadChatsForUser();
+
+        // wire the search box inline — only set up once so a separate method felt like overkill
+        View searchView = view.findViewById(R.id.etSearchChats);
+        if (searchView instanceof EditText) {
+            etSearch = (EditText) searchView;
+            etSearch.addTextChangedListener(new TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    filterAndRefresh();
+                }
+                @Override public void afterTextChanged(Editable s) {}
+            });
+        }
+
+        refreshChatList();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        // clean up listeners so they dont fire after the view is gone
-        for (com.google.firebase.firestore.ListenerRegistration reg : listeners) {
-            reg.remove();
+        // detach snapshot listeners so they don't fire after the view is gone and cause crashes
+        for (com.google.firebase.firestore.ListenerRegistration l : listeners) {
+            l.remove();
         }
         listeners.clear();
-        rootView = null;
+        etSearch = null;
     }
 
 
-
-
-
     // admin sees all societies, regular users only see ones they joined
-    private void loadChatsForUser() {
+    private void refreshChatList() {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
@@ -97,13 +107,12 @@ public class ChatsFragment extends Fragment {
                     boolean isAdmin = "admin".equalsIgnoreCase(userDoc.getString("role"));
 
                     if (isAdmin) {
-
                         db.collection("societies")
                                 .get()
                                 .addOnSuccessListener(querySnapshot -> {
                                     if (!isAdded()) return;
                                     allChats.clear();
-                                    if (querySnapshot.isEmpty()) { applySearch(); return; }
+                                    if (querySnapshot.isEmpty()) { filterAndRefresh(); return; }
                                     AtomicInteger remaining = new AtomicInteger(querySnapshot.size());
                                     for (QueryDocumentSnapshot societyDoc : querySnapshot) {
                                         addChatFromSociety(societyDoc, db, remaining);
@@ -112,11 +121,10 @@ public class ChatsFragment extends Fragment {
                         return;
                     }
 
-
                     List<String> societyIds = (List<String>) userDoc.get("societyIds");
                     if (societyIds == null || societyIds.isEmpty()) {
                         allChats.clear();
-                        applySearch();
+                        filterAndRefresh();
                         return;
                     }
 
@@ -139,10 +147,10 @@ public class ChatsFragment extends Fragment {
     private void addChatFromSociety(
             @NonNull DocumentSnapshot societyDoc,
             @NonNull FirebaseFirestore db,
-            @NonNull AtomicInteger remaining) {
+            AtomicInteger remaining) {
 
         if (!societyDoc.exists()) {
-            checkAllLoaded(remaining);
+            if (remaining.decrementAndGet() <= 0) filterAndRefresh();
             return;
         }
 
@@ -152,7 +160,6 @@ public class ChatsFragment extends Fragment {
         String iconUrl = societyDoc.getString("iconUrl");
         if (iconUrl == null) iconUrl = "";
 
-
         if (name == null || TextHelpers.isBlank(name)) name = "Society Chat";
         if (colorHex == null || TextHelpers.isBlank(colorHex)) colorHex = "#8D2E3A";
 
@@ -160,14 +167,14 @@ public class ChatsFragment extends Fragment {
         final String finalColor = colorHex;
         final String finalIconUrl = iconUrl;
 
-
-        // placeholder while we wait for the last message
+        // placeholder while we wait for the last message to come back from firestore
         Chat placeholder = new Chat(societyId, finalName, "Loading…", "", finalColor, finalIconUrl);
         allChats.add(placeholder);
-        checkAllLoaded(remaining);
+        if (remaining.decrementAndGet() <= 0) filterAndRefresh();
 
-        // live listener so new messages update the preview without refresh
-        com.google.firebase.firestore.ListenerRegistration reg =
+        // live listener so new messages update the preview without a manual refresh
+        // TODO: track a per-society lastSeenTimestamp here so we can show unread badges
+        com.google.firebase.firestore.ListenerRegistration l =
                 db.collection("societies")
                         .document(societyId)
                         .collection("messages")
@@ -184,7 +191,6 @@ public class ChatsFragment extends Fragment {
                             String text = lastMsg.getString("text");
                             String senderName = lastMsg.getString("senderName");
 
-
                             String preview;
                             FirebaseUser me = AuthHelpers.currentUser();
                             String senderId = lastMsg.getString("senderId");
@@ -197,102 +203,65 @@ public class ChatsFragment extends Fragment {
                                         : (text != null ? text : "");
                             }
 
-
                             com.google.firebase.Timestamp ts = lastMsg.getTimestamp("timestamp");
-                            String timeLabel = formatTimestamp(ts);
-
-                            updateChatPreview(societyId, finalName, preview, timeLabel, finalColor, finalIconUrl);
+                            updateChatPreview(societyId, finalName, preview, formatTimestamp(ts), finalColor, finalIconUrl);
                         });
 
-        listeners.add(reg);
+        listeners.add(l);
     }
 
 
-    // replace or append - needed because listeners fire at different times
     private void updateChatPreview(String societyId, String name,
                                    String preview, String time, String color, String iconUrl) {
         for (int i = 0; i < allChats.size(); i++) {
             if (allChats.get(i).getId().equals(societyId)) {
                 allChats.set(i, new Chat(societyId, name, preview, time, color, iconUrl));
-                applySearch();
+                filterAndRefresh();
                 return;
             }
         }
-
         allChats.add(new Chat(societyId, name, preview, time, color, iconUrl));
-        applySearch();
+        filterAndRefresh();
     }
 
-    private void checkAllLoaded(@NonNull AtomicInteger remaining) {
-        if (remaining.decrementAndGet() <= 0) {
-            applySearch();
-        }
-    }
+    private void filterAndRefresh() {
+        if (!isAdded()) return;
 
-
-
-
-
-    private void hookSearch(@NonNull View view) {
-        View et = view.findViewById(R.id.etSearchChats);
-        if (!(et instanceof android.widget.EditText)) return;
-
-        android.widget.EditText etSearch = (android.widget.EditText) et;
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                applySearch();
-            }
-            @Override public void afterTextChanged(Editable s) {}
-        });
-    }
-
-    private void applySearch() {
-        if (rootView == null || !isAdded()) return;
-
-        String query = "";
-        View et = rootView.findViewById(R.id.etSearchChats);
-        if (et instanceof android.widget.EditText) {
-            query = ((android.widget.EditText) et).getText().toString().trim().toLowerCase(Locale.UK);
-        }
+        String query = etSearch != null
+                ? etSearch.getText().toString().trim().toLowerCase(Locale.UK)
+                : "";
 
         filteredChats.clear();
-        for (Chat chat : allChats) {
-            if (!query.isEmpty() && !chat.getTitle().toLowerCase(Locale.UK).contains(query)) {
-                continue;
-            }
-            filteredChats.add(chat);
+        for (Chat c : allChats) {
+            if (!query.isEmpty() && !c.getTitle().toLowerCase(Locale.UK).contains(query)) continue;
+            filteredChats.add(c);
         }
 
         adapter.updateList(filteredChats);
     }
 
 
-
-
-
-    // formats timestamp like whatsapp basically
+    // formats like whatsapp — calendar-based so the today/yesterday boundary is midnight not rolling 24h
     private String formatTimestamp(@Nullable com.google.firebase.Timestamp ts) {
         if (ts == null) return "";
 
-        java.util.Date msgDate = ts.toDate();
-        java.util.Date now = new java.util.Date();
+        Calendar msgCal = Calendar.getInstance();
+        msgCal.setTime(ts.toDate());
+        Calendar now = Calendar.getInstance();
 
-        long diffMs = now.getTime() - msgDate.getTime();
-        long diffDays = diffMs / (1000 * 60 * 60 * 24);
+        boolean sameYear = msgCal.get(Calendar.YEAR) == now.get(Calendar.YEAR);
+        int dayGap = now.get(Calendar.DAY_OF_YEAR) - msgCal.get(Calendar.DAY_OF_YEAR);
 
-        if (diffDays == 0) {
-
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm", Locale.UK);
-            return sdf.format(msgDate);
-        } else if (diffDays == 1) {
+        if (sameYear && dayGap == 0) {
+            long ageMs = now.getTimeInMillis() - msgCal.getTimeInMillis();
+            if (ageMs < 60_000) return "just now";
+            return new SimpleDateFormat("HH:mm", Locale.UK).format(ts.toDate());
+        } else if (sameYear && dayGap == 1) {
             return "Yesterday";
-        } else if (diffDays < 7) {
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("EEE", Locale.UK);
-            return sdf.format(msgDate);
+        } else if (sameYear && dayGap < 7) {
+            return new SimpleDateFormat("EEE", Locale.UK).format(ts.toDate());
         } else {
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM", Locale.UK);
-            return sdf.format(msgDate);
+            return new SimpleDateFormat("dd/MM/yy", Locale.UK).format(ts.toDate());
         }
     }
 }

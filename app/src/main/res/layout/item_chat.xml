@@ -16,6 +16,7 @@
     app:strokeWidth="2dp"
     app:strokeColor="#8D2E3A">
 
+    <!-- stroke border instead of elevation so the card stands out without casting shadow on the list below -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,6 +49,7 @@
                 android:textSize="16sp"
                 android:textColor="?attr/colorOnSurface" />
 
+            <!-- maxLines not set here intentionally — the preview is populated with a single line from code -->
             <TextView
                 android:id="@+id/tvChatPreview"
                 android:layout_width="wrap_content"

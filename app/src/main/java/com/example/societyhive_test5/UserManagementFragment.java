@@ -71,25 +71,23 @@ public class UserManagementFragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.cardJoinRequests).setOnClickListener(v -> openPendingJoins());
 
-        view.findViewById(R.id.cardJoinRequests).setOnClickListener(v -> showJoinRequests());
-
-        loadJoinRequestCount(view);
-        loadUsers();
+        loadRequestBadge(view);
+        fetchMembers();
     }
 
-    // loads all users, filters to just this society if societyFilter is set
-    private void loadUsers() {
+    // when societyFilter is set we're scoped to one society's admin panel — only show those members
+    private void fetchMembers() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersCollection = db.collection("users");
-        usersCollection.get()
+        CollectionReference users = db.collection("users");
+        users.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     allUsers.clear();
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         List<String> societyIds = (List<String>) doc.get("societyIds");
                         List<String> adminOf    = (List<String>) doc.get("adminOf");
-
 
                         if (societyFilter != null) {
                             if (societyIds == null || !societyIds.contains(societyFilter)) continue;
@@ -109,11 +107,10 @@ public class UserManagementFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(), "Failed to load users", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireActivity(), "couldn't load users", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    // just local filter, no extra firebase calls
     private void filterUsers(String query) {
         String q = query.toLowerCase().trim();
         filtered.clear();
@@ -125,7 +122,7 @@ public class UserManagementFragment extends Fragment {
         adapter.updateList(filtered);
     }
 
-    private void loadJoinRequestCount(@NonNull View view) {
+    private void loadRequestBadge(@NonNull View view) {
         TextView tvCount = view.findViewById(R.id.tvRequestCount);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -146,9 +143,9 @@ public class UserManagementFragment extends Fragment {
         });
     }
 
-    // fetch pending requests then look up user and society names separately
-    // cant just show the ids or it looks terrible
-    private void showJoinRequests() {
+    // fetch pending requests then look up user and society names separately —
+    // the ids alone are meaningless in a dialog so we resolve them first
+    private void openPendingJoins() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Query query = (societyFilter != null)
@@ -187,9 +184,9 @@ public class UserManagementFragment extends Fragment {
             for (int i = 0; i < total; i++) {
                 final int idx = i;
 
-                CollectionReference usersCollection = db.collection("users");
-                DocumentReference userDocument = usersCollection.document(uids.get(idx));
-                userDocument.get()
+                CollectionReference col = db.collection("users");
+                DocumentReference userRef = col.document(uids.get(idx));
+                userRef.get()
                         .addOnSuccessListener(userDoc -> {
                             String fullName = userDoc.getString("fullName");
                             userNames.set(idx, (fullName != null && !fullName.isEmpty()) ? fullName : uids.get(idx));
@@ -200,9 +197,8 @@ public class UserManagementFragment extends Fragment {
                             if (remaining.decrementAndGet() == 0) showRequestsDialog(userNames, socNames, docIds, uids, sids);
                         });
 
-                CollectionReference societiesCollection = db.collection("societies");
-                DocumentReference societyDocument = societiesCollection.document(sids.get(idx));
-                societyDocument.get()
+                DocumentReference socRef = db.collection("societies").document(sids.get(idx));
+                socRef.get()
                         .addOnSuccessListener(socDoc -> {
                             String socName = socDoc.getString("name");
                             socNames.set(idx, (socName != null && !socName.isEmpty()) ? socName : sids.get(idx));
@@ -234,37 +230,34 @@ public class UserManagementFragment extends Fragment {
     private void showApproveRejectDialog(String reqId, String uid, String sid, String label) {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(label)
-                .setPositiveButton("Approve", (d, w) -> approveRequest(reqId, uid, sid))
+                .setPositiveButton("Approve", (d, w) -> grantMembership(reqId, uid, sid))
                 .setNegativeButton("Reject", (d, w)  -> rejectRequest(reqId))
                 .setNeutralButton("Cancel", null)
                 .show();
     }
 
-    private void approveRequest(String reqId, String uid, String sid) {
+    private void grantMembership(String reqId, String uid, String sid) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // add the society to the user's list then mark request as approved
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(uid);
+        // update the user's societyIds first, then mark the request approved so there's no gap
+        DocumentReference userDocument = db.collection("users").document(uid);
         userDocument
                 .update("societyIds", com.google.firebase.firestore.FieldValue.arrayUnion(sid))
                 .addOnSuccessListener(unused -> {
-                    CollectionReference joinRequestsCollection = db.collection("joinRequests");
-                    DocumentReference requestDocument = joinRequestsCollection.document(reqId);
-                    requestDocument
+                    DocumentReference reqRef = db.collection("joinRequests").document(reqId);
+                    reqRef
                             .update("status", "approved")
                             .addOnSuccessListener(u2 -> {
                                 if (!isAdded()) return;
                                 Toast.makeText(requireContext(), "Request approved!", Toast.LENGTH_SHORT).show();
-                                loadUsers();
+                                fetchMembers();
                             });
                 });
     }
 
     private void rejectRequest(String reqId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference joinRequestsCollection = db.collection("joinRequests");
-        DocumentReference requestDocument = joinRequestsCollection.document(reqId);
+        DocumentReference requestDocument = db.collection("joinRequests").document(reqId);
         requestDocument
                 .update("status", "rejected")
                 .addOnSuccessListener(unused -> {
@@ -283,7 +276,7 @@ public class UserManagementFragment extends Fragment {
                 .setTitle(user.getFullName().isEmpty() ? "User" : user.getFullName())
                 .setItems(items, (dialog, which) -> {
                     if (items[which].equals("Make Society Admin")) {
-                        showPickSocietyForAdmin(user);
+                        pickSocietyForAdmin(user);
                     } else if (items[which].equals("Remove from Society") && societyFilter != null) {
                         removeFromSociety(user);
                     }
@@ -292,11 +285,11 @@ public class UserManagementFragment extends Fragment {
                 .show();
     }
 
-    private void removeFromSociety(@NonNull UserItem user) {
+    private void removeFromSociety(UserItem user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(user.getId());
-        userDocument
+        CollectionReference col = db.collection("users");
+        DocumentReference ref = col.document(user.getId());
+        ref
                 .update("societyIds", com.google.firebase.firestore.FieldValue.arrayRemove(societyFilter))
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
@@ -307,11 +300,10 @@ public class UserManagementFragment extends Fragment {
                 });
     }
 
-    // lets you pick which society to make them admin of
-    private void showPickSocietyForAdmin(@NonNull UserItem user) {
+    private void pickSocietyForAdmin(@NonNull UserItem user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference societiesCollection = db.collection("societies");
-        societiesCollection.get()
+        CollectionReference socs = db.collection("societies");
+        socs.get()
                 .addOnSuccessListener(snap -> {
                     if (!isAdded()) return;
                     List<String> names = new ArrayList<>();
@@ -327,16 +319,15 @@ public class UserManagementFragment extends Fragment {
                             .setItems(items, (d, which) -> {
                                 Map<String, Object> update = new HashMap<>();
                                 update.put("adminOf", com.google.firebase.firestore.FieldValue.arrayUnion(ids.get(which)));
-                                CollectionReference usersCollection = db.collection("users");
-                                DocumentReference userDocument = usersCollection.document(user.getId());
-                                userDocument
+                                DocumentReference userRef = db.collection("users").document(user.getId());
+                                userRef
                                         .update(update)
                                         .addOnSuccessListener(u -> {
                                             if (!isAdded()) return;
                                             Toast.makeText(requireContext(),
                                                     user.getFullName() + " is now admin of " + names.get(which),
                                                     Toast.LENGTH_SHORT).show();
-                                            loadUsers();
+                                            fetchMembers();
                                         });
                             })
                             .setNegativeButton("Cancel", null)

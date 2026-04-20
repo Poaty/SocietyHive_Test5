@@ -15,7 +15,7 @@ public class UserItem {
         this.id = id;
         this.fullName = fullName != null ? fullName : "";
         this.email = email != null ? email : "";
-        this.role = role != null ? role : "member";
+        this.role = role != null ? role : "member"; // default to member if role isn't set in firestore yet
         this.adminOf = adminOf;
     }
 

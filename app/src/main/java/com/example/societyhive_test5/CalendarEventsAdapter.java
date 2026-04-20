@@ -47,6 +47,7 @@ public class CalendarEventsAdapter extends RecyclerView.Adapter<CalendarEventsAd
         notifyDataSetChanged();
     }
 
+    // the stored format is "dd-MMM-yyyy • HH:mm"
     private String formatSubtitle(String dateTime) {
         if (dateTime == null || !dateTime.contains(" • ")) return dateTime != null ? dateTime : "";
         try {

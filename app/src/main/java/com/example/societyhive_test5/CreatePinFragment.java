@@ -47,18 +47,17 @@ public class CreatePinFragment extends Fragment {
         actvSociety  = view.findViewById(R.id.actvSociety);
 
         MaterialButton btnCreatePin = view.findViewById(R.id.btnCreatePin);
-        btnCreatePin.setOnClickListener(v -> attemptCreate());
+        btnCreatePin.setOnClickListener(v -> submitPin());
 
         if (getArguments() != null) {
             preSelectedSocietyId = getArguments().getString("preSelectedSocietyId", "");
         }
 
-        loadSocieties();
+        fetchSocieties();
     }
 
 
-
-    private void loadSocieties() {
+    private void fetchSocieties() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference societiesCollection = db.collection("societies");
         societiesCollection.get()
@@ -71,16 +70,16 @@ public class CreatePinFragment extends Fragment {
                         societyIds.add(doc.getId());
                         societyNames.add(name != null ? name : doc.getId());
                     }
-                    setupSocietyDropdown();
+                    buildDropdown();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
-                            "Failed to load societies.", Toast.LENGTH_SHORT).show();
+                            "couldn't load societies", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void setupSocietyDropdown() {
+    private void buildDropdown() {
         if (societyIds.isEmpty()) {
             Toast.makeText(requireContext(),
                     "No societies found. Add societies to Firestore first.",
@@ -105,8 +104,7 @@ public class CreatePinFragment extends Fragment {
     }
 
 
-
-    private void attemptCreate() {
+    private void submitPin() {
         String content = etPinContent.getText() != null
                 ? TextHelpers.trimmed(etPinContent) : "";
 
@@ -136,7 +134,7 @@ public class CreatePinFragment extends Fragment {
         pinsCollection.add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(), "Pin created!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireActivity(), "Pin created!", Toast.LENGTH_SHORT).show();
                     NavHelpers.navigateUp(this);
                 })
                 .addOnFailureListener(e -> {

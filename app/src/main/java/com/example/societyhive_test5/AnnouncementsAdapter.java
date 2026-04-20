@@ -22,6 +22,7 @@ public class AnnouncementsAdapter extends RecyclerView.Adapter<AnnouncementsAdap
     }
 
 
+    // separate checker so the fragment can pass its own logic
     public interface DeleteChecker {
         boolean canDelete(Announcement announcement);
     }

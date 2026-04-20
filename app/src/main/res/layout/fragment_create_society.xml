@@ -46,6 +46,7 @@
                     android:gravity="center_vertical"
                     android:layout_marginBottom="20dp">
 
+                    <!-- 72dp circle is large enough to tap comfortably and shows the chosen image at a useful preview size -->
                     <ImageView
                         android:id="@+id/ivSocietyIcon"
                         android:layout_width="72dp"
@@ -147,6 +148,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
+                <!-- live colour swatch updates as the user types the hex value so they get instant visual feedback -->
                 <View
                     android:id="@+id/colorSwatch"
                     android:layout_width="match_parent"

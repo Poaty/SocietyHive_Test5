@@ -15,6 +15,7 @@ import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    // two view types so sent and received messages can use different layouts and alignment
     private static final int TYPE_RECEIVED = 0;
     private static final int TYPE_SENT = 1;
 

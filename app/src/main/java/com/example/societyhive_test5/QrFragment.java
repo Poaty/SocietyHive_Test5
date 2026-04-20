@@ -31,13 +31,12 @@ public class QrFragment extends Fragment {
                 if (granted) {
                     startScanning();
                 } else {
-                    Toast.makeText(requireContext(),
-                            "Camera permission is required to scan QR codes.",
+                    Toast.makeText(requireActivity(),
+                            "need camera permission to scan QR codes",
                             Toast.LENGTH_LONG).show();
                 }
             });
 
-    // fires every time a qr code is successfully decoded
     private final BarcodeCallback barcodeCallback = result -> {
         if (result != null && result.getText() != null) {
             onQrDetected(result.getText());
@@ -82,11 +81,11 @@ public class QrFragment extends Fragment {
         barcodeView.decodeContinuous(barcodeCallback);
     }
 
-    private void onQrDetected(@NonNull String eventId) {
-        if (hasNavigated) return; // guard against double-firing from rapid scans
+    private void onQrDetected(String eventId) {
+        // hasNavigated stops the callback firing twice before the fragment is replaced
+        if (hasNavigated) return;
         hasNavigated = true;
 
-        // take the user straight to the event details
         Bundle args = new Bundle();
         args.putString("eventId", eventId);
         NavHostFragment.findNavController(this)

@@ -74,6 +74,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatVH> {
             tvPreview.setText(chat.getLastMessage());
             tvTime.setText(chat.getTime());
 
+            // stroke colour matches the society's brand colour so you can tell chats apart at a glance
             try {
                 int colour = Color.parseColor(chat.getSocietyColor());
                 card.setStrokeColor(ColorStateList.valueOf(colour));

@@ -20,6 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
 
+    <!-- same pill-card pattern as the login screen so the two screens feel like a single flow -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardFullName"
         android:layout_width="0dp"
@@ -167,6 +168,7 @@
     </com.google.android.material.card.MaterialCardView>
 
 
+    <!-- confirm password is a separate field rather than inline validation so the user can review both strings before submitting -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardConfirmPassword"
         android:layout_width="0dp"

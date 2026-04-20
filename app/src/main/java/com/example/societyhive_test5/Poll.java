@@ -19,7 +19,7 @@ public class Poll {
     private String societyName = "";
 
 
-    private int selectedOptionIndex = -1;
+    private int selectedOptionIndex = -1; // -1 means nothing picked yet
     private boolean hasVoted = false;
     private int votedOptionIndex = -1;
     private List<Integer> voteCounts = new ArrayList<>();

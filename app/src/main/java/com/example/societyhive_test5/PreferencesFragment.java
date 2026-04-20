@@ -68,7 +68,7 @@ public class PreferencesFragment extends Fragment {
             userDocument.update(update);
         }
 
-        requireActivity().recreate();
+        requireActivity().recreate(); // easiest way to apply a new theme — recreate applies it from scratch
     }
 
     private void refreshTicks(@NonNull View root, @NonNull String selectedKey, int[] tickIds) {
@@ -91,7 +91,7 @@ public class PreferencesFragment extends Fragment {
     }
 
     private void makeCircle(@NonNull View root, int viewId,
-                             @NonNull String hex, boolean selected) {
+                             String hex, boolean selected) {
         View v = root.findViewById(viewId);
         if (v == null) return;
 

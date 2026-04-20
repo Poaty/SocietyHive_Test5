@@ -49,6 +49,7 @@ public class UserManagementAdapter extends RecyclerView.Adapter<UserManagementAd
         holder.tvRole.setText(user.getRole());
 
 
+        // placeholder only — not loading actual avatars here, it's an admin list not a social feed
         holder.ivAvatar.setPadding(6, 6, 6, 6);
         holder.ivAvatar.setBackgroundResource(R.drawable.bg_circle_neutral);
         holder.ivAvatar.setImageResource(R.drawable.ic_profile);

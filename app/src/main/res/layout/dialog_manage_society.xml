@@ -7,6 +7,7 @@
     android:paddingBottom="32dp">
 
 
+    <!-- drag handle at the top signals this is a bottom sheet rather than a full-screen dialog -->
     <View
         android:layout_width="40dp"
         android:layout_height="4dp"
@@ -25,6 +26,7 @@
         android:paddingEnd="20dp"
         android:paddingBottom="16dp">
 
+        <!-- 6dp accent bar matches the chat header style so society branding feels consistent -->
         <View
             android:id="@+id/viewSheetAccent"
             android:layout_width="6dp"

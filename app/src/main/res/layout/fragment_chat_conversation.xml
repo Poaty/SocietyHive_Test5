@@ -34,6 +34,7 @@
             android:textColor="#1E1E1E" />
     </LinearLayout>
 
+    <!-- height is 0dp so ConstraintLayout can fill the space between header and input card exactly -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMessages"
         android:layout_width="0dp"
@@ -48,6 +49,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- 72dp height matches the standard pill-shaped input card used on the login screen -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardMessageInput"
         android:layout_width="0dp"

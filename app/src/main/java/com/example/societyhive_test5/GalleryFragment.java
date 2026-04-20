@@ -79,15 +79,14 @@ public class GalleryFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // admin sees all societies, normal users only see what theyre in
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(uid);
-        userDocument.get().addOnSuccessListener(userDoc -> {
+        DocumentReference userDoc = db.collection("users").document(uid);
+        userDoc.get().addOnSuccessListener(userSnap -> {
             if (!isAdded()) return;
-            isAdmin = "admin".equals(userDoc.getString("role"));
+            isAdmin = "admin".equals(userSnap.getString("role"));
 
             if (isAdmin) {
-                CollectionReference societiesCollection = db.collection("societies");
-                societiesCollection.get().addOnSuccessListener(snap -> {
+                CollectionReference socs = db.collection("societies");
+                socs.get().addOnSuccessListener(snap -> {
                     if (!isAdded()) return;
                     tabSocietyIds.add("");
                     tabSocietyNames.add("All");
@@ -102,7 +101,7 @@ public class GalleryFragment extends Fragment {
                     setupTabs(tabLayout, viewPager, fabUpload);
                 });
             } else {
-                List<?> rawIds = (List<?>) userDoc.get("societyIds");
+                List<?> rawIds = (List<?>) userSnap.get("societyIds");
                 List<String> ids = new ArrayList<>();
                 if (rawIds != null) {
                     for (Object o : rawIds) {
@@ -128,9 +127,8 @@ public class GalleryFragment extends Fragment {
                 Map<String, String> colorMap = new HashMap<>();
 
                 for (String id : ids) {
-                    CollectionReference societiesCollection = db.collection("societies");
-                    DocumentReference societyDocument = societiesCollection.document(id);
-                    societyDocument.get().addOnCompleteListener(task -> {
+                    DocumentReference socDoc = db.collection("societies").document(id);
+                    socDoc.get().addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             String n = task.getResult().getString("name");
                             if (n != null) nameMap.put(id, n);
@@ -160,6 +158,7 @@ public class GalleryFragment extends Fragment {
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, pos) -> tab.setText(tabSocietyNames.get(pos))).attach();
 
+        // hide the upload FAB on the "All" tab — uploads need a specific society attached
         boolean firstIsAll = tabSocietyIds.get(0).isEmpty();
         fabUpload.setVisibility(firstIsAll ? View.GONE : View.VISIBLE);
 
@@ -208,11 +207,11 @@ public class GalleryFragment extends Fragment {
                         photo.put("createdAt", Timestamp.now());
 
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        CollectionReference galleryCollection = db.collection("gallery");
-                        galleryCollection.add(photo)
+                        CollectionReference gallery = db.collection("gallery");
+                        gallery.add(photo)
                                 .addOnSuccessListener(ref ->
                                         requireActivity().runOnUiThread(() ->
-                                                Toast.makeText(requireContext(),
+                                                Toast.makeText(requireActivity(),
                                                         "Photo uploaded!", Toast.LENGTH_SHORT).show()));
                     }
 
@@ -221,7 +220,7 @@ public class GalleryFragment extends Fragment {
                         if (!isAdded()) return;
                         requireActivity().runOnUiThread(() ->
                                 Toast.makeText(requireContext(),
-                                        "Upload failed: " + error.getDescription(),
+                                        "upload error: " + error.getDescription(),
                                         Toast.LENGTH_LONG).show());
                     }
 

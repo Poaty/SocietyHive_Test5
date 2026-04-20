@@ -39,6 +39,7 @@
                     android:layout_marginBottom="20dp" />
 
 
+                <!-- ExposedDropdownMenu shows the society list; the admin may belong to multiple societies so a picker is needed -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilSociety"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -63,6 +64,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
+                <!-- minLines=4 gives the content field enough room to write a meaningful announcement without scrolling immediately -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilPinContent"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"

@@ -62,6 +62,7 @@
     </com.google.android.material.card.MaterialCardView>
 
 
+    <!-- singleSelection + selectionRequired so there's always an active filter — avoids an empty state when nothing is chosen -->
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroupFilters"
         android:layout_width="0dp"
@@ -120,6 +121,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 
+    <!-- paddingBottom on the list so the last card clears the bottom nav bar without cutting off -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEvents"
         android:layout_width="0dp"

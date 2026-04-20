@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -68,31 +69,28 @@ public class BrowseSocietiesFragment extends Fragment {
         adapter = new BrowseAdapter();
         rv.setAdapter(adapter);
 
-        loadSocieties();
+        refreshAvailableSocieties();
     }
 
 
-
-    // shows all societies the user hasnt joined yet, with pending state if they already requested
-    private void loadSocieties() {
+    private void refreshAvailableSocieties() {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(user.getUid());
-        userDocument.get()
+        // load the user's existing memberships first so we can hide societies they're already in
+        DocumentReference userRef = db.collection("users").document(user.getUid());
+        userRef.get()
                 .addOnSuccessListener(userDoc -> {
                     if (!isAdded()) return;
 
                     List<String> joined = (List<String>) userDoc.get("societyIds");
                     Set<String> joinedSet = joined != null ? new HashSet<>(joined) : new HashSet<>();
 
-
-                    CollectionReference joinRequestsCollection = db.collection("joinRequests");
-                    joinRequestsCollection
+                    // also check pending requests so the button shows "Requested" rather than "Request"
+                    CollectionReference joinReqs = db.collection("joinRequests");
+                    joinReqs
                             .whereEqualTo("userId", user.getUid())
                             .whereEqualTo("status", "pending")
                             .get()
@@ -105,9 +103,8 @@ public class BrowseSocietiesFragment extends Fragment {
                                     if (sid != null) pendingIds.add(sid);
                                 }
 
-
-                                CollectionReference societiesCollection = db.collection("societies");
-                                societiesCollection.get()
+                                CollectionReference societies = db.collection("societies");
+                                societies.get()
                                         .addOnSuccessListener(societiesSnap -> {
                                             if (!isAdded()) return;
                                             rows.clear();
@@ -137,20 +134,19 @@ public class BrowseSocietiesFragment extends Fragment {
                                                     ? View.VISIBLE : View.GONE);
                                         })
                                         .addOnFailureListener(e -> {
-                                            if (!isAdded()) return;
-                                            Toast.makeText(requireContext(),
+                                            if (getView() == null) return;
+                                            Snackbar.make(requireView(),
                                                     "Failed to load societies",
-                                                    Toast.LENGTH_SHORT).show();
+                                                    Snackbar.LENGTH_SHORT).show();
                                         });
                             });
                 });
     }
 
-    private void submitRequest(SocietyRow row, MaterialButton btn) {
+    private void requestMembership(SocietyRow row, MaterialButton btn) {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) return;
 
-        // write the join request, admin will see it in user management
         Map<String, Object> data = new HashMap<>();
         data.put("userId",    user.getUid());
         data.put("societyId", row.id);
@@ -158,25 +154,22 @@ public class BrowseSocietiesFragment extends Fragment {
         data.put("createdAt", Timestamp.now());
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference joinRequestsCollection = db.collection("joinRequests");
-        joinRequestsCollection.add(data)
+        CollectionReference requests = db.collection("joinRequests");
+        requests.add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
                     row.requested = true;
                     btn.setText("Requested");
                     btn.setEnabled(false);
-                    Toast.makeText(requireContext(),
+                    Toast.makeText(requireActivity(),
                             "Request sent!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
-                            "Failed to send request", Toast.LENGTH_SHORT).show();
+                            "request failed, try again", Toast.LENGTH_SHORT).show();
                 });
     }
-
-
-
 
 
     private class BrowseAdapter extends RecyclerView.Adapter<BrowseAdapter.VH> {
@@ -238,14 +231,13 @@ public class BrowseSocietiesFragment extends Fragment {
                     ivIcon.setImageResource(R.drawable.ic_profile);
                 }
 
-                // disable the button if they already sent a request
                 if (row.requested) {
                     btnRequest.setText("Requested");
                     btnRequest.setEnabled(false);
                 } else {
                     btnRequest.setText("Request");
                     btnRequest.setEnabled(true);
-                    btnRequest.setOnClickListener(v -> submitRequest(row, btnRequest));
+                    btnRequest.setOnClickListener(v -> requestMembership(row, btnRequest));
                 }
             }
         }

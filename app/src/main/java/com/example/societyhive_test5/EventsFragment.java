@@ -82,19 +82,17 @@ public class EventsFragment extends Fragment {
         view.findViewById(R.id.btnCalendar).setOnClickListener(v ->
                 NavHelpers.navigate(this, R.id.calendarFragment));
 
-        loadEventsFromFirestore();
+        pullEvents();
     }
 
 
 
 
-
-    // grab all events then layer in attendance state and society filtering
-    private void loadEventsFromFirestore() {
+    private void pullEvents() {
         if (progressEvents != null) progressEvents.setVisibility(View.VISIBLE);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference eventsCollection = db.collection("events");
-        eventsCollection.get()
+        CollectionReference events = db.collection("events");
+        events.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     if (progressEvents != null) progressEvents.setVisibility(View.GONE);
@@ -103,49 +101,46 @@ public class EventsFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         allEvents.add(new Event(
                                 doc.getId(),
-                                safeString(doc.getString("name"), "Unnamed Event"),
-                                safeString(doc.getString("dateTime"), "TBC"),
-                                safeString(doc.getString("location"), "TBC"),
-                                safeString(doc.getString("organiser"), "Unknown"),
-                                safeString(doc.getString("description"), ""),
-                                safeString(doc.getString("societyId"), ""),
+                                orElse(doc.getString("name"), "Unnamed Event"),
+                                orElse(doc.getString("dateTime"), "TBC"),
+                                orElse(doc.getString("location"), "TBC"),
+                                orElse(doc.getString("organiser"), "Unknown"),
+                                orElse(doc.getString("description"), ""),
+                                orElse(doc.getString("societyId"), ""),
                                 Boolean.TRUE.equals(doc.getBoolean("isPublic")),
                                 false,
                                 false
                         ));
                     }
 
-                    if (allEvents.isEmpty()) seedDummyEvents(); // fallback so screen isnt empty
+                    if (allEvents.isEmpty()) seedDummyEvents();
 
-                    loadAttendanceAndMerge();
+                    mergeAttendance();
                 })
                 .addOnFailureListener(e -> {
-                    if (!isAdded()) return;
+                    if (getContext() == null) return;
                     if (progressEvents != null) progressEvents.setVisibility(View.GONE);
                     if (allEvents.isEmpty()) seedDummyEvents();
                     Toast.makeText(requireContext(),
                             "Could not load events: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
-                    loadAttendanceAndMerge();
+                    mergeAttendance();
                 });
     }
 
 
-
-
-
-    private void loadAttendanceAndMerge() {
+    private void mergeAttendance() {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
-            loadUserSocietiesAndFilter();
+            filterBySocieties();
             return;
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference attendanceCollection = db.collection(ATTENDANCE_COLLECTION);
-        DocumentReference userAttendanceDocument = attendanceCollection.document(user.getUid());
-        CollectionReference attendingEventsCollection = userAttendanceDocument.collection(ATTENDING_SUB);
-        attendingEventsCollection.get()
+        CollectionReference att = db.collection(ATTENDANCE_COLLECTION);
+        DocumentReference userDoc = att.document(user.getUid());
+        CollectionReference sub = userDoc.collection(ATTENDING_SUB);
+        sub.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     Set<String> attendingIds = new HashSet<>();
@@ -155,11 +150,11 @@ public class EventsFragment extends Fragment {
                     for (Event event : allEvents) {
                         event.setAttending(attendingIds.contains(event.getId()));
                     }
-                    loadUserSocietiesAndFilter();
+                    filterBySocieties();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-                    loadUserSocietiesAndFilter();
+                    filterBySocieties();
                 });
     }
 
@@ -168,7 +163,7 @@ public class EventsFragment extends Fragment {
 
 
 
-    private void loadUserSocietiesAndFilter() {
+    private void filterBySocieties() {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             applyFilters();
@@ -176,9 +171,8 @@ public class EventsFragment extends Fragment {
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(user.getUid());
-        userDocument.get()
+        DocumentReference userRef = db.collection("users").document(user.getUid());
+        userRef.get()
                 .addOnSuccessListener((DocumentSnapshot doc) -> {
                     if (!isAdded()) return;
                     isAdmin = "admin".equalsIgnoreCase(doc.getString("role"));
@@ -192,7 +186,7 @@ public class EventsFragment extends Fragment {
                     applyFilters();
                 })
                 .addOnFailureListener(e -> {
-                    if (!isAdded()) return;
+                    if (getContext() == null) return;
                     applyFilters();
                 });
     }
@@ -201,7 +195,6 @@ public class EventsFragment extends Fragment {
 
 
 
-    // optimistic update - flip the state in ui first, revert if save fails
     private void toggleAttendance(@NonNull Event event, boolean attending) {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
@@ -215,8 +208,8 @@ public class EventsFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference attendanceCollection = db.collection(ATTENDANCE_COLLECTION);
         DocumentReference userAttendanceDocument = attendanceCollection.document(user.getUid());
-        CollectionReference attendingEventsCollection = userAttendanceDocument.collection(ATTENDING_SUB);
-        DocumentReference ref = attendingEventsCollection.document(event.getId());
+        CollectionReference attended = userAttendanceDocument.collection(ATTENDING_SUB);
+        DocumentReference ref = attended.document(event.getId());
 
         if (attending) {
             Map<String, Object> data = new HashMap<>();
@@ -227,8 +220,8 @@ public class EventsFragment extends Fragment {
                 if (!isAdded()) return;
                 event.setAttending(false);
                 adapter.notifyDataSetChanged();
-                Toast.makeText(requireContext(),
-                        "Failed to save attendance.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(),
+                        "couldn't save that", Toast.LENGTH_SHORT).show();
             });
         } else {
             ref.delete().addOnFailureListener(e -> {
@@ -247,7 +240,7 @@ public class EventsFragment extends Fragment {
 
 
 
-    // placeholder events if firestore is empty or hasnt loaded - TODO remove eventually
+    // fallback data so the screen isn't blank during development when firestore is empty
     private void seedDummyEvents() {
         allEvents.add(new Event(
                 "e1",
@@ -403,7 +396,6 @@ public class EventsFragment extends Fragment {
     }
 
 
-    // splits out the date from "15-Nov-2025 • 18:00" format for chip filtering
     @Nullable
     private static Date parseEventDate(@Nullable String dateTime) {
         if (dateTime == null || dateTime.isEmpty()) return null;
@@ -418,7 +410,7 @@ public class EventsFragment extends Fragment {
     }
 
     @NonNull
-    private String safeString(@Nullable String value, @NonNull String fallback) {
+    private String orElse(@Nullable String value, String fallback) {
         return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
     }
 }

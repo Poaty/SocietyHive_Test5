@@ -99,7 +99,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
 
 
-                                    mAuth.signOut(); // sign out so they have to log in properly
+                                    mAuth.signOut(); // force them through the login screen so the theme loads correctly
                                     startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
                                     finish();
                                 })

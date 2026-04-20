@@ -84,7 +84,7 @@ public class EditSocietyFragment extends Fragment {
         ivSocietyIcon.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
         MaterialButton btnSave = view.findViewById(R.id.btnSave);
-        btnSave.setOnClickListener(v -> attemptSave());
+        btnSave.setOnClickListener(v -> saveChanges());
 
         etColor.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int i, int c, int a) {}
@@ -94,13 +94,13 @@ public class EditSocietyFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        loadSocieties();
+        pullSocieties();
     }
 
-    private void loadSocieties() {
+    private void pullSocieties() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference societiesCollection = db.collection("societies");
-        societiesCollection.get()
+        CollectionReference socs = db.collection("societies");
+        socs.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     societyIds.clear(); societyNames.clear();
@@ -119,15 +119,15 @@ public class EditSocietyFragment extends Fragment {
                         storedColors.add(color != null ? color : "#8D2E3A");
                         storedIcons .add(icon  != null ? icon  : "");
                     }
-                    setupDropdown();
+                    buildDropdown();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(), "Failed to load societies.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "couldn't load societies", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void setupDropdown() {
+    private void buildDropdown() {
         if (societyIds.isEmpty()) {
             Toast.makeText(requireContext(), "No societies found.", Toast.LENGTH_LONG).show();
             return;
@@ -140,11 +140,10 @@ public class EditSocietyFragment extends Fragment {
 
         actvSociety.setOnItemClickListener((parent, v, position, id) -> {
             selectedIndex = position;
+            // clear any pending icon so we don't accidentally carry it over to the newly selected society
             pendingIconUrl = null;
             fillFields(position);
         });
-
-
 
         if (!preSelectedSocietyId.isEmpty()) {
             int idx = societyIds.indexOf(preSelectedSocietyId);
@@ -178,7 +177,7 @@ public class EditSocietyFragment extends Fragment {
         }
     }
 
-    private void updateSwatch(@NonNull String hex) {
+    private void updateSwatch(String hex) {
         try { colorSwatch.setBackgroundColor(Color.parseColor(hex)); }
         catch (IllegalArgumentException ignored) {}
     }
@@ -206,7 +205,7 @@ public class EditSocietyFragment extends Fragment {
                         ivSocietyIcon.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
                         Glide.with(EditSocietyFragment.this)
                                 .load(pendingIconUrl).circleCrop().into(ivSocietyIcon);
-                        Toast.makeText(requireContext(),
+                        Toast.makeText(requireActivity(),
                                 "Icon ready \u2014 tap Save to apply", Toast.LENGTH_SHORT).show();
                     }
 
@@ -222,7 +221,7 @@ public class EditSocietyFragment extends Fragment {
                 .dispatch();
     }
 
-    private void attemptSave() {
+    private void saveChanges() {
         if (societyIds.isEmpty()) {
             Toast.makeText(requireContext(), "No society selected.", Toast.LENGTH_SHORT).show();
             return;
@@ -239,8 +238,7 @@ public class EditSocietyFragment extends Fragment {
         try { Color.parseColor(color); }
         catch (IllegalArgumentException e) { etColor.setError("Invalid colour \u2014 use #RRGGBB"); return; }
 
-
-
+        // prefer preSelectedSocietyId if this was opened from a society's own admin panel
         String societyId = !preSelectedSocietyId.isEmpty()
                 ? preSelectedSocietyId
                 : societyIds.get(selectedIndex);
@@ -251,8 +249,7 @@ public class EditSocietyFragment extends Fragment {
         if (pendingIconUrl != null) updates.put("iconUrl", pendingIconUrl);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference societiesCollection = db.collection("societies");
-        DocumentReference societyDocument = societiesCollection.document(societyId);
+        DocumentReference societyDocument = db.collection("societies").document(societyId);
         societyDocument.update(updates)
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;

@@ -62,28 +62,26 @@ public class CreatePollFragment extends Fragment {
         optionsContainer = view.findViewById(R.id.optionsContainer);
         actvSociety      = view.findViewById(R.id.actvSociety);
 
-        etCloseDate.setOnClickListener(v -> showDatePicker()); // tap to open calendar
+        etCloseDate.setOnClickListener(v -> showDatePicker());
 
         MaterialButton btnAddOption  = view.findViewById(R.id.btnAddOption);
         MaterialButton btnCreatePoll = view.findViewById(R.id.btnCreatePoll);
 
-
-        addOptionField(); // start with 2 option fields
+        // start with 2 blank options so the form doesn't look empty
+        addOptionField();
         addOptionField();
 
         btnAddOption.setOnClickListener(v -> addOptionField());
-        btnCreatePoll.setOnClickListener(v -> attemptCreate());
+        btnCreatePoll.setOnClickListener(v -> submitPoll());
 
         if (getArguments() != null) {
             preSelectedSocietyId = getArguments().getString("preSelectedSocietyId", "");
         }
 
-        loadSocieties();
+        fetchSocieties();
     }
 
 
-
-    // shows date picker, sets time to end of day (23:59) so the whole day counts
     private void showDatePicker() {
         Calendar start = closeDateCal != null ? closeDateCal : Calendar.getInstance();
         DatePickerDialog dialog = new DatePickerDialog(
@@ -93,7 +91,7 @@ public class CreatePollFragment extends Fragment {
                     picked.set(year, month, day, 23, 59, 59);
                     picked.set(Calendar.MILLISECOND, 0);
 
-
+                    // closing date must be in the future, otherwise votes could be cast after it closes
                     if (!picked.after(Calendar.getInstance())) {
                         Toast.makeText(requireContext(),
                                 "Closing date must be in the future", Toast.LENGTH_SHORT).show();
@@ -108,11 +106,9 @@ public class CreatePollFragment extends Fragment {
                 start.get(Calendar.MONTH),
                 start.get(Calendar.DAY_OF_MONTH));
 
-
         dialog.getDatePicker().setMinDate(System.currentTimeMillis());
         dialog.show();
     }
-
 
 
     private void addOptionField() {
@@ -126,7 +122,7 @@ public class CreatePollFragment extends Fragment {
         optionFields.add(et);
     }
 
-    private void loadSocieties() {
+    private void fetchSocieties() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference societiesCollection = db.collection("societies");
         societiesCollection.get()
@@ -139,16 +135,16 @@ public class CreatePollFragment extends Fragment {
                         societyIds.add(doc.getId());
                         societyNames.add(name != null ? name : doc.getId());
                     }
-                    setupSocietyDropdown();
+                    buildDropdown();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
-                            "Failed to load societies.", Toast.LENGTH_SHORT).show();
+                            "couldn't load societies", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void setupSocietyDropdown() {
+    private void buildDropdown() {
         if (societyIds.isEmpty()) {
             Toast.makeText(requireContext(),
                     "No societies found. Add societies to Firestore first.",
@@ -173,9 +169,7 @@ public class CreatePollFragment extends Fragment {
     }
 
 
-
-    // validate everything then push to firestore
-    private void attemptCreate() {
+    private void submitPoll() {
         String title    = text(etTitle);
         String question = text(etQuestion);
 
@@ -218,7 +212,7 @@ public class CreatePollFragment extends Fragment {
         data.put("createdBy", user.getUid());
         data.put("createdAt", Timestamp.now());
         if (closeDateCal != null) {
-            data.put("endsAt", new Timestamp(closeDateCal.getTime())); // optional, poll stays open forever if not set
+            data.put("endsAt", new Timestamp(closeDateCal.getTime()));
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -226,7 +220,7 @@ public class CreatePollFragment extends Fragment {
         pollsCollection.add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(), "Poll created!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireActivity(), "Poll created!", Toast.LENGTH_SHORT).show();
                     NavHelpers.navigateUp(this);
                 })
                 .addOnFailureListener(e -> {
@@ -237,7 +231,7 @@ public class CreatePollFragment extends Fragment {
     }
 
     @NonNull
-    private String text(@Nullable TextInputEditText et) {
+    private String text(TextInputEditText et) {
         return (et != null && et.getText() != null) ? TextHelpers.trimmed(et) : "";
     }
 }

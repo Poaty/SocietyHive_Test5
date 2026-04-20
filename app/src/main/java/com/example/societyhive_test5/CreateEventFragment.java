@@ -70,23 +70,17 @@ public class CreateEventFragment extends Fragment {
 
         MaterialButton btnCreate = view.findViewById(R.id.btnCreateEvent);
 
-
         etDateTime.setOnClickListener(v -> showDatePicker());
-
-        btnCreate.setOnClickListener(v -> attemptCreate());
+        btnCreate.setOnClickListener(v -> tryCreateEvent());
 
         if (getArguments() != null) {
             preSelectedSocietyId = getArguments().getString("preSelectedSocietyId", "");
         }
 
-        loadSocieties();
+        fetchSocieties();
     }
 
 
-
-
-
-    // date then time, chained together
     private void showDatePicker() {
         Calendar cal = Calendar.getInstance();
         new DatePickerDialog(requireContext(), (datePicker, year, month, day) -> {
@@ -106,7 +100,7 @@ public class CreateEventFragment extends Fragment {
             pickedMinute = minute;
             dateTimePicked = true;
 
-
+            // reject past times so the event list doesn't immediately look broken
             java.util.Calendar selected = java.util.Calendar.getInstance();
             selected.set(pickedYear, pickedMonth, pickedDay, hour, minute, 0);
             if (selected.before(java.util.Calendar.getInstance())) {
@@ -125,13 +119,10 @@ public class CreateEventFragment extends Fragment {
     }
 
 
-
-
-
-    private void loadSocieties() {
+    private void fetchSocieties() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference societiesCollection = db.collection("societies");
-        societiesCollection.get()
+        CollectionReference societies = db.collection("societies");
+        societies.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     societyIds.clear();
@@ -141,16 +132,16 @@ public class CreateEventFragment extends Fragment {
                         societyIds.add(doc.getId());
                         societyNames.add(name != null ? name : doc.getId());
                     }
-                    setupSocietyDropdown();
+                    buildSocietyDropdown();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
-                            "Failed to load societies.", Toast.LENGTH_SHORT).show();
+                            "couldn't load societies", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void setupSocietyDropdown() {
+    private void buildSocietyDropdown() {
         if (societyIds.isEmpty()) {
             Toast.makeText(requireContext(),
                     "No societies found. Add societies to Firestore first.",
@@ -164,6 +155,8 @@ public class CreateEventFragment extends Fragment {
         actvSociety.setOnItemClickListener(
                 (parent, v, position, id) -> selectedSocietyIndex = position);
 
+        // if opened from a society's own admin panel, lock the dropdown so you can't accidentally
+        // create the event under a different society
         if (!preSelectedSocietyId.isEmpty()) {
             int idx = societyIds.indexOf(preSelectedSocietyId);
             if (idx >= 0) {
@@ -175,11 +168,9 @@ public class CreateEventFragment extends Fragment {
     }
 
 
-
-
-
-    private void attemptCreate() {
-        String name        = text(etEventName);
+    private void tryCreateEvent() {
+        // inline the trim here — name is the most critical field so I want to be explicit
+        String name = etEventName.getText() != null ? etEventName.getText().toString().trim() : "";
         String description = text(etDescription);
         String location    = text(etLocation);
         String dateTime    = text(etDateTime);
@@ -209,11 +200,10 @@ public class CreateEventFragment extends Fragment {
         String societyId = societyIds.get(selectedSocietyIndex);
         boolean isPublic = switchPublic.isChecked();
 
-
+        // pull the organiser name from their profile — fall back to email if somehow blank
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(user.getUid());
-        userDocument.get()
+        DocumentReference userDoc = db.collection("users").document(user.getUid());
+        userDoc.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String organiser = doc.getString("fullName");
@@ -221,19 +211,18 @@ public class CreateEventFragment extends Fragment {
                     if (organiser == null || TextHelpers.isBlank(organiser)) {
                         organiser = user.getEmail() != null ? user.getEmail() : "Admin";
                     }
-                    writeEvent(name, description, location, dateTime,
+                    persistEvent(name, description, location, dateTime,
                                organiser, societyId, isPublic, user.getUid());
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
 
-                    writeEvent(name, description, location, dateTime,
+                    persistEvent(name, description, location, dateTime,
                                "Admin", societyId, isPublic, user.getUid());
                 });
     }
 
-    // actually write the event document
-    private void writeEvent(String name, String description, String location,
+    private void persistEvent(String name, String description, String location,
                             String dateTime, String organiser,
                             String societyId, boolean isPublic, String uid) {
         Map<String, Object> data = new HashMap<>();
@@ -248,11 +237,11 @@ public class CreateEventFragment extends Fragment {
         data.put("createdAt",   Timestamp.now());
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference eventsCollection = db.collection("events");
-        eventsCollection.add(data)
+        CollectionReference events = db.collection("events");
+        events.add(data)
                 .addOnSuccessListener(ref -> {
                     if (!isAdded()) return;
-                    Toast.makeText(requireContext(), "Event created!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireActivity(), "Event created!", Toast.LENGTH_SHORT).show();
                     NavHelpers.navigateUp(this);
                 })
                 .addOnFailureListener(e -> {
@@ -263,7 +252,7 @@ public class CreateEventFragment extends Fragment {
     }
 
     @NonNull
-    private String text(@Nullable TextInputEditText et) {
+    private String text(TextInputEditText et) {
         return (et != null && et.getText() != null) ? TextHelpers.trimmed(et) : "";
     }
 }

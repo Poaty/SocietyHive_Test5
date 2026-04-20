@@ -84,6 +84,7 @@
             android:textSize="14sp" />
 
 
+        <!-- options are inflated dynamically from item_poll_option into this container at bind time -->
         <LinearLayout
             android:id="@+id/optionsContainer"
             android:layout_width="match_parent"
@@ -109,6 +110,7 @@
             android:gravity="end"
             android:layout_marginTop="12dp">
 
+            <!-- close and delete are gone by default — only shown for the poll creator or an admin -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnClosePoll"
                 style="@style/Widget.Material3.Button.OutlinedButton"

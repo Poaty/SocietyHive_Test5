@@ -106,6 +106,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventVH> {
             tvExpandedDescription.setText(event.getDescription());
             tvExpandedOrganiser.setText(event.getOrganiser());
 
+            // tap the row to expand/collapse rather than needing a separate details button
             itemView.setOnClickListener(v -> {
                 event.setExpanded(!event.isExpanded());
                 notifyItemChanged(getBindingAdapterPosition());

@@ -47,10 +47,10 @@ public class HomeFragment extends Fragment {
         rvAnnouncements.setAdapter(announcementsAdapter);
 
         wireTiles(view); // hook up all the nav tiles first
-        loadUserData(view);
+        initUserProfile(view);
     }
 
-    private void loadUserData(@NonNull View view) {
+    private void initUserProfile(@NonNull View view) {
         TextView tvWelcome = view.findViewById(R.id.tvWelcome);
         if (tvWelcome != null) tvWelcome.setText("Welcome back");
 
@@ -100,7 +100,7 @@ public class HomeFragment extends Fragment {
                         }
                     }
 
-                    loadAnnouncements(view);
+                    fetchPins(view);
                 });
     }
 
@@ -110,6 +110,7 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.cardAdminDashboard).setVisibility(v);
     }
 
+    // society admin panel is separate from the global admin section — different set of tiles
     private void showSocietyAdminSection(@NonNull View view, boolean visible) {
         int v = visible ? View.VISIBLE : View.GONE;
         view.findViewById(R.id.tvSocietyAdminItems).setVisibility(v);
@@ -159,18 +160,14 @@ public class HomeFragment extends Fragment {
         });
     }
 
-
-
-
-
     // fetches pinned announcements from firestore
-    private void loadAnnouncements(@NonNull View view) {
+    private void fetchPins(@NonNull View view) {
         View progress = view.findViewById(R.id.progressPins);
         if (progress != null) progress.setVisibility(View.VISIBLE);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference pinsCollection = db.collection("pins");
-        pinsCollection.get()
+        CollectionReference pins = db.collection("pins");
+        pins.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     if (progress != null) progress.setVisibility(View.GONE);
@@ -183,10 +180,10 @@ public class HomeFragment extends Fragment {
 
                         Announcement a = new Announcement();
                         a.setId(doc.getId());
-                        a.setTitle(safeString(doc.getString("content"), ""));
+                        a.setTitle(orDefault(doc.getString("content"), ""));
                         a.setContent("");
                         a.setSocietyId(societyId != null ? societyId : "");
-                        a.setCreatedBy(safeString(doc.getString("createdBy"), ""));
+                        a.setCreatedBy(orDefault(doc.getString("createdBy"), ""));
                         a.setCreatedAt(doc.getTimestamp("createdAt"));
                         announcements.add(a);
                     }
@@ -212,9 +209,8 @@ public class HomeFragment extends Fragment {
 
         for (String sid : ids) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            CollectionReference societiesCollection = db.collection("societies");
-            DocumentReference societyDocument = societiesCollection.document(sid);
-            societyDocument.get()
+            DocumentReference socRef = db.collection("societies").document(sid);
+            socRef.get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             String name = task.getResult().getString("name");
@@ -253,9 +249,8 @@ public class HomeFragment extends Fragment {
     // remove from list without reloading the whole thing
     private void deletePin(@NonNull String pinId, @NonNull View view) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference pinsCollection = db.collection("pins");
-        DocumentReference pinDocument = pinsCollection.document(pinId);
-        pinDocument.delete()
+        DocumentReference ref = db.collection("pins").document(pinId);
+        ref.delete()
                 .addOnSuccessListener(unused -> {
                     if (!isAdded()) return;
                     announcements.removeIf(a -> a.getId().equals(pinId));
@@ -293,8 +288,8 @@ public class HomeFragment extends Fragment {
     }
 
     @NonNull
-    private String safeString(@Nullable String value, @NonNull String fallback) {
-
-        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
+    private String orDefault(@Nullable String value, String fallback) {
+        if (value != null && !TextHelpers.isBlank(value)) return value.trim();
+        return fallback;
     }
 }

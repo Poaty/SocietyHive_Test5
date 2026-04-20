@@ -1,0 +1,987 @@
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\Announcement.java
+CLASSES: Announcement
+METHOD COUNT: 15
+COMMENT COUNT: 1
+METHODS:
+  - Announcement
+  - getId
+  - setId
+  - getTitle
+  - setTitle
+  - getContent
+  - setContent
+  - getSocietyId
+  - setSocietyId
+  - getSocietyName
+  - setSocietyName
+  - getCreatedBy
+  - setCreatedBy
+  - getCreatedAt
+  - setCreatedAt
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\AnnouncementsAdapter.java
+CLASSES: AnnouncementsAdapter, ViewHolder
+METHOD COUNT: 10
+COMMENT COUNT: 1
+METHODS:
+  - onDelete
+  - canDelete
+  - setDeleteListener
+  - setDeleteChecker
+  - onCreateViewHolder
+  - ViewHolder
+  - onBindViewHolder
+  - SimpleDateFormat
+  - getItemCount
+  - updateList
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\AuthHelpers.java
+CLASSES: AuthHelpers
+METHOD COUNT: 3
+COMMENT COUNT: 1
+METHODS:
+  - AuthHelpers
+  - currentUser
+  - signOut
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\BrowseSocietiesFragment.java
+CLASSES: BrowseSocietiesFragment, SocietyRow, BrowseAdapter, VH
+METHOD COUNT: 13
+COMMENT COUNT: 2
+METHODS:
+  - BrowseSocietiesFragment
+  - onViewCreated
+  - LinearLayoutManager
+  - BrowseAdapter
+  - refreshAvailableSocieties
+  - SocietyRow
+  - requestMembership
+  - onCreateViewHolder
+  - VH
+  - onBindViewHolder
+  - getItemCount
+  - bind
+  - requestMembership
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\CalendarEventsAdapter.java
+CLASSES: CalendarEventsAdapter, ViewHolder
+METHOD COUNT: 8
+COMMENT COUNT: 1
+METHODS:
+  - onCreateViewHolder
+  - ViewHolder
+  - onBindViewHolder
+  - getItemCount
+  - updateList
+  - formatSubtitle
+  - SimpleDateFormat
+  - SimpleDateFormat
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\CalendarFragment.java
+CLASSES: CalendarFragment
+METHOD COUNT: 30
+COMMENT COUNT: 1
+METHODS:
+  - SimpleDateFormat
+  - SimpleDateFormat
+  - SimpleDateFormat
+  - CalendarFragment
+  - onViewCreated
+  - LinearLayoutManager
+  - CalendarEventsAdapter
+  - updateCalendar
+  - updateMonthYearHeader
+  - buildCalendarGrid
+  - TableRow
+  - makeDayCell
+  - TextView
+  - if
+  - onDayClicked
+  - makeCircle
+  - GradientDrawable
+  - onDayClicked
+  - loadEventsFromFirestore
+  - fetchCalendarEvents
+  - Event
+  - mergeAttendanceData
+  - applyMembershipFilter
+  - applyVisibilityFilter
+  - showEventsForSelectedDate
+  - getEventDaysForMonth
+  - updateEventsHeader
+  - parseEventDate
+  - dpToPx
+  - fmt
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\Chat.java
+CLASSES: Chat
+METHOD COUNT: 8
+COMMENT COUNT: 1
+METHODS:
+  - Chat
+  - Chat
+  - getId
+  - getTitle
+  - getLastMessage
+  - getTime
+  - getSocietyColor
+  - getIconUrl
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\ChatAdapter.java
+CLASSES: ChatAdapter, ChatVH
+METHOD COUNT: 8
+COMMENT COUNT: 1
+METHODS:
+  - onChatClick
+  - ChatAdapter
+  - onCreateViewHolder
+  - ChatVH
+  - onBindViewHolder
+  - getItemCount
+  - updateList
+  - bind
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\ChatConversationFragment.java
+CLASSES: ChatConversationFragment
+METHOD COUNT: 12
+COMMENT COUNT: 5
+METHODS:
+  - ChatConversationFragment
+  - onViewCreated
+  - LinearLayoutManager
+  - MessageAdapter
+  - onDestroyView
+  - attachMessageStream
+  - Message
+  - fetchMissingAvatars
+  - renderMessages
+  - postMessage
+  - loadDisplayName
+  - safeString
+GENERIC-SOUNDING METHOD NAMES TO REVIEW:
+  - safeString
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\ChatsFragment.java
+CLASSES: ChatsFragment
+METHOD COUNT: 24
+COMMENT COUNT: 5
+METHODS:
+  - ChatsFragment
+  - onViewCreated
+  - LinearLayoutManager
+  - ChatAdapter
+  - onDestroyView
+  - for
+  - refreshChatList
+  - AtomicInteger
+  - AtomicInteger
+  - addChatFromSociety
+  - Chat
+  - updateChatPreview
+  - Chat
+  - Chat
+  - checkAllLoaded
+  - hookSearch
+  - TextWatcher
+  - beforeTextChanged
+  - onTextChanged
+  - afterTextChanged
+  - applySearch
+  - formatTimestamp
+  - if
+  - if
+GENERIC-SOUNDING METHOD NAMES TO REVIEW:
+  - applySearch
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\CreateEventFragment.java
+CLASSES: CreateEventFragment
+METHOD COUNT: 14
+COMMENT COUNT: 5
+METHODS:
+  - CreateEventFragment
+  - onViewCreated
+  - showDatePicker
+  - tryCreateEvent
+  - showDatePicker
+  - DatePickerDialog
+  - showTimePicker
+  - TimePickerDialog
+  - fetchSocieties
+  - buildSocietyDropdown
+  - if
+  - tryCreateEvent
+  - persistEvent
+  - text
+GENERIC-SOUNDING METHOD NAMES TO REVIEW:
+  - text
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\CreatePinFragment.java
+CLASSES: CreatePinFragment
+METHOD COUNT: 6
+COMMENT COUNT: 0
+METHODS:
+  - CreatePinFragment
+  - onViewCreated
+  - submitPin
+  - fetchSocieties
+  - buildDropdown
+  - submitPin
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\CreatePollFragment.java
+CLASSES: CreatePollFragment
+METHOD COUNT: 16
+COMMENT COUNT: 2
+METHODS:
+  - CreatePollFragment
+  - onViewCreated
+  - showDatePicker
+  - addOptionField
+  - addOptionField
+  - submitPoll
+  - showDatePicker
+  - DatePickerDialog
+  - if
+  - SimpleDateFormat
+  - addOptionField
+  - fetchSocieties
+  - buildDropdown
+  - submitPoll
+  - Timestamp
+  - text
+GENERIC-SOUNDING METHOD NAMES TO REVIEW:
+  - text
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\CreateSocietyFragment.java
+CLASSES: CreateSocietyFragment
+METHOD COUNT: 18
+COMMENT COUNT: 1
+METHODS:
+  - CreateSocietyFragment
+  - onViewCreated
+  - submitNewSociety
+  - TextWatcher
+  - beforeTextChanged
+  - onTextChanged
+  - afterTextChanged
+  - updateSwatch
+  - uploadIcon
+  - UploadCallback
+  - onStart
+  - onProgress
+  - onSuccess
+  - onError
+  - onReschedule
+  - submitNewSociety
+  - colour
+  - text
+GENERIC-SOUNDING METHOD NAMES TO REVIEW:
+  - text
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\EditSocietyFragment.java
+CLASSES: EditSocietyFragment
+METHOD COUNT: 21
+COMMENT COUNT: 2
+METHODS:
+  - EditSocietyFragment
+  - onViewCreated
+  - saveChanges
+  - TextWatcher
+  - beforeTextChanged
+  - onTextChanged
+  - afterTextChanged
+  - pullSocieties
+  - buildDropdown
+  - fillFields
+  - updateSwatch
+  - uploadIcon
+  - UploadCallback
+  - onStart
+  - onProgress
+  - onSuccess
+  - onError
+  - onReschedule
+  - saveChanges
+  - colour
+  - text
+GENERIC-SOUNDING METHOD NAMES TO REVIEW:
+  - text
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\Event.java
+CLASSES: Event
+METHOD COUNT: 22
+COMMENT COUNT: 1
+METHODS:
+  - Event
+  - Event
+  - getId
+  - getName
+  - getDateTime
+  - getLocation
+  - getOrganiser
+  - getDescription
+  - getSocietyId
+  - setId
+  - setName
+  - setDateTime
+  - setLocation
+  - setOrganiser
+  - setDescription
+  - setSocietyId
+  - isPublic
+  - setPublic
+  - isAttending
+  - setAttending
+  - isExpanded
+  - setExpanded
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\EventDetailsFragment.java
+CLASSES: EventDetailsFragment
+METHOD COUNT: 13
+COMMENT COUNT: 3
+METHODS:
+  - EventDetailsFragment
+  - onCreate
+  - MaterialFadeThrough
+  - onViewCreated
+  - openEventDetails
+  - bindEvent
+  - generateQrCode
+  - BarcodeEncoder
+  - checkAttendanceStatus
+  - wireAttendButton
+  - saveAttendance
+  - updateAttendButton
+  - str
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\EventsAdapter.java
+CLASSES: EventsAdapter, EventVH
+METHOD COUNT: 9
+COMMENT COUNT: 1
+METHODS:
+  - onAttendClick
+  - onViewDetailsClick
+  - EventsAdapter
+  - onCreateViewHolder
+  - EventVH
+  - onBindViewHolder
+  - getItemCount
+  - updateList
+  - bind
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\EventsFragment.java
+CLASSES: EventsFragment
+METHOD COUNT: 27
+COMMENT COUNT: 1
+METHODS:
+  - EventsFragment
+  - onViewCreated
+  - LinearLayoutManager
+  - EventsAdapter
+  - pullEvents
+  - Event
+  - mergeAttendance
+  - filterBySocieties
+  - toggleAttendance
+  - seedDummyEvents
+  - Event
+  - Event
+  - Event
+  - Event
+  - Event
+  - hookSearch
+  - TextWatcher
+  - beforeTextChanged
+  - onTextChanged
+  - afterTextChanged
+  - hookChips
+  - applyFilters
+  - applyFilters
+  - getWeekStart
+  - parseEventDate
+  - SimpleDateFormat
+  - orElse
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\GalleryAdapter.java
+CLASSES: GalleryAdapter, PhotoViewHolder
+METHOD COUNT: 13
+COMMENT COUNT: 2
+METHODS:
+  - onDelete
+  - GalleryAdapter
+  - setDeleteListener
+  - updatePhotos
+  - onCreateViewHolder
+  - PhotoViewHolder
+  - onBindViewHolder
+  - if
+  - getItemCount
+  - formatTimestamp
+  - SimpleDateFormat
+  - SimpleDateFormat
+  - SimpleDateFormat
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\GalleryFragment.java
+CLASSES: GalleryFragment
+METHOD COUNT: 18
+COMMENT COUNT: 4
+METHODS:
+  - GalleryFragment
+  - onCreate
+  - onViewCreated
+  - AtomicInteger
+  - setupTabs
+  - GalleryPagerAdapter
+  - TabLayoutMediator
+  - onTabSelected
+  - onTabUnselected
+  - onTabReselected
+  - uploadImage
+  - UploadCallback
+  - onStart
+  - onProgress
+  - onSuccess
+  - requireActivity
+  - onError
+  - onReschedule
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\GalleryPageFragment.java
+CLASSES: GalleryPageFragment
+METHOD COUNT: 10
+COMMENT COUNT: 1
+METHODS:
+  - newInstance
+  - GalleryPageFragment
+  - Bundle
+  - onCreate
+  - onCreateView
+  - onViewCreated
+  - GalleryAdapter
+  - LinearLayoutManager
+  - listenPhotos
+  - onDestroyView
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\GalleryPagerAdapter.java
+CLASSES: GalleryPagerAdapter
+METHOD COUNT: 3
+COMMENT COUNT: 1
+METHODS:
+  - GalleryPagerAdapter
+  - createFragment
+  - getItemCount
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\GalleryPhoto.java
+CLASSES: GalleryPhoto
+METHOD COUNT: 11
+COMMENT COUNT: 1
+METHODS:
+  - GalleryPhoto
+  - getId
+  - setId
+  - getSocietyId
+  - setSocietyId
+  - getImageUrl
+  - setImageUrl
+  - getUploadedBy
+  - setUploadedBy
+  - getCreatedAt
+  - setCreatedAt
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\HomeFragment.java
+CLASSES: HomeFragment
+METHOD COUNT: 26
+COMMENT COUNT: 6
+METHODS:
+  - HomeFragment
+  - onViewCreated
+  - LinearLayoutManager
+  - AnnouncementsAdapter
+  - initUserProfile
+  - initUserProfile
+  - if
+  - showAdminSection
+  - showSocietyAdminSection
+  - wireSocietyAdminTiles
+  - Bundle
+  - Bundle
+  - Bundle
+  - Bundle
+  - Bundle
+  - fetchPins
+  - Announcement
+  - fetchAnnouncementSocietyNames
+  - publishAnnouncements
+  - deletePin
+  - if
+  - deletePin
+  - deletePin
+  - wireTiles
+  - wire
+  - orDefault
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\JoinedSocietyAdapter.java
+CLASSES: JoinedSocietyAdapter, SocietyVH
+METHOD COUNT: 8
+COMMENT COUNT: 1
+METHODS:
+  - onManageClick
+  - JoinedSocietyAdapter
+  - onCreateViewHolder
+  - SocietyVH
+  - onBindViewHolder
+  - getItemCount
+  - updateList
+  - bind
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\LoginActivity.java
+CLASSES: LoginActivity
+METHOD COUNT: 4
+COMMENT COUNT: 4
+METHODS:
+  - onCreate
+  - if
+  - Intent
+  - Intent
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\MainActivity.java
+CLASSES: MainActivity
+METHOD COUNT: 7
+COMMENT COUNT: 1
+METHODS:
+  - onCreate
+  - onCreateOptionsMenu
+  - onOptionsItemSelected
+  - Intent
+  - onSupportNavigateUp
+  - requestNotificationPermission
+  - fetchAndSaveFcmToken
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\Message.java
+CLASSES: Message
+METHOD COUNT: 16
+COMMENT COUNT: 1
+METHODS:
+  - Message
+  - Message
+  - getId
+  - setId
+  - getText
+  - setText
+  - getSenderId
+  - setSenderId
+  - getSenderName
+  - setSenderName
+  - getTimestamp
+  - setTimestamp
+  - isSentByMe
+  - setSentByMe
+  - getSenderPhotoUrl
+  - setSenderPhotoUrl
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\MessageAdapter.java
+CLASSES: MessageAdapter, SentVH, ReceivedVH
+METHOD COUNT: 9
+COMMENT COUNT: 1
+METHODS:
+  - MessageAdapter
+  - getItemViewType
+  - onCreateViewHolder
+  - SentVH
+  - ReceivedVH
+  - onBindViewHolder
+  - if
+  - getItemCount
+  - updateList
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\MyFirebaseMessagingService.java
+CLASSES: MyFirebaseMessagingService
+METHOD COUNT: 6
+COMMENT COUNT: 1
+METHODS:
+  - onNewToken
+  - saveTokenToFirestore
+  - onMessageReceived
+  - Intent
+  - ensureChannel
+  - NotificationChannel
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\NavHelpers.java
+CLASSES: NavHelpers
+METHOD COUNT: 4
+COMMENT COUNT: 1
+METHODS:
+  - NavHelpers
+  - navigate
+  - navigate
+  - navigateUp
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\Poll.java
+CLASSES: Poll
+METHOD COUNT: 29
+COMMENT COUNT: 2
+METHODS:
+  - Poll
+  - getId
+  - setId
+  - getTitle
+  - setTitle
+  - getQuestion
+  - setQuestion
+  - getOptions
+  - setOptions
+  - getSocietyId
+  - setSocietyId
+  - isActive
+  - setActive
+  - getSelectedOptionIndex
+  - setSelectedOptionIndex
+  - isHasVoted
+  - setHasVoted
+  - getVotedOptionIndex
+  - setVotedOptionIndex
+  - getVoteCounts
+  - setVoteCounts
+  - getTotalVotes
+  - setTotalVotes
+  - getSocietyName
+  - setSocietyName
+  - getEndsAt
+  - setEndsAt
+  - isClosed
+  - Date
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\PollsAdapter.java
+CLASSES: PollsAdapter, ViewHolder
+METHOD COUNT: 11
+COMMENT COUNT: 1
+METHODS:
+  - onVote
+  - onDelete
+  - onClose
+  - PollsAdapter
+  - onCreateViewHolder
+  - ViewHolder
+  - onBindViewHolder
+  - SimpleDateFormat
+  - if
+  - getItemCount
+  - updateList
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\PollsFragment.java
+CLASSES: PollsFragment
+METHOD COUNT: 22
+COMMENT COUNT: 5
+METHODS:
+  - PollsFragment
+  - onViewCreated
+  - LinearLayoutManager
+  - LinearLayoutManager
+  - PollsAdapter
+  - PollsAdapter
+  - loadUserSocietiesThenPolls
+  - if
+  - PollsAdapter
+  - PollsAdapter
+  - fetchActivePolls
+  - Poll
+  - fetchSocietyNamesThenVotes
+  - tallyCastVotes
+  - applyVoteDocs
+  - finishOne
+  - publishPolls
+  - submitVote
+  - deletePoll
+  - isClosed
+  - closePoll
+  - safe
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\PreferencesFragment.java
+CLASSES: PreferencesFragment
+METHOD COUNT: 8
+COMMENT COUNT: 1
+METHODS:
+  - PreferencesFragment
+  - onViewCreated
+  - selectScheme
+  - selectScheme
+  - refreshTicks
+  - refreshBorders
+  - makeCircle
+  - GradientDrawable
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\ProfileFragment.java
+CLASSES: ProfileFragment
+METHOD COUNT: 25
+COMMENT COUNT: 7
+METHODS:
+  - ProfileFragment
+  - onViewCreated
+  - LinearLayoutManager
+  - JoinedSocietyAdapter
+  - Intent
+  - fetchProfileData
+  - uploadProfilePicture
+  - UploadCallback
+  - onStart
+  - onProgress
+  - onSuccess
+  - onError
+  - onReschedule
+  - loadAvatar
+  - renderSocietyBadges
+  - addSocietyIfValid
+  - Society
+  - showManageSheet
+  - BottomSheetDialog
+  - Bundle
+  - confirmLeaveSociety
+  - MaterialAlertDialogBuilder
+  - leaveSociety
+  - leaveSociety
+  - capitalize
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\QrFragment.java
+CLASSES: QrFragment
+METHOD COUNT: 9
+COMMENT COUNT: 1
+METHODS:
+  - QrFragment
+  - onViewCreated
+  - DefaultDecoderFactory
+  - onResume
+  - onPause
+  - startScanning
+  - onQrDetected
+  - if
+  - Bundle
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\SettingsFragment.java
+CLASSES: SettingsFragment
+METHOD COUNT: 15
+COMMENT COUNT: 1
+METHODS:
+  - SettingsFragment
+  - onViewCreated
+  - showEditNameDialog
+  - showChangePasswordDialog
+  - confirmSignOut
+  - fetchAccountDetails
+  - showEditNameDialog
+  - MaterialAlertDialogBuilder
+  - saveDisplayName
+  - showChangePasswordDialog
+  - MaterialAlertDialogBuilder
+  - reauthAndChangePassword
+  - confirmSignOut
+  - MaterialAlertDialogBuilder
+  - Intent
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\SignUpActivity.java
+CLASSES: SignUpActivity
+METHOD COUNT: 5
+COMMENT COUNT: 3
+METHODS:
+  - onCreate
+  - if
+  - startActivity
+  - Intent
+  - finish
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\Society.java
+CLASSES: Society
+METHOD COUNT: 7
+COMMENT COUNT: 1
+METHODS:
+  - Society
+  - Society
+  - getId
+  - getName
+  - getSubtitle
+  - getColorHex
+  - getIconUrl
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\SplashActivity.java
+CLASSES: SplashActivity
+METHOD COUNT: 3
+COMMENT COUNT: 1
+METHODS:
+  - onCreate
+  - Handler
+  - Intent
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\TextHelpers.java
+CLASSES: TextHelpers
+METHOD COUNT: 5
+COMMENT COUNT: 1
+METHODS:
+  - getText
+  - TextHelpers
+  - text
+  - trimmed
+  - isBlank
+GENERIC-SOUNDING METHOD NAMES TO REVIEW:
+  - text
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\ThemeHelper.java
+CLASSES: ThemeHelper
+METHOD COUNT: 5
+COMMENT COUNT: 1
+METHODS:
+  - ThemeHelper
+  - apply
+  - save
+  - current
+  - themeResId
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\UserItem.java
+CLASSES: UserItem
+METHOD COUNT: 8
+COMMENT COUNT: 1
+METHODS:
+  - UserItem
+  - UserItem
+  - getId
+  - getFullName
+  - getEmail
+  - getRole
+  - getAdminOf
+  - isAdmin
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\UserManagementAdapter.java
+CLASSES: UserManagementAdapter, UserVH
+METHOD COUNT: 7
+COMMENT COUNT: 1
+METHODS:
+  - onUserClick
+  - setClickListener
+  - updateList
+  - onCreateViewHolder
+  - UserVH
+  - onBindViewHolder
+  - getItemCount
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+
+====================================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\java\com\example\societyhive_test5\UserManagementFragment.java
+CLASSES: UserManagementFragment
+METHOD COUNT: 33
+COMMENT COUNT: 5
+METHODS:
+  - UserManagementFragment
+  - onCreate
+  - onViewCreated
+  - LinearLayoutManager
+  - UserManagementAdapter
+  - showUserOptions
+  - TextWatcher
+  - beforeTextChanged
+  - afterTextChanged
+  - onTextChanged
+  - openPendingJoins
+  - fetchMembers
+  - UserItem
+  - filterUsers
+  - loadRequestBadge
+  - openPendingJoins
+  - request
+  - AtomicInteger
+  - showRequestsDialog
+  - MaterialAlertDialogBuilder
+  - showApproveRejectDialog
+  - showApproveRejectDialog
+  - MaterialAlertDialogBuilder
+  - grantMembership
+  - rejectRequest
+  - grantMembership
+  - rejectRequest
+  - showUserOptions
+  - MaterialAlertDialogBuilder
+  - if
+  - removeFromSociety
+  - pickSocietyForAdmin
+  - MaterialAlertDialogBuilder
+GENERIC-SOUNDING METHOD NAMES TO REVIEW: None
+

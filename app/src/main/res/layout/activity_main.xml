@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="?attr/colorPrimaryContainer"
     android:fitsSystemWindows="true">
+    <!-- fitsSystemWindows so the toolbar doesn't slide under the status bar on API 35+ edge-to-edge displays -->
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/mainToolbar"
@@ -29,6 +30,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <!-- FrameLayout wrapper so the custom bg_bottom_nav shape clips correctly around the navigation view -->
     <FrameLayout
         android:id="@+id/navContainer"
         android:layout_width="0dp"

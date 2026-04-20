@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+// saves importing NavHostFragment.findNavController in every fragment that needs to navigate
 public final class NavHelpers {
 
     private NavHelpers() {}

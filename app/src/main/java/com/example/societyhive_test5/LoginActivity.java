@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-                        // load their saved theme before going to main screen
+                        // pull their theme preference before launching MainActivity so it doesn't flicker
                         String uid = mAuth.getCurrentUser().getUid();
                         com.google.firebase.firestore.FirebaseFirestore db =
                                 com.google.firebase.firestore.FirebaseFirestore.getInstance();

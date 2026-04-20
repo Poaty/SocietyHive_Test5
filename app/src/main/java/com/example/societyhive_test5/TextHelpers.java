@@ -2,6 +2,7 @@ package com.example.societyhive_test5;
 
 import android.widget.TextView;
 
+// static utility — avoids repeating getText().toString().trim() everywhere
 public final class TextHelpers {
 
     private TextHelpers() {}

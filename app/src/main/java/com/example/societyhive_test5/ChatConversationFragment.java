@@ -47,7 +47,6 @@ public class ChatConversationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable android.os.Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
         // get args passed from wherever we navigated from
         String chatTitle = "Chat";
         String chatColor = "#8D2E3A";
@@ -59,7 +58,6 @@ public class ChatConversationFragment extends Fragment {
             societyId = getArguments().getString("societyId", null);
         }
 
-
         TextView tvHeader = view.findViewById(R.id.tvChatHeaderTitle);
         View headerBar = view.findViewById(R.id.viewChatHeaderAccent);
         tvHeader.setText(chatTitle);
@@ -69,14 +67,12 @@ public class ChatConversationFragment extends Fragment {
             headerBar.setBackgroundColor(Color.parseColor("#8D2E3A"));
         }
 
-
         rv = view.findViewById(R.id.rvMessages);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         rv.setHasFixedSize(false);
 
         adapter = new MessageAdapter(new ArrayList<>());
         rv.setAdapter(adapter);
-
 
         EditText etMessage = view.findViewById(R.id.etMessage);
         View btnSend = view.findViewById(R.id.btnSendMessage);
@@ -85,13 +81,14 @@ public class ChatConversationFragment extends Fragment {
             String text = TextHelpers.trimmed(etMessage);
             if (text.isEmpty()) return;
             etMessage.setText("");
-            sendMessage(text);
+            postMessage(text);
         });
 
-
-        resolveCurrentUserName(() -> {
+        // resolve the display name before attaching the listener so outgoing messages
+        // already have the right senderName instead of the default "Member"
+        loadDisplayName(() -> {
             if (societyId != null && !societyId.isEmpty()) {
-                startListening();
+                attachMessageStream();
             }
         });
     }
@@ -106,27 +103,24 @@ public class ChatConversationFragment extends Fragment {
     }
 
 
-
-
-
-    // real-time listener, updates whenever a new message is sent
-    private void startListening() {
+    // real-time listener — fires on every new message so the chat stays live
+    private void attachMessageStream() {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null || societyId == null) return;
 
         final String myUid = user.getUid();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference societiesCollection = db.collection("societies");
-        DocumentReference societyDocument = societiesCollection.document(societyId);
-        CollectionReference messagesCollection = societyDocument.collection("messages");
-        messageListener = messagesCollection
+        CollectionReference societies = db.collection("societies");
+        DocumentReference societyDoc = societies.document(societyId);
+        CollectionReference msgCol = societyDoc.collection("messages");
+        messageListener = msgCol
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .addSnapshotListener((snapshots, error) -> {
                     if (!isAdded()) return;
 
                     if (error != null) {
-                        Toast.makeText(requireContext(),
+                        Toast.makeText(requireActivity(),
                                 "Chat error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -145,16 +139,13 @@ public class ChatConversationFragment extends Fragment {
                         messages.add(msg);
                     }
 
-                    enrichWithPhotos(messages);
+                    fetchMissingAvatars(messages);
                 });
     }
 
 
-
-
-
-    // fetch profile pics for senders we havent seen before
-    private void enrichWithPhotos(@NonNull List<Message> msgs) {
+    // fetch profile pics for senders we haven't seen yet — cached so we don't re-fetch on every update
+    private void fetchMissingAvatars(@NonNull List<Message> msgs) {
         java.util.Set<String> toFetch = new java.util.HashSet<>();
         for (Message m : msgs) {
             if (!m.isSentByMe() && !photoCache.containsKey(m.getSenderId())) {
@@ -163,7 +154,7 @@ public class ChatConversationFragment extends Fragment {
         }
 
         if (toFetch.isEmpty()) {
-            applyPhotosAndShow(msgs);
+            renderMessages(msgs);
             return;
         }
 
@@ -171,10 +162,10 @@ public class ChatConversationFragment extends Fragment {
                 new java.util.concurrent.atomic.AtomicInteger(toFetch.size());
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersCollection = db.collection("users");
+        CollectionReference users = db.collection("users");
         for (String uid : toFetch) {
-            DocumentReference userDocument = usersCollection.document(uid);
-            userDocument.get()
+            DocumentReference userRef = users.document(uid);
+            userRef.get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null
                                 && task.getResult().exists()) {
@@ -184,13 +175,13 @@ public class ChatConversationFragment extends Fragment {
                             photoCache.put(uid, "");
                         }
                         if (remaining.decrementAndGet() == 0 && isAdded()) {
-                            applyPhotosAndShow(msgs);
+                            renderMessages(msgs);
                         }
                     });
         }
     }
 
-    private void applyPhotosAndShow(@NonNull List<Message> msgs) {
+    private void renderMessages(@NonNull List<Message> msgs) {
         for (Message m : msgs) {
             if (!m.isSentByMe()) {
                 m.setSenderPhotoUrl(photoCache.getOrDefault(m.getSenderId(), ""));
@@ -200,11 +191,10 @@ public class ChatConversationFragment extends Fragment {
         if (!msgs.isEmpty()) rv.scrollToPosition(msgs.size() - 1);
     }
 
-    private void sendMessage(@NonNull String text) {
+    private void postMessage(@NonNull String text) {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null || societyId == null) return;
 
-        // listener above picks this up and updates the UI automatically
         Map<String, Object> data = new HashMap<>();
         data.put("text", text);
         data.put("senderId", user.getUid());
@@ -212,24 +202,18 @@ public class ChatConversationFragment extends Fragment {
         data.put("timestamp", Timestamp.now());
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference societiesCollection = db.collection("societies");
-        DocumentReference societyDocument = societiesCollection.document(societyId);
-        CollectionReference messagesCollection = societyDocument.collection("messages");
+        DocumentReference societyDoc = db.collection("societies").document(societyId);
+        CollectionReference messagesCollection = societyDoc.collection("messages");
         messagesCollection.add(data)
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
-                            "Send failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            "couldn't send: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-
     }
 
 
-
-
-
-    // get their name so messages show properly - onReady fires when done
-    private void resolveCurrentUserName(@NonNull Runnable onReady) {
+    private void loadDisplayName(@NonNull Runnable onReady) {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
             onReady.run();
@@ -238,8 +222,8 @@ public class ChatConversationFragment extends Fragment {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(user.getUid());
-        userDocument.get()
+        DocumentReference userDoc = usersCollection.document(user.getUid());
+        userDoc.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     String name = doc.getString("fullName");
@@ -253,11 +237,8 @@ public class ChatConversationFragment extends Fragment {
     }
 
 
-
-
-
     @NonNull
-    private String safeString(@Nullable String value) {
+    private String safeString(String value) {
         return value != null ? value : "";
     }
 }

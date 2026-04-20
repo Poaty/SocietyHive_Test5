@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- fixed 220dp height gives the photo a consistent frame regardless of the image aspect ratio -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="220dp">
@@ -30,6 +31,7 @@
                 android:scaleType="centerCrop"
                 android:contentDescription="Gallery photo" />
 
+            <!-- semi-transparent dark background on the delete button so it's visible over both light and dark photos -->
             <ImageButton
                 android:id="@+id/btnDeletePhoto"
                 android:layout_width="32dp"

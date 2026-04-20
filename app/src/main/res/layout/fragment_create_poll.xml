@@ -99,6 +99,7 @@
                     android:orientation="vertical" />
 
 
+                <!-- OutlinedButton keeps "add option" visually secondary to the "Create Poll" submit button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddOption"
                     style="@style/Widget.Material3.Button.OutlinedButton"
@@ -137,6 +138,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
+                <!-- close date field is optional — endIconMode clear_text lets the user remove a date they already set -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilCloseDate"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"

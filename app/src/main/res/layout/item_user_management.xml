@@ -39,6 +39,7 @@
             android:textColor="?attr/colorOnPrimaryContainer"
             android:text="User Name" />
 
+        <!-- alpha 0.7 dims the email below the name so the hierarchy is clear without using a different colour -->
         <TextView
             android:id="@+id/tvUserEmail"
             android:layout_width="wrap_content"
@@ -50,6 +51,7 @@
 
     </LinearLayout>
 
+    <!-- role badge uses colorPrimary directly so it inherits the active theme without a separate drawable -->
     <TextView
         android:id="@+id/tvUserRole"
         android:layout_width="wrap_content"

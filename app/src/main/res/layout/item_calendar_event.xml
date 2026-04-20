@@ -17,6 +17,7 @@
         android:padding="14dp">
 
 
+        <!-- fixed 38dp circle with the attending drawable gives each calendar row a consistent left anchor -->
         <FrameLayout
             android:layout_width="38dp"
             android:layout_height="38dp"
@@ -46,6 +47,7 @@
                 android:textSize="15sp"
                 android:textColor="#1E1E1E" />
 
+            <!-- hardcoded colour #757575 rather than colorOnSurfaceVariant because the card bg is always white -->
             <TextView
                 android:id="@+id/tvCalEventDateTime"
                 android:layout_width="match_parent"

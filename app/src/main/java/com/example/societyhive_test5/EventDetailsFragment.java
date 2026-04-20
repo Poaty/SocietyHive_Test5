@@ -76,22 +76,18 @@ public class EventDetailsFragment extends Fragment {
             return;
         }
 
-        loadEvent();
+        openEventDetails();
     }
 
 
-
-
-
-    private void loadEvent() {
+    private void openEventDetails() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference eventsCollection = db.collection("events");
-        DocumentReference eventDocument = eventsCollection.document(eventId);
-        eventDocument.get()
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+        eventDoc.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded() || !doc.exists()) return;
                     bindEvent(doc);
-                    loadAttendanceState();
+                    checkAttendanceStatus();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
@@ -101,11 +97,11 @@ public class EventDetailsFragment extends Fragment {
     }
 
     private void bindEvent(@NonNull DocumentSnapshot doc) {
-        eventName = safeString(doc.getString("name"), "Unnamed Event");
-        String dateTime  = safeString(doc.getString("dateTime"), "TBC");
-        String location  = safeString(doc.getString("location"), "TBC");
-        String organiser = safeString(doc.getString("organiser"), "Unknown");
-        String desc      = safeString(doc.getString("description"), "No description provided.");
+        eventName = str(doc.getString("name"), "Unnamed Event");
+        String dateTime  = str(doc.getString("dateTime"), "TBC");
+        String location  = str(doc.getString("location"), "TBC");
+        String organiser = str(doc.getString("organiser"), "Unknown");
+        String desc      = str(doc.getString("description"), "No description provided.");
 
         tvTitle.setText(eventName);
         tvMeta.setText(dateTime + "  •  " + location);
@@ -129,22 +125,22 @@ public class EventDetailsFragment extends Fragment {
 
 
 
-    // check if theyre already attending before wiring the button
-    private void loadAttendanceState() {
+    // check once on load — no live listener needed, attendance doesn't change behind the user's back
+    private void checkAttendanceStatus() {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) {
-            // not logged in, still show the button but tapping will prompt login
+
             updateAttendButton(false);
             wireAttendButton();
             return;
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference attendanceCollection = db.collection(ATTENDANCE_COLLECTION);
-        DocumentReference userAttendanceDocument = attendanceCollection.document(user.getUid());
-        CollectionReference attendingEventsCollection = userAttendanceDocument.collection(ATTENDING_SUB);
-        DocumentReference eventAttendanceDocument = attendingEventsCollection.document(eventId);
-        eventAttendanceDocument.get()
+        CollectionReference attendance = db.collection(ATTENDANCE_COLLECTION);
+        DocumentReference userRecord = attendance.document(user.getUid());
+        CollectionReference attendingEvents = userRecord.collection(ATTENDING_SUB);
+        DocumentReference eventRef = attendingEvents.document(eventId);
+        eventRef.get()
                 .addOnSuccessListener(doc -> {
                     if (!isAdded()) return;
                     isAttending = doc.exists();
@@ -184,8 +180,8 @@ public class EventDetailsFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference attendanceCollection = db.collection(ATTENDANCE_COLLECTION);
         DocumentReference userAttendanceDocument = attendanceCollection.document(user.getUid());
-        CollectionReference attendingEventsCollection = userAttendanceDocument.collection(ATTENDING_SUB);
-        DocumentReference ref = attendingEventsCollection.document(eventId);
+        CollectionReference sub = userAttendanceDocument.collection(ATTENDING_SUB);
+        DocumentReference ref = sub.document(eventId);
 
         if (attending) {
             Map<String, Object> data = new HashMap<>();
@@ -196,8 +192,8 @@ public class EventDetailsFragment extends Fragment {
                 if (!isAdded()) return;
                 isAttending = false;
                 updateAttendButton(false);
-                Toast.makeText(requireContext(),
-                        "Failed to save attendance.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(),
+                        "couldn't save that", Toast.LENGTH_SHORT).show();
             });
         } else {
             ref.delete().addOnFailureListener(e -> {
@@ -219,9 +215,8 @@ public class EventDetailsFragment extends Fragment {
     }
 
     @NonNull
-    private String safeString(@Nullable String value, @NonNull String fallback) {
-
-        return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
-
+    private String str(@Nullable String value, String fallback) {
+        if (value == null || TextHelpers.isBlank(value)) return fallback;
+        return value.trim();
     }
 }

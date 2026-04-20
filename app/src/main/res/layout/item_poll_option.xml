@@ -39,6 +39,7 @@
     </LinearLayout>
 
 
+    <!-- vote result row is hidden until the user votes or the poll closes — avoids spoiling results upfront -->
     <LinearLayout
         android:id="@+id/layoutVoteResult"
         android:layout_width="match_parent"
@@ -50,6 +51,7 @@
         android:paddingBottom="12dp"
         android:visibility="gone">
 
+        <!-- 8dp height is thick enough to read at a glance but doesn't overshadow the option label above -->
         <ProgressBar
             android:id="@+id/progressVotes"
             style="@android:style/Widget.ProgressBar.Horizontal"

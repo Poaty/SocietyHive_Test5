@@ -12,6 +12,7 @@
         android:orientation="vertical"
         android:paddingBottom="32dp">
 
+        <!-- 70dp top margin keeps the heading clear of the status bar; used consistently across all tab fragments -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -143,6 +144,7 @@
                     android:layout_marginTop="14dp"
                     android:layout_marginBottom="4dp" />
 
+                <!-- nestedScrollingEnabled false so the list measures fully inside the outer NestedScrollView without clipping -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvJoinedSocieties"
                     android:layout_width="match_parent"
@@ -189,6 +191,7 @@
                     android:layout_height="1dp"
                     android:background="#20FFFFFF" />
 
+                <!-- 64dp row height gives a comfortable tap target without feeling oversized next to the list items -->
                 <LinearLayout
                     android:id="@+id/btnLogOut"
                     android:layout_width="match_parent"

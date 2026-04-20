@@ -105,11 +105,8 @@ public class CalendarFragment extends Fragment {
         updateMonthYearHeader();
         updateEventsHeader(selectedYear, selectedMonth, selectedDay);
 
-        loadEventsFromFirestore();
+        fetchCalendarEvents();
     }
-
-
-
 
 
     private void updateCalendar() {
@@ -215,31 +212,33 @@ public class CalendarFragment extends Fragment {
 
 
 
-    private void loadEventsFromFirestore() {
+    private void loadEventsFromFirestore() { fetchCalendarEvents(); }
+
+    private void fetchCalendarEvents() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference eventsCollection = db.collection("events");
-        eventsCollection.get()
+        CollectionReference events = db.collection("events");
+        events.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     allVisibleEvents.clear();
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         allVisibleEvents.add(new Event(
                                 doc.getId(),
-                                safeString(doc.getString("name"), "Unnamed Event"),
-                                safeString(doc.getString("dateTime"), ""),
-                                safeString(doc.getString("location"), "TBC"),
-                                safeString(doc.getString("organiser"), "Unknown"),
-                                safeString(doc.getString("description"), ""),
-                                safeString(doc.getString("societyId"), ""),
+                                fmt(doc.getString("name"), "Unnamed Event"),
+                                fmt(doc.getString("dateTime"), ""),
+                                fmt(doc.getString("location"), "TBC"),
+                                fmt(doc.getString("organiser"), "Unknown"),
+                                fmt(doc.getString("description"), ""),
+                                fmt(doc.getString("societyId"), ""),
                                 Boolean.TRUE.equals(doc.getBoolean("isPublic")),
                                 false, false
                         ));
                     }
-                    loadAttendanceAndMerge();
+                    mergeAttendanceData();
                 })
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
-                    loadAttendanceAndMerge();
+                    mergeAttendanceData();
                 });
     }
 
@@ -247,37 +246,36 @@ public class CalendarFragment extends Fragment {
 
 
 
-    private void loadAttendanceAndMerge() {
+    private void mergeAttendanceData() {
         FirebaseUser user = AuthHelpers.currentUser();
-        if (user == null) { loadUserSocietiesAndFilter(); return; }
+        if (user == null) { applyMembershipFilter(); return; }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference attendanceCollection = db.collection(ATTENDANCE_COLLECTION);
-        DocumentReference userAttendanceDocument = attendanceCollection.document(user.getUid());
-        CollectionReference attendingEventsCollection = userAttendanceDocument.collection(ATTENDING_SUB);
-        attendingEventsCollection.get()
+        CollectionReference att = db.collection(ATTENDANCE_COLLECTION);
+        DocumentReference userDoc = att.document(user.getUid());
+        CollectionReference sub = userDoc.collection(ATTENDING_SUB);
+        sub.get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!isAdded()) return;
                     Set<String> attendingIds = new HashSet<>();
                     for (QueryDocumentSnapshot doc : querySnapshot) attendingIds.add(doc.getId());
                     for (Event event : allVisibleEvents) event.setAttending(attendingIds.contains(event.getId()));
-                    loadUserSocietiesAndFilter();
+                    applyMembershipFilter();
                 })
-                .addOnFailureListener(e -> { if (isAdded()) loadUserSocietiesAndFilter(); });
+                .addOnFailureListener(e -> { if (isAdded()) applyMembershipFilter(); });
     }
 
 
 
 
 
-    private void loadUserSocietiesAndFilter() {
+    private void applyMembershipFilter() {
         FirebaseUser user = AuthHelpers.currentUser();
         if (user == null) { applyVisibilityFilter(); return; }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersCollection = db.collection("users");
-        DocumentReference userDocument = usersCollection.document(user.getUid());
-        userDocument.get()
+        DocumentReference userRef = db.collection("users").document(user.getUid());
+        userRef.get()
                 .addOnSuccessListener((DocumentSnapshot doc) -> {
                     if (!isAdded()) return;
                     userSocietyIds.clear();
@@ -293,6 +291,7 @@ public class CalendarFragment extends Fragment {
     }
 
     private void applyVisibilityFilter() {
+        // keep events from societies the user belongs to, plus any they've personally RSVP'd to
         List<Event> visible = new ArrayList<>();
         for (Event e : allVisibleEvents) {
             if (userSocietyIds.contains(e.getSocietyId()) || e.isAttending()) visible.add(e);
@@ -371,7 +370,7 @@ public class CalendarFragment extends Fragment {
     }
 
     @NonNull
-    private static String safeString(@Nullable String value, @NonNull String fallback) {
+    private static String fmt(@Nullable String value, String fallback) {
 
         return (value != null && !TextHelpers.isBlank(value)) ? value.trim() : fallback;
     }

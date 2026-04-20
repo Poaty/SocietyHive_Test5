@@ -64,7 +64,7 @@ public class CreateSocietyFragment extends Fragment {
         ivSocietyIcon.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
         MaterialButton btnCreate = view.findViewById(R.id.btnCreate);
-        btnCreate.setOnClickListener(v -> attemptCreate());
+        btnCreate.setOnClickListener(v -> submitNewSociety());
 
         etColor.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int i, int c, int a) {}
@@ -75,7 +75,7 @@ public class CreateSocietyFragment extends Fragment {
         });
     }
 
-    private void updateSwatch(@NonNull String hex) {
+    private void updateSwatch(String hex) {
         try { colorSwatch.setBackgroundColor(Color.parseColor(hex)); }
         catch (IllegalArgumentException ignored) {}
     }
@@ -103,7 +103,7 @@ public class CreateSocietyFragment extends Fragment {
                         ivSocietyIcon.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
                         Glide.with(CreateSocietyFragment.this)
                                 .load(pendingIconUrl).circleCrop().into(ivSocietyIcon);
-                        Toast.makeText(requireContext(),
+                        Toast.makeText(requireActivity(),
                                 "Icon ready \u2014 tap Create to apply", Toast.LENGTH_SHORT).show();
                     }
 
@@ -120,9 +120,10 @@ public class CreateSocietyFragment extends Fragment {
                 .dispatch();
     }
 
-    private void attemptCreate() {
+    private void submitNewSociety() {
         String name  = text(etName);
         String desc  = text(etDescription);
+        // hex validation before hitting firestore — bad colours would cause crash in adapters later
         String color = text(etColor);
 
         if (name.isEmpty()) {
@@ -159,7 +160,7 @@ public class CreateSocietyFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     if (!isAdded()) return;
                     Toast.makeText(requireContext(),
-                            "Failed to create society: " + e.getMessage(),
+                            "couldn't create society: " + e.getMessage(),
                             Toast.LENGTH_LONG).show();
                 });
     }
