@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- asymmetric corners so the bubble isn't the standard uniformly-rounded chat pill.
+     small bottom-right corner gives it a subtle "anchor" toward the sender side -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#F4DDE1" />
+    <corners
+        android:topLeftRadius="20dp"
+        android:topRightRadius="20dp"
+        android:bottomLeftRadius="20dp"
+        android:bottomRightRadius="6dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#2A8D2E3A" />
+</shape>

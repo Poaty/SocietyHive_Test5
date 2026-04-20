@@ -2,12 +2,13 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardChat"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="12dp"
     android:layout_marginEnd="12dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="9dp"
     android:clickable="true"
     android:focusable="true"
     app:cardCornerRadius="14dp"
@@ -16,7 +17,7 @@
     app:strokeWidth="2dp"
     app:strokeColor="#8D2E3A">
 
-    <!-- stroke border instead of elevation so the card stands out without casting shadow on the list below -->
+    <!-- stroke instead of shadow here — tried elevation=4dp but the shadows looked too heavy in the list -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,7 +33,8 @@
             android:background="@drawable/bg_circle_neutral"
             android:padding="4dp"
             android:scaleType="centerInside"
-            android:contentDescription="Society icon" />
+            android:contentDescription="Society icon"
+            tools:src="@drawable/ic_profile" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -47,16 +49,18 @@
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:textColor="?attr/colorOnSurface" />
+                android:textColor="?attr/colorOnSurface"
+                tools:text="Computing Society" />
 
-            <!-- maxLines not set here intentionally — the preview is populated with a single line from code -->
+            <!-- no maxLines — the preview is always one line from code anyway, not worth adding a constraint here -->
             <TextView
                 android:id="@+id/tvChatPreview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="You: sounds good for Thursday" />
         </LinearLayout>
 
         <TextView
@@ -64,7 +68,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+            android:textColor="?attr/colorOnSurfaceVariant"
+            tools:text="14:32" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

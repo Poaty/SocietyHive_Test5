@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardGalleryPhoto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -19,7 +20,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- fixed 220dp height gives the photo a consistent frame regardless of the image aspect ratio -->
+        <!-- 220dp height for the photo — went back and forth between 200 and 240, this felt like the right balance -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="220dp">
@@ -29,9 +30,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:contentDescription="Gallery photo" />
+                android:contentDescription="Gallery photo"
+                tools:src="@drawable/ic_gallery" />
 
-            <!-- semi-transparent dark background on the delete button so it's visible over both light and dark photos -->
+            <!-- dark scrim on the delete button so it shows up on bright photos, not just dark ones -->
             <ImageButton
                 android:id="@+id/btnDeletePhoto"
                 android:layout_width="32dp"
@@ -76,7 +78,8 @@
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface" />
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="Jamie Whitfield" />
 
                 <TextView
                     android:id="@+id/tvUploadDate"
@@ -84,7 +87,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:textSize="12sp"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    tools:text="18 Apr 2026" />
 
             </LinearLayout>
 

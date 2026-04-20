@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:paddingStart="4dp"
-    android:paddingEnd="60dp"
+    android:paddingEnd="64dp"
     android:gravity="bottom">
 
 
-    <!-- avatar is 32dp rather than 40dp so it doesn't dominate the bubble row on small screens -->
+    <!-- 32dp avatar with the crimson ring — the 2dp bottom margin nudges it below the bubble baseline, reads more natural that way -->
     <ImageView
         android:id="@+id/ivSenderAvatar"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="2dp"
         android:src="@drawable/ic_profile"
-        android:background="@drawable/bg_circle_neutral"
+        android:background="@drawable/bg_avatar_ring"
         android:padding="4dp"
         android:scaleType="centerInside"
-        android:contentDescription="Sender avatar" />
+        android:contentDescription="Sender avatar"
+        tools:src="@drawable/ic_profile" />
 
 
     <LinearLayout
@@ -30,33 +32,34 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <!-- sender name is gone by default — shown only in group chats where multiple people write -->
+        <!-- sender name hidden by default — only makes sense in group chats where multiple people are posting -->
         <TextView
             android:id="@+id/tvMessageSenderName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:layout_marginBottom="2dp"
             android:textSize="11sp"
             android:textStyle="bold"
             android:textColor="#88000000"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:text="Alex Morgan"
+            tools:visibility="visible" />
 
-        <com.google.android.material.card.MaterialCardView
+        <!-- drawable background for asymmetric corners — dropped the MaterialCardView wrapper so the bubble feels lighter -->
+        <TextView
+            android:id="@+id/tvMessageReceived"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#F8E7EA">
-
-            <TextView
-                android:id="@+id/tvMessageReceived"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:textColor="#1E1E1E"
-                android:textSize="15sp" />
-        </com.google.android.material.card.MaterialCardView>
+            android:background="@drawable/bg_bubble_received"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="#1E1E1E"
+            android:textSize="15sp"
+            android:elevation="2dp"
+            tools:text="yeah I'll be there, want to grab food after?" />
 
     </LinearLayout>
 

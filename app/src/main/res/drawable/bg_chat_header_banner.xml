@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- mask for the chat header banner. top corners are square because the banner
+     sits flush with the top of the fragment, bottom corners are asymmetric to
+     keep the same hand-placed feel as the bubbles below. this drawable is only
+     used as a clip-outline — viewChatHeaderAccent inside supplies the colour -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF" />
+    <corners
+        android:topLeftRadius="0dp"
+        android:topRightRadius="0dp"
+        android:bottomLeftRadius="22dp"
+        android:bottomRightRadius="8dp" />
+</shape>

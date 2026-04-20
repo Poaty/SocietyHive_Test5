@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="end"
     android:paddingTop="6dp"
     android:paddingBottom="6dp">
 
-    <!-- 60dp left margin keeps the sent bubble right-aligned without needing RTL layout tricks -->
-    <com.google.android.material.card.MaterialCardView
+    <!-- pushed in 64dp from the left so it sits clearly on the right — tried 48 first and it looked too centered -->
+    <TextView
+        android:id="@+id/tvMessageSent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginEnd="4dp"
-        app:cardCornerRadius="18dp"
-        app:cardElevation="4dp"
-        app:cardBackgroundColor="#F4DDE1">
-
-        <TextView
-            android:id="@+id/tvMessageSent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="Hello."
-            android:textColor="#1E1E1E"
-            android:textSize="16sp" />
-    </com.google.android.material.card.MaterialCardView>
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/bg_bubble_sent"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="11dp"
+        android:paddingBottom="11dp"
+        android:text="Hello."
+        android:textColor="#1E1E1E"
+        android:textSize="16sp"
+        android:elevation="2dp"
+        tools:text="sounds good for Thursday" />
 </LinearLayout>

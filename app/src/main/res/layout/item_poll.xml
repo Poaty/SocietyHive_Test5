@@ -2,9 +2,10 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
+    android:layout_marginBottom="14dp"
     app:cardCornerRadius="20dp"
     app:cardElevation="6dp"
     app:cardBackgroundColor="?attr/colorPrimary">
@@ -29,7 +30,9 @@
             android:textColor="?attr/colorOnPrimary"
             android:textSize="11sp"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:text="Photography Society"
+            tools:visibility="visible" />
 
 
         <TextView
@@ -39,7 +42,8 @@
             android:text="Poll Title"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="Where should we hold the Freshers event?" />
 
 
         <TextView
@@ -57,7 +61,8 @@
             android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible" />
 
 
         <TextView
@@ -84,7 +89,7 @@
             android:textSize="14sp" />
 
 
-        <!-- options are inflated dynamically from item_poll_option into this container at bind time -->
+        <!-- options get inflated in here from item_poll_option at bind time — this container stays empty in the XML -->
         <LinearLayout
             android:id="@+id/optionsContainer"
             android:layout_width="match_parent"
@@ -100,7 +105,9 @@
             android:textColor="?attr/colorOnPrimary"
             android:alpha="0.75"
             android:textSize="13sp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:text="34 votes"
+            tools:visibility="visible" />
 
 
         <LinearLayout
@@ -110,7 +117,7 @@
             android:gravity="end"
             android:layout_marginTop="12dp">
 
-            <!-- close and delete are gone by default — only shown for the poll creator or an admin -->
+            <!-- close and delete are gone by default — shown only if the current user created the poll or is an admin -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnClosePoll"
                 style="@style/Widget.Material3.Button.OutlinedButton"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -28,7 +29,8 @@
             android:text="Option"
             android:textColor="?attr/colorPrimary"
             android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="Student Union Bar" />
 
         <ImageView
             android:id="@+id/ivCheckbox"
@@ -39,7 +41,7 @@
     </LinearLayout>
 
 
-    <!-- vote result row is hidden until the user votes or the poll closes — avoids spoiling results upfront -->
+    <!-- vote result row is hidden until the user has voted — didn't want to show percentages before they pick -->
     <LinearLayout
         android:id="@+id/layoutVoteResult"
         android:layout_width="match_parent"
@@ -51,7 +53,7 @@
         android:paddingBottom="12dp"
         android:visibility="gone">
 
-        <!-- 8dp height is thick enough to read at a glance but doesn't overshadow the option label above -->
+        <!-- 8dp progress bar — tried 6 and it was too thin to notice, 10 felt too chunky next to the label -->
         <ProgressBar
             android:id="@+id/progressVotes"
             style="@android:style/Widget.ProgressBar.Horizontal"

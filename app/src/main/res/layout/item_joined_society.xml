@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="12dp"
@@ -15,7 +16,7 @@
     app:strokeWidth="2dp"
     app:strokeColor="#8D2E3A">
 
-    <!-- cardElevation=0 because the stroke already provides enough visual separation from the background -->
+    <!-- elevation=0 since the stroke already lifts the card off the background — didn't need both -->
     <View
         android:id="@+id/viewSocietyAccent"
         android:layout_width="0dp"
@@ -52,16 +53,18 @@
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:textColor="?attr/colorOnSurface" />
+                android:textColor="?attr/colorOnSurface"
+                tools:text="Photography Society" />
 
-            <!-- subtitle is populated with the role or member count from the adapter, kept empty here -->
+            <!-- subtitle comes from the adapter — could be the role or the member count depending on context -->
             <TextView
                 android:id="@+id/tvSocietySubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="Member" />
 
         </LinearLayout>
 

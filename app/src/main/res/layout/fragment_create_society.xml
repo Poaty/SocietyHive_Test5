@@ -46,7 +46,7 @@
                     android:gravity="center_vertical"
                     android:layout_marginBottom="20dp">
 
-                    <!-- 72dp circle is large enough to tap comfortably and shows the chosen image at a useful preview size -->
+                    <!-- 72dp circle for the icon picker — large enough to tap and show a decent preview of the chosen image -->
                     <ImageView
                         android:id="@+id/ivSocietyIcon"
                         android:layout_width="72dp"
@@ -106,7 +106,7 @@
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="14dp"
                     android:hint="Description (optional)"
                     app:boxStrokeColor="?attr/colorOnPrimary"
                     app:boxStrokeWidthFocused="2dp"
@@ -148,7 +148,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <!-- live colour swatch updates as the user types the hex value so they get instant visual feedback -->
+                <!-- live swatch so the user can see the colour update as they type — much better than waiting for a confirm -->
                 <View
                     android:id="@+id/colorSwatch"
                     android:layout_width="match_parent"

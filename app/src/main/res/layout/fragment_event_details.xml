@@ -55,7 +55,7 @@
             android:id="@+id/cardDetails"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="19dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="?attr/colorSurfaceVariant"
@@ -77,7 +77,7 @@
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"/>
 
-                <!-- lineSpacingMultiplier 1.4 makes multi-line descriptions easier to read on small screens -->
+                <!-- lineSpacingMultiplier 1.4 — descriptions can be long and the default line height was too tight to read comfortably -->
                 <TextView
                     android:id="@+id/tvEventDescription"
                     android:layout_width="match_parent"
@@ -105,7 +105,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- QR card is gone by default — shown only when the current user is the event organiser -->
+        <!-- QR card hidden by default — only the organiser needs to see it, so we show it from code -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardQr"
             android:layout_width="0dp"

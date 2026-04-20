@@ -10,13 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="9dp"
         android:text="Browse Societies"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="?attr/colorOnPrimaryContainer" />
 
-    <!-- alpha 0.7 on the subtitle keeps it readable as supporting text without competing with the heading -->
+    <!-- alpha 0.7 on the subtitle so it sits below the heading visually without needing a different colour -->
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
         android:textColor="?attr/colorOnPrimaryContainer"
         android:alpha="0.7" />
 
-    <!-- layout_weight=1 and the empty-state TextView share the same weight slot so they never overlap -->
+    <!-- both the list and the empty state get weight=1 so only one fills the space at a time -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBrowseSocieties"
         android:layout_width="match_parent"

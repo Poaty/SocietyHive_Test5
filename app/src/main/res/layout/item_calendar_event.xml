@@ -2,9 +2,10 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="10dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="3dp"
     app:cardBackgroundColor="#FFFFFF">
@@ -17,7 +18,7 @@
         android:padding="14dp">
 
 
-        <!-- fixed 38dp circle with the attending drawable gives each calendar row a consistent left anchor -->
+        <!-- 38dp circle on the left — tried 40 but it pushed the text too far right on smaller screens -->
         <FrameLayout
             android:layout_width="38dp"
             android:layout_height="38dp"
@@ -45,9 +46,10 @@
                 android:text="Event Name"
                 android:textStyle="bold"
                 android:textSize="15sp"
-                android:textColor="#1E1E1E" />
+                android:textColor="#1E1E1E"
+                tools:text="Hack Night — Makerspace" />
 
-            <!-- hardcoded colour #757575 rather than colorOnSurfaceVariant because the card bg is always white -->
+            <!-- hardcoded #757575 here because the card bg is always white — colorOnSurfaceVariant wouldn't be right -->
             <TextView
                 android:id="@+id/tvCalEventDateTime"
                 android:layout_width="match_parent"

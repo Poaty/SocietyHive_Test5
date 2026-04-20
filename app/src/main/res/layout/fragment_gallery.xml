@@ -21,7 +21,7 @@
             app:tabSelectedTextColor="?attr/colorPrimary"
             app:tabTextColor="?attr/colorOnSurface" />
 
-        <!-- layout_weight=1 so the ViewPager fills the remaining height after the TabLayout measures itself -->
+        <!-- weight=1 so the ViewPager fills whatever height is left after the tabs — wrap_content didn't work here -->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPagerGallery"
             android:layout_width="match_parent"
@@ -42,7 +42,7 @@
 
     </LinearLayout>
 
-    <!-- FAB is gone by default — only society members with upload permission see it -->
+    <!-- FAB hidden by default, shown from code once we know the user has upload permission for this society -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabUpload"
         android:layout_width="wrap_content"

@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimaryContainer">
@@ -12,7 +13,7 @@
         android:orientation="vertical"
         android:paddingBottom="32dp">
 
-        <!-- 70dp top margin keeps the heading clear of the status bar; used consistently across all tab fragments -->
+        <!-- 70dp here same as the other tab fragments — keeps the heading below the status bar on all screen sizes -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -97,7 +98,8 @@
                         android:text="SocietyHive Member"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="?attr/colorOnPrimary" />
+                        android:textColor="?attr/colorOnPrimary"
+                        tools:text="Jamie Whitfield" />
 
                     <TextView
                         android:id="@+id/tvProfileEmail"
@@ -107,7 +109,8 @@
                         android:text="member@email.com"
                         android:textSize="13sp"
                         android:textColor="?attr/colorOnPrimary"
-                        android:alpha="0.7" />
+                        android:alpha="0.7"
+                        tools:text="j.whitfield@uni.ac.uk" />
 
                     <TextView
                         android:id="@+id/tvProfileRole"
@@ -144,7 +147,7 @@
                     android:layout_marginTop="14dp"
                     android:layout_marginBottom="4dp" />
 
-                <!-- nestedScrollingEnabled false so the list measures fully inside the outer NestedScrollView without clipping -->
+                <!-- nestedScrollingEnabled false or the societies list cuts off inside the outer scroll — took a while to figure this out -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvJoinedSocieties"
                     android:layout_width="match_parent"
@@ -191,7 +194,7 @@
                     android:layout_height="1dp"
                     android:background="#20FFFFFF" />
 
-                <!-- 64dp row height gives a comfortable tap target without feeling oversized next to the list items -->
+                <!-- 64dp felt right for the tap target here, same height as the browse row above it -->
                 <LinearLayout
                     android:id="@+id/btnLogOut"
                     android:layout_width="match_parent"

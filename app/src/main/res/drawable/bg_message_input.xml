@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- message composer pill with slight corner asymmetry so it matches the bubble
+     language above it. bigger top-left, smaller bottom-right — consistent with
+     the sent bubble's corner pattern -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#F2D8DC" />
+    <corners
+        android:topLeftRadius="26dp"
+        android:topRightRadius="22dp"
+        android:bottomLeftRadius="22dp"
+        android:bottomRightRadius="16dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#2A8D2E3A" />
+</shape>

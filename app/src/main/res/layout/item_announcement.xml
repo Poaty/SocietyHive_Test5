@@ -2,9 +2,10 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="10dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
     app:cardBackgroundColor="?attr/colorPrimary">
@@ -38,7 +39,7 @@
                 android:textStyle="bold"
                 android:visibility="gone" />
 
-            <!-- delete button is gone by default — shown only when the current user has admin permissions -->
+            <!-- delete button hidden by default — only shown if the current user is an admin for this society -->
             <ImageButton
                 android:id="@+id/btnDeletePin"
                 android:layout_width="32dp"
@@ -58,10 +59,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="?attr/colorOnPrimary"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="Reminder: society meeting this Thursday at 6pm" />
 
 
-        <!-- alpha 0.6 on the timestamp keeps it readable without competing with the pin body text -->
+        <!-- alpha on the timestamp so it reads as secondary without pulling focus from the pin content -->
         <TextView
             android:id="@+id/tvAnnouncementTimestamp"
             android:layout_width="match_parent"
@@ -70,7 +72,8 @@
             android:textColor="?attr/colorOnPrimary"
             android:alpha="0.6"
             android:textSize="12sp"
-            android:gravity="end" />
+            android:gravity="end"
+            tools:text="20 Apr 2026, 14:32" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

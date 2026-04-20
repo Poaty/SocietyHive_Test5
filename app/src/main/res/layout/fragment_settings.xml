@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimaryContainer">
@@ -46,7 +47,7 @@
             android:layout_marginBottom="10dp" />
 
 
-        <!-- single card groups all account actions so there's one focussed surface rather than scattered buttons -->
+        <!-- one card for all the account actions — looked too scattered when each one was its own separate thing -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,7 +70,7 @@
                     android:columnCount="2">
 
 
-                    <!-- 110dp tile height accommodates the icon, label, and truncated current-value text without crowding -->
+                    <!-- 110dp for the tiles — tried 90 but the two-line label was too cramped once the current name shows below it -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/rowEditName"
                         android:layout_width="0dp"
@@ -113,7 +114,8 @@
                                 android:textColor="?attr/colorOnSecondaryContainer"
                                 android:alpha="0.6"
                                 android:maxLines="1"
-                                android:ellipsize="end" />
+                                android:ellipsize="end"
+                                tools:text="Jamie Whitfield" />
 
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>

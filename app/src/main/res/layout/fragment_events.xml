@@ -62,7 +62,7 @@
     </com.google.android.material.card.MaterialCardView>
 
 
-    <!-- singleSelection + selectionRequired so there's always an active filter — avoids an empty state when nothing is chosen -->
+    <!-- singleSelection + selectionRequired so there's always something checked — found out the hard way that deselecting all breaks the filter -->
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroupFilters"
         android:layout_width="0dp"
@@ -76,8 +76,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Filter style makes chips checkable — default Assist chips aren't, which is what we need for the group selection to work -->
         <com.google.android.material.chip.Chip
             android:id="@+id/chipAll"
+            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="All"
@@ -89,6 +91,7 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipThisWeek"
+            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="This Week"
@@ -99,6 +102,7 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipNextWeek"
+            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Next Week"
@@ -121,7 +125,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 
-    <!-- paddingBottom on the list so the last card clears the bottom nav bar without cutting off -->
+    <!-- paddingBottom + clipToPadding false so the last event card clears the bottom nav and isn't cut off -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEvents"
         android:layout_width="0dp"

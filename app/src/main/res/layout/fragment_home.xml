@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimaryContainer">
@@ -12,7 +13,7 @@
         android:orientation="vertical"
         android:paddingBottom="24dp">
 
-        <!-- 70dp top margin keeps the title clear of the status bar without fitsSystemWindows complexity -->
+        <!-- 70dp gave the right gap from the status bar — tried 60 but the welcome text felt too cramped up top -->
         <TextView
             android:id="@+id/tvWelcome"
             android:layout_width="wrap_content"
@@ -47,7 +48,7 @@
             android:layout_marginTop="18dp"
             android:visibility="gone" />
 
-        <!-- nestedScrollingEnabled false so the RecyclerView doesn't fight for scroll inside the outer NestedScrollView -->
+        <!-- nestedScrollingEnabled false otherwise the pins RecyclerView and the outer scroll fight each other -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvAnnouncements"
             android:layout_width="match_parent"
@@ -71,7 +72,7 @@
             android:layout_marginTop="18dp" />
 
 
-        <!-- single card wrapping the grid so tiles share a rounded surface rather than floating individually -->
+        <!-- one card around the whole grid — looked too scattered when each tile had its own elevation -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardDashboard"
             android:layout_width="match_parent"
@@ -218,7 +219,8 @@
             app:cardBackgroundColor="?attr/colorPrimary"
             app:cardCornerRadius="18dp"
             app:cardElevation="10dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <GridLayout
                 android:layout_width="match_parent"

@@ -8,7 +8,7 @@
     android:background="?attr/colorPrimaryContainer">
 
 
-    <!-- join requests card is always visible at the top so admins notice pending requests without scrolling the list -->
+    <!-- join requests card pinned at the top so admins see pending requests straight away, not buried in the list -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardJoinRequests"
         android:layout_width="match_parent"
@@ -58,7 +58,7 @@
             </LinearLayout>
 
 
-            <!-- badge count is gone when zero — showing "0" would mislead the admin into thinking something needs attention -->
+            <!-- badge is hidden when count is zero — showing "0" would look like there's something to action when there isn't -->
             <TextView
                 android:id="@+id/tvRequestCount"
                 android:layout_width="28dp"

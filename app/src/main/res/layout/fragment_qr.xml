@@ -34,7 +34,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 
-    <!-- cardCornerRadius=26dp clips the camera preview to a rounded shape without requiring a custom SurfaceView subclass -->
+    <!-- 26dp corner radius on the camera card — clips the preview to a rounded shape without needing a custom SurfaceView -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardCameraPreview"
         android:layout_width="0dp"
@@ -79,7 +79,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_qr_scanner_outline" />
 
-                <!-- scan line animates vertically in the fragment — starts at the top so the animation has full travel distance -->
+                <!-- scan line starts at the top so the vertical animation has the full height to travel through -->
                 <View
                     android:id="@+id/viewScanLine"
                     android:layout_width="match_parent"

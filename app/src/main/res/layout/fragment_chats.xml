@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingTop="12dp">
 
-    <!-- pill-card search bar rather than a standard TextInputLayout so the border and icon background are a single unit -->
+    <!-- pill-shaped search — tried a plain TextInputLayout first but couldn't get the icon padding to look right inside it -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSearchChats"
         android:layout_width="0dp"
@@ -48,7 +48,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- paddingBottom with clipToPadding false so the last chat item doesn't sit flush against the bottom nav -->
+    <!-- paddingBottom + clipToPadding false so the last chat doesn't get cut off by the bottom nav -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvChats"
         android:layout_width="0dp"

@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -37,9 +38,10 @@
             android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnPrimaryContainer"
-            android:text="User Name" />
+            android:text="User Name"
+            tools:text="Jamie Whitfield" />
 
-        <!-- alpha 0.7 dims the email below the name so the hierarchy is clear without using a different colour -->
+        <!-- alpha 0.7 on the email — faded enough to read as secondary without needing a different colour -->
         <TextView
             android:id="@+id/tvUserEmail"
             android:layout_width="wrap_content"
@@ -51,7 +53,7 @@
 
     </LinearLayout>
 
-    <!-- role badge uses colorPrimary directly so it inherits the active theme without a separate drawable -->
+    <!-- role badge uses colorPrimary directly — didn't feel like adding another drawable just for this little chip -->
     <TextView
         android:id="@+id/tvUserRole"
         android:layout_width="wrap_content"
@@ -64,6 +66,7 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:paddingTop="3dp"
-        android:paddingBottom="3dp" />
+        android:paddingBottom="3dp"
+        tools:text="Admin" />
 
 </LinearLayout>

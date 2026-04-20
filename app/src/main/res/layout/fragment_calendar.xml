@@ -139,7 +139,7 @@
                 </TableLayout>
 
 
-                <!-- TableLayout rows are built at runtime; keeping this empty here so the fragment can repopulate on month change -->
+                <!-- rows get rebuilt in code on every month change — this stays empty in the XML -->
                 <TableLayout
                     android:id="@+id/calendarTable"
                     android:layout_width="match_parent"
@@ -185,7 +185,7 @@
             android:visibility="gone" />
 
 
-        <!-- nestedScrollingEnabled false so this list flows into the outer NestedScrollView rather than scrolling independently -->
+        <!-- nestedScrollingEnabled false — otherwise this RecyclerView tries to scroll independently inside the outer NestedScrollView -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCalendarEvents"
             android:layout_width="match_parent"

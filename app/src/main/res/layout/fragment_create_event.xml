@@ -97,7 +97,7 @@
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="13dp"
                     android:hint="Location"
                     app:boxStrokeColor="?attr/colorOnPrimary"
                     app:boxStrokeWidthFocused="2dp"
@@ -114,7 +114,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <!-- date field is focusable=false to prevent the keyboard from opening; a DatePicker dialog is shown on click instead -->
+                <!-- focusable=false so the keyboard doesn't open when you tap the date field — shows a DatePicker instead -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilDateTime"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -202,7 +202,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <!-- backgroundTint colorOnPrimary inverts the button colour against the primary card — white button on dark card -->
+                <!-- backgroundTint=colorOnPrimary flips the button colour against the dark card — ends up as white, which is what we want -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCreateEvent"
                     android:layout_width="wrap_content"

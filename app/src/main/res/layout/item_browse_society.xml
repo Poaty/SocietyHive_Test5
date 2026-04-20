@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="12dp"
@@ -15,7 +16,7 @@
     app:strokeWidth="2dp"
     app:strokeColor="#8D2E3A">
 
-    <!-- accent view is sized 0dp and hidden — it existed in an earlier design and kept in case per-society colouring comes back -->
+    <!-- accent view leftover from an older design — kept it at 0dp in case we bring per-society colour back later -->
     <View
         android:id="@+id/viewAccent"
         android:layout_width="0dp"
@@ -52,7 +53,8 @@
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:textColor="?attr/colorOnSurface" />
+                android:textColor="?attr/colorOnSurface"
+                tools:text="Photography Society" />
 
             <TextView
                 android:id="@+id/tvMemberCount"
@@ -60,11 +62,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="47 members" />
 
         </LinearLayout>
 
-        <!-- OutlinedButton keeps the join action visible without the strong fill that a primary button would imply -->
+        <!-- OutlinedButton for the request action — a filled button here felt too dominant next to the society name -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRequestJoin"
             style="@style/Widget.Material3.Button.OutlinedButton"

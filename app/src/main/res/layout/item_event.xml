@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
@@ -24,7 +25,8 @@
             android:text="Event Name"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="?attr/colorOnSurface"
+            tools:text="Hack Night — Makerspace" />
 
         <TextView
             android:id="@+id/tvEventDateTime"
@@ -54,7 +56,7 @@
             app:tint="?attr/colorOnSurfaceVariant"
             android:contentDescription="Expand" />
 
-        <!-- attending badge uses the same drawable as the calendar icon background to stay visually consistent -->
+        <!-- attending badge reuses the same bg_attending_indicator drawable — didn't want a third background style just for this -->
         <TextView
             android:id="@+id/tvAttendingIndicator"
             android:layout_width="wrap_content"
@@ -68,9 +70,10 @@
             android:text="Attending"
             android:textColor="?attr/colorPrimary"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible" />
 
-        <!-- visibility gone by default — the adapter toggles it when the user taps the chevron -->
+        <!-- hidden by default, adapter expands it on tap — tried always showing the description but the list got too long -->
         <LinearLayout
             android:id="@+id/layoutExpanded"
             android:layout_width="match_parent"

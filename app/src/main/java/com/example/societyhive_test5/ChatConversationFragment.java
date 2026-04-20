@@ -1,6 +1,5 @@
 package com.example.societyhive_test5;
 
-import android.graphics.Color;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -58,20 +57,20 @@ public class ChatConversationFragment extends Fragment {
             societyId = getArguments().getString("societyId", null);
         }
 
+        // one derived palette drives the header + every bubble + the avatar ring.
+        // built once here and passed down to the adapter so theming is consistent
+        ChatTheme theme = ChatTheme.from(chatColor);
+
         TextView tvHeader = view.findViewById(R.id.tvChatHeaderTitle);
         View headerBar = view.findViewById(R.id.viewChatHeaderAccent);
         tvHeader.setText(chatTitle);
-        try {
-            headerBar.setBackgroundColor(Color.parseColor(chatColor));
-        } catch (IllegalArgumentException e) {
-            headerBar.setBackgroundColor(Color.parseColor("#8D2E3A"));
-        }
+        headerBar.setBackgroundColor(theme.primary);
 
         rv = view.findViewById(R.id.rvMessages);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         rv.setHasFixedSize(false);
 
-        adapter = new MessageAdapter(new ArrayList<>());
+        adapter = new MessageAdapter(new ArrayList<>(), theme);
         rv.setAdapter(adapter);
 
         EditText etMessage = view.findViewById(R.id.etMessage);

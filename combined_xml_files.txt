@@ -43,6 +43,23 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\drawable\bg_attending_indic
 
 
 ================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\drawable\bg_avatar_ring.xml
+================================================================================
+
+<?xml version="1.0" encoding="utf-8"?>
+<!-- replaces bg_circle_neutral for the chat avatar — thin crimson ring gives it
+     a bit of character without fighting the message bubble for attention -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#F3E9EA" />
+    <stroke
+        android:width="1.5dp"
+        android:color="#8D2E3A" />
+</shape>
+
+
+
+================================================================================
 FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\drawable\bg_bottom_nav.xml
 ================================================================================
 
@@ -67,6 +84,67 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\drawable\bg_bottom_nav.xml
 
 
 ================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\drawable\bg_bubble_received.xml
+================================================================================
+
+<?xml version="1.0" encoding="utf-8"?>
+<!-- mirror of bg_bubble_sent — small bottom-left corner anchors toward the avatar -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#F8E7EA" />
+    <corners
+        android:topLeftRadius="20dp"
+        android:topRightRadius="20dp"
+        android:bottomLeftRadius="6dp"
+        android:bottomRightRadius="20dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#2A8D2E3A" />
+</shape>
+
+
+
+================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\drawable\bg_bubble_sent.xml
+================================================================================
+
+<?xml version="1.0" encoding="utf-8"?>
+<!-- asymmetric corners so the bubble isn't the standard uniformly-rounded chat pill.
+     small bottom-right corner gives it a subtle "anchor" toward the sender side -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#F4DDE1" />
+    <corners
+        android:topLeftRadius="20dp"
+        android:topRightRadius="20dp"
+        android:bottomLeftRadius="20dp"
+        android:bottomRightRadius="6dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#2A8D2E3A" />
+</shape>
+
+
+
+================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\drawable\bg_chat_header_banner.xml
+================================================================================
+
+<?xml version="1.0" encoding="utf-8"?>
+<!-- mask for the chat header banner. top corners are square because the banner
+     sits flush with the top of the fragment, bottom corners are asymmetric to
+     keep the same hand-placed feel as the bubbles below. this drawable is only
+     used as a clip-outline — viewChatHeaderAccent inside supplies the colour -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF" />
+    <corners
+        android:topLeftRadius="0dp"
+        android:topRightRadius="0dp"
+        android:bottomLeftRadius="22dp"
+        android:bottomRightRadius="8dp" />
+</shape>
+
+
+
+================================================================================
 FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\drawable\bg_circle_neutral.xml
 ================================================================================
 
@@ -74,6 +152,28 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\drawable\bg_circle_neutral.
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
     <solid android:color="#DDDDDD" />
+</shape>
+
+
+
+================================================================================
+FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\drawable\bg_message_input.xml
+================================================================================
+
+<?xml version="1.0" encoding="utf-8"?>
+<!-- message composer pill with slight corner asymmetry so it matches the bubble
+     language above it. bigger top-left, smaller bottom-right — consistent with
+     the sent bubble's corner pattern -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#F2D8DC" />
+    <corners
+        android:topLeftRadius="26dp"
+        android:topRightRadius="22dp"
+        android:bottomLeftRadius="22dp"
+        android:bottomRightRadius="16dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#2A8D2E3A" />
 </shape>
 
 
@@ -871,7 +971,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\activity_login.xml
             android:textStyle="bold" />
 
 
-        <!-- pill-shaped card (cornerRadius=36dp) wrapping the TextInputLayout so we can control the full background and icon padding together -->
+        <!-- pill shape (36dp radius) for the input cards — same pattern as the sign up screen, wanted them to match -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardEmail"
             android:layout_width="match_parent"
@@ -976,7 +1076,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\activity_login.xml
             app:cornerRadius="28dp" />
 
 
-        <!-- inline sign-up prompt avoids a second screen just to navigate away; keeps friction low for new users -->
+        <!-- inline sign-up link below the button — didn't want users to have to hunt for it on a separate screen -->
         <LinearLayout
             android:id="@+id/rowSignUp"
             android:layout_width="wrap_content"
@@ -1023,7 +1123,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\activity_main.xml
     android:layout_height="match_parent"
     android:background="?attr/colorPrimaryContainer"
     android:fitsSystemWindows="true">
-    <!-- fitsSystemWindows so the toolbar doesn't slide under the status bar on API 35+ edge-to-edge displays -->
+    <!-- needed for edge-to-edge on newer android, without this the toolbar disappears behind the status bar -->
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/mainToolbar"
@@ -1047,7 +1147,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\activity_main.xml
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- FrameLayout wrapper so the custom bg_bottom_nav shape clips correctly around the navigation view -->
+    <!-- FrameLayout wrapper so bg_bottom_nav clips the nav correctly — tried putting the background on the BottomNavigationView itself but it didn't work -->
     <FrameLayout
         android:id="@+id/navContainer"
         android:layout_width="0dp"
@@ -1099,7 +1199,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\activity_sign_up.xml
         app:layout_constraintEnd_toEndOf="parent"/>
 
 
-    <!-- same pill-card pattern as the login screen so the two screens feel like a single flow -->
+    <!-- went with the same pill-card style as the login screen, wanted the two to feel like one continuous flow -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardFullName"
         android:layout_width="0dp"
@@ -1247,7 +1347,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\activity_sign_up.xml
     </com.google.android.material.card.MaterialCardView>
 
 
-    <!-- confirm password is a separate field rather than inline validation so the user can review both strings before submitting -->
+    <!-- separate confirm field rather than inline validation — user needs to see both strings before hitting create -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardConfirmPassword"
         android:layout_width="0dp"
@@ -1359,7 +1459,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\activity_splash.xml
     android:gravity="center"
     android:background="?attr/colorPrimary">
 
-    <!-- colorPrimary background means the splash screen colour matches whatever theme the user has selected -->
+    <!-- background is colorPrimary so the splash picks up whatever theme the user has set — avoids hardcoding a hex -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -1368,7 +1468,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\activity_splash.xml
         android:textStyle="bold"
         android:textColor="?attr/colorOnPrimary" />
 
-    <!-- alpha 0.7 dims the tagline so it reads as a subtitle without needing a separate colour token -->
+    <!-- alpha 0.7 on the tagline so it reads as secondary without needing a different colour -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -1396,7 +1496,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\dialog_change_passwo
     android:paddingTop="8dp"
     android:paddingBottom="4dp">
 
-    <!-- passwordToggleEnabled on every field so users can verify what they typed without security risk -->
+    <!-- passwordToggleEnabled on all three fields — people always get the confirm field wrong if they can't see what they typed -->
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
@@ -1453,7 +1553,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\dialog_input_field.x
 ================================================================================
 
 <?xml version="1.0" encoding="utf-8"?>
-<!-- padding matches the MaterialAlertDialog content insets so the field aligns with the dialog title -->
+<!-- 24dp padding matches what MaterialAlertDialog uses internally, so the field lines up with the title -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -1495,7 +1595,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\dialog_manage_societ
     android:paddingBottom="32dp">
 
 
-    <!-- drag handle at the top signals this is a bottom sheet rather than a full-screen dialog -->
+    <!-- drag handle so it reads as a bottom sheet, not just a dialog that appears mid-screen -->
     <View
         android:layout_width="40dp"
         android:layout_height="4dp"
@@ -1514,7 +1614,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\dialog_manage_societ
         android:paddingEnd="20dp"
         android:paddingBottom="16dp">
 
-        <!-- 6dp accent bar matches the chat header style so society branding feels consistent -->
+        <!-- 6dp accent bar — the same width we used in the chat header, wanted it to feel like the same branding -->
         <View
             android:id="@+id/viewSheetAccent"
             android:layout_width="6dp"
@@ -1664,13 +1764,13 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_browse_soci
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="9dp"
         android:text="Browse Societies"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="?attr/colorOnPrimaryContainer" />
 
-    <!-- alpha 0.7 on the subtitle keeps it readable as supporting text without competing with the heading -->
+    <!-- alpha 0.7 on the subtitle so it sits below the heading visually without needing a different colour -->
     <TextView
         android:id="@+id/tvSubtitle"
         android:layout_width="match_parent"
@@ -1683,7 +1783,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_browse_soci
         android:textColor="?attr/colorOnPrimaryContainer"
         android:alpha="0.7" />
 
-    <!-- layout_weight=1 and the empty-state TextView share the same weight slot so they never overlap -->
+    <!-- both the list and the empty state get weight=1 so only one fills the space at a time -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBrowseSocieties"
         android:layout_width="match_parent"
@@ -1855,7 +1955,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_calendar.xm
                 </TableLayout>
 
 
-                <!-- TableLayout rows are built at runtime; keeping this empty here so the fragment can repopulate on month change -->
+                <!-- rows get rebuilt in code on every month change — this stays empty in the XML -->
                 <TableLayout
                     android:id="@+id/calendarTable"
                     android:layout_width="match_parent"
@@ -1901,7 +2001,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_calendar.xm
             android:visibility="gone" />
 
 
-        <!-- nestedScrollingEnabled false so this list flows into the outer NestedScrollView rather than scrolling independently -->
+        <!-- nestedScrollingEnabled false — otherwise this RecyclerView tries to scroll independently inside the outer NestedScrollView -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCalendarEvents"
             android:layout_width="match_parent"
@@ -1930,7 +2030,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_chats.xml
     android:layout_height="match_parent"
     android:paddingTop="12dp">
 
-    <!-- pill-card search bar rather than a standard TextInputLayout so the border and icon background are a single unit -->
+    <!-- pill-shaped search — tried a plain TextInputLayout first but couldn't get the icon padding to look right inside it -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSearchChats"
         android:layout_width="0dp"
@@ -1972,7 +2072,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_chats.xml
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- paddingBottom with clipToPadding false so the last chat item doesn't sit flush against the bottom nav -->
+    <!-- paddingBottom + clipToPadding false so the last chat doesn't get cut off by the bottom nav -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvChats"
         android:layout_width="0dp"
@@ -1997,39 +2097,47 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_chat_conver
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- full-width banner header — went with this instead of the thin accent + text strip, looks much better with custom society colours -->
+    <FrameLayout
         android:id="@+id/layoutChatHeader"
         android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:layout_height="60dp"
+        android:background="@drawable/bg_chat_header_banner"
+        android:clipToOutline="true"
+        android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <View
             android:id="@+id/viewChatHeaderAccent"
-            android:layout_width="6dp"
-            android:layout_height="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@color/button1" />
 
         <TextView
             android:id="@+id/tvChatHeaderTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_gravity="center_vertical|start"
+            android:paddingStart="22dp"
+            android:paddingEnd="16dp"
             android:text="Group Chat"
             android:textSize="20sp"
+            tools:text="Computing Society"
             android:textStyle="bold"
-            android:textColor="#1E1E1E" />
-    </LinearLayout>
+            android:textColor="#FFFFFF"
+            android:shadowColor="#55000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2" />
+    </FrameLayout>
 
-    <!-- height is 0dp so ConstraintLayout can fill the space between header and input card exactly -->
+    <!-- 0dp height so ConstraintLayout stretches the message list to fill exactly the space between header and input -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMessages"
         android:layout_width="0dp"
@@ -2044,17 +2152,16 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_chat_conver
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 72dp height matches the standard pill-shaped input card used on the login screen -->
-    <com.google.android.material.card.MaterialCardView
+    <!-- FrameLayout + drawable instead of MaterialCardView so the corners can be asymmetric like the bubbles above — elevation still set so it lifts off -->
+    <FrameLayout
         android:id="@+id/cardMessageInput"
         android:layout_width="0dp"
         android:layout_height="72dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="12dp"
-        app:cardCornerRadius="22dp"
-        app:cardElevation="8dp"
-        app:cardBackgroundColor="#F2D8DC"
+        android:background="@drawable/bg_message_input"
+        android:elevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -2094,7 +2201,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_chat_conver
                 app:tint="@color/button1" />
 
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -2203,7 +2310,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_create_even
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="13dp"
                     android:hint="Location"
                     app:boxStrokeColor="?attr/colorOnPrimary"
                     app:boxStrokeWidthFocused="2dp"
@@ -2220,7 +2327,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_create_even
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <!-- date field is focusable=false to prevent the keyboard from opening; a DatePicker dialog is shown on click instead -->
+                <!-- focusable=false so the keyboard doesn't open when you tap the date field — shows a DatePicker instead -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilDateTime"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -2308,7 +2415,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_create_even
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <!-- backgroundTint colorOnPrimary inverts the button colour against the primary card — white button on dark card -->
+                <!-- backgroundTint=colorOnPrimary flips the button colour against the dark card — ends up as white, which is what we want -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCreateEvent"
                     android:layout_width="wrap_content"
@@ -2375,7 +2482,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_create_pin.
                     android:layout_marginBottom="20dp" />
 
 
-                <!-- ExposedDropdownMenu shows the society list; the admin may belong to multiple societies so a picker is needed -->
+                <!-- ExposedDropdownMenu for the society picker — an admin might run more than one society, so we need a selector -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilSociety"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -2400,7 +2507,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_create_pin.
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <!-- minLines=4 gives the content field enough room to write a meaningful announcement without scrolling immediately -->
+                <!-- minLines=4 so the pin content field isn't tiny by default — felt too small at 2 and didn't invite longer text -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilPinContent"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -2550,7 +2657,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_create_poll
                     android:orientation="vertical" />
 
 
-                <!-- OutlinedButton keeps "add option" visually secondary to the "Create Poll" submit button -->
+                <!-- OutlinedButton for "add option" so it doesn't compete with the Create Poll submit button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAddOption"
                     style="@style/Widget.Material3.Button.OutlinedButton"
@@ -2589,7 +2696,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_create_poll
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <!-- close date field is optional — endIconMode clear_text lets the user remove a date they already set -->
+                <!-- close date is optional, endIconMode=clear_text so the user can remove it if they change their mind -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilCloseDate"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -2690,7 +2797,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_create_soci
                     android:gravity="center_vertical"
                     android:layout_marginBottom="20dp">
 
-                    <!-- 72dp circle is large enough to tap comfortably and shows the chosen image at a useful preview size -->
+                    <!-- 72dp circle for the icon picker — large enough to tap and show a decent preview of the chosen image -->
                     <ImageView
                         android:id="@+id/ivSocietyIcon"
                         android:layout_width="72dp"
@@ -2750,7 +2857,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_create_soci
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="14dp"
                     android:hint="Description (optional)"
                     app:boxStrokeColor="?attr/colorOnPrimary"
                     app:boxStrokeWidthFocused="2dp"
@@ -2792,7 +2899,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_create_soci
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <!-- live colour swatch updates as the user types the hex value so they get instant visual feedback -->
+                <!-- live swatch so the user can see the colour update as they type — much better than waiting for a confirm -->
                 <View
                     android:id="@+id/colorSwatch"
                     android:layout_width="match_parent"
@@ -2899,7 +3006,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_edit_societ
                 </LinearLayout>
 
 
-                <!-- society picker comes before the detail fields so the form populates with existing data once one is chosen -->
+                <!-- society picker at the top — once you select one, the fields below populate with the existing data -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilSociety"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -3000,7 +3107,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_edit_societ
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <!-- colour swatch defaults to the current society colour; updated in real time as the admin edits the hex -->
+                <!-- swatch defaults to the current society colour and updates as the admin types — instant feedback is much better here -->
                 <View
                     android:id="@+id/colorSwatch"
                     android:layout_width="match_parent"
@@ -3098,7 +3205,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_events.xml
     </com.google.android.material.card.MaterialCardView>
 
 
-    <!-- singleSelection + selectionRequired so there's always an active filter — avoids an empty state when nothing is chosen -->
+    <!-- singleSelection + selectionRequired so there's always something checked — found out the hard way that deselecting all breaks the filter -->
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroupFilters"
         android:layout_width="0dp"
@@ -3112,8 +3219,10 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_events.xml
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Filter style makes chips checkable — default Assist chips aren't, which is what we need for the group selection to work -->
         <com.google.android.material.chip.Chip
             android:id="@+id/chipAll"
+            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="All"
@@ -3125,6 +3234,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_events.xml
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipThisWeek"
+            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="This Week"
@@ -3135,6 +3245,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_events.xml
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipNextWeek"
+            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Next Week"
@@ -3157,7 +3268,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_events.xml
         app:layout_constraintEnd_toEndOf="parent" />
 
 
-    <!-- paddingBottom on the list so the last card clears the bottom nav bar without cutting off -->
+    <!-- paddingBottom + clipToPadding false so the last event card clears the bottom nav and isn't cut off -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEvents"
         android:layout_width="0dp"
@@ -3237,7 +3348,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_event_detai
             android:id="@+id/cardDetails"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="19dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="?attr/colorSurfaceVariant"
@@ -3259,7 +3370,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_event_detai
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"/>
 
-                <!-- lineSpacingMultiplier 1.4 makes multi-line descriptions easier to read on small screens -->
+                <!-- lineSpacingMultiplier 1.4 — descriptions can be long and the default line height was too tight to read comfortably -->
                 <TextView
                     android:id="@+id/tvEventDescription"
                     android:layout_width="match_parent"
@@ -3287,7 +3398,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_event_detai
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- QR card is gone by default — shown only when the current user is the event organiser -->
+        <!-- QR card hidden by default — only the organiser needs to see it, so we show it from code -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardQr"
             android:layout_width="0dp"
@@ -3367,7 +3478,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_gallery.xml
             app:tabSelectedTextColor="?attr/colorPrimary"
             app:tabTextColor="?attr/colorOnSurface" />
 
-        <!-- layout_weight=1 so the ViewPager fills the remaining height after the TabLayout measures itself -->
+        <!-- weight=1 so the ViewPager fills whatever height is left after the tabs — wrap_content didn't work here -->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPagerGallery"
             android:layout_width="match_parent"
@@ -3388,7 +3499,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_gallery.xml
 
     </LinearLayout>
 
-    <!-- FAB is gone by default — only society members with upload permission see it -->
+    <!-- FAB hidden by default, shown from code once we know the user has upload permission for this society -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabUpload"
         android:layout_width="wrap_content"
@@ -3410,7 +3521,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_gallery_pag
 ================================================================================
 
 <?xml version="1.0" encoding="utf-8"?>
-<!-- FrameLayout root so the empty-state TextView can be centred over the RecyclerView without a nested layout -->
+<!-- FrameLayout so the empty state can sit centred over the list without any extra wrapping -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -3448,6 +3559,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_home.xml
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimaryContainer">
@@ -3458,7 +3570,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_home.xml
         android:orientation="vertical"
         android:paddingBottom="24dp">
 
-        <!-- 70dp top margin keeps the title clear of the status bar without fitsSystemWindows complexity -->
+        <!-- 70dp gave the right gap from the status bar — tried 60 but the welcome text felt too cramped up top -->
         <TextView
             android:id="@+id/tvWelcome"
             android:layout_width="wrap_content"
@@ -3493,7 +3605,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_home.xml
             android:layout_marginTop="18dp"
             android:visibility="gone" />
 
-        <!-- nestedScrollingEnabled false so the RecyclerView doesn't fight for scroll inside the outer NestedScrollView -->
+        <!-- nestedScrollingEnabled false otherwise the pins RecyclerView and the outer scroll fight each other -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvAnnouncements"
             android:layout_width="match_parent"
@@ -3517,7 +3629,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_home.xml
             android:layout_marginTop="18dp" />
 
 
-        <!-- single card wrapping the grid so tiles share a rounded surface rather than floating individually -->
+        <!-- one card around the whole grid — looked too scattered when each tile had its own elevation -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardDashboard"
             android:layout_width="match_parent"
@@ -3664,7 +3776,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_home.xml
             app:cardBackgroundColor="?attr/colorPrimary"
             app:cardCornerRadius="18dp"
             app:cardElevation="10dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <GridLayout
                 android:layout_width="match_parent"
@@ -3919,9 +4032,10 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_polls.xml
 ================================================================================
 
 <?xml version="1.0" encoding="utf-8"?>
-<!-- FrameLayout root so the progress bar and empty-state text can float over the scroll content without pushing it down -->
+<!-- FrameLayout because the spinner and empty text need to float over the list, not push it down -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -3948,7 +4062,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_polls.xml
                 android:clipToPadding="false" />
 
 
-            <!-- closed polls section starts hidden — shown from code once the query returns results -->
+            <!-- closed polls section is hidden to start — code unhides it once the query comes back with results -->
             <TextView
                 android:id="@+id/tvClosedPollsLabel"
                 android:layout_width="wrap_content"
@@ -3958,9 +4072,10 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_polls.xml
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnBackground"
                 android:alpha="0.6"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="22dp"
                 android:layout_marginBottom="8dp"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvClosedPolls"
@@ -4036,7 +4151,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_preferences
             android:alpha="0.6"
             android:textSize="14sp"
             android:layout_marginStart="24dp"
-            android:layout_marginBottom="28dp" />
+            android:layout_marginBottom="26dp" />
 
 
         <TextView
@@ -4065,7 +4180,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_preferences
                 android:orientation="vertical">
 
 
-                <!-- 72dp row height matches the profile and settings rows so all swipe-able items feel consistent -->
+                <!-- 72dp rows here to match the profile and settings screens — kept them consistent across all three -->
                 <LinearLayout
                     android:id="@+id/swatchCrimson"
                     android:layout_width="match_parent"
@@ -4092,7 +4207,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_preferences
                         android:textColor="?attr/colorOnPrimary"
                         android:textSize="16sp" />
 
-                    <!-- Crimson tick starts visible because it's the default theme — code sets others to invisible -->
+                    <!-- Crimson tick is visible by default since it's the app's default theme — code hides the others -->
                     <ImageView
                         android:id="@+id/tickCrimson"
                         android:layout_width="22dp"
@@ -4207,6 +4322,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_profile.xml
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimaryContainer">
@@ -4217,7 +4333,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_profile.xml
         android:orientation="vertical"
         android:paddingBottom="32dp">
 
-        <!-- 70dp top margin keeps the heading clear of the status bar; used consistently across all tab fragments -->
+        <!-- 70dp here same as the other tab fragments — keeps the heading below the status bar on all screen sizes -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -4302,7 +4418,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_profile.xml
                         android:text="SocietyHive Member"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="?attr/colorOnPrimary" />
+                        android:textColor="?attr/colorOnPrimary"
+                        tools:text="Jamie Whitfield" />
 
                     <TextView
                         android:id="@+id/tvProfileEmail"
@@ -4312,7 +4429,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_profile.xml
                         android:text="member@email.com"
                         android:textSize="13sp"
                         android:textColor="?attr/colorOnPrimary"
-                        android:alpha="0.7" />
+                        android:alpha="0.7"
+                        tools:text="j.whitfield@uni.ac.uk" />
 
                     <TextView
                         android:id="@+id/tvProfileRole"
@@ -4349,7 +4467,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_profile.xml
                     android:layout_marginTop="14dp"
                     android:layout_marginBottom="4dp" />
 
-                <!-- nestedScrollingEnabled false so the list measures fully inside the outer NestedScrollView without clipping -->
+                <!-- nestedScrollingEnabled false or the societies list cuts off inside the outer scroll — took a while to figure this out -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvJoinedSocieties"
                     android:layout_width="match_parent"
@@ -4396,7 +4514,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_profile.xml
                     android:layout_height="1dp"
                     android:background="#20FFFFFF" />
 
-                <!-- 64dp row height gives a comfortable tap target without feeling oversized next to the list items -->
+                <!-- 64dp felt right for the tap target here, same height as the browse row above it -->
                 <LinearLayout
                     android:id="@+id/btnLogOut"
                     android:layout_width="match_parent"
@@ -4475,7 +4593,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_qr.xml
         app:layout_constraintEnd_toEndOf="parent" />
 
 
-    <!-- cardCornerRadius=26dp clips the camera preview to a rounded shape without requiring a custom SurfaceView subclass -->
+    <!-- 26dp corner radius on the camera card — clips the preview to a rounded shape without needing a custom SurfaceView -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardCameraPreview"
         android:layout_width="0dp"
@@ -4520,7 +4638,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_qr.xml
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_qr_scanner_outline" />
 
-                <!-- scan line animates vertically in the fragment — starts at the top so the animation has full travel distance -->
+                <!-- scan line starts at the top so the vertical animation has the full height to travel through -->
                 <View
                     android:id="@+id/viewScanLine"
                     android:layout_width="match_parent"
@@ -4621,6 +4739,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_settings.xm
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimaryContainer">
@@ -4665,7 +4784,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_settings.xm
             android:layout_marginBottom="10dp" />
 
 
-        <!-- single card groups all account actions so there's one focussed surface rather than scattered buttons -->
+        <!-- one card for all the account actions — looked too scattered when each one was its own separate thing -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -4688,7 +4807,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_settings.xm
                     android:columnCount="2">
 
 
-                    <!-- 110dp tile height accommodates the icon, label, and truncated current-value text without crowding -->
+                    <!-- 110dp for the tiles — tried 90 but the two-line label was too cramped once the current name shows below it -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/rowEditName"
                         android:layout_width="0dp"
@@ -4732,7 +4851,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_settings.xm
                                 android:textColor="?attr/colorOnSecondaryContainer"
                                 android:alpha="0.6"
                                 android:maxLines="1"
-                                android:ellipsize="end" />
+                                android:ellipsize="end"
+                                tools:text="Jamie Whitfield" />
 
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -4838,7 +4958,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_user_manage
     android:background="?attr/colorPrimaryContainer">
 
 
-    <!-- join requests card is always visible at the top so admins notice pending requests without scrolling the list -->
+    <!-- join requests card pinned at the top so admins see pending requests straight away, not buried in the list -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardJoinRequests"
         android:layout_width="match_parent"
@@ -4888,7 +5008,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\fragment_user_manage
             </LinearLayout>
 
 
-            <!-- badge count is gone when zero — showing "0" would mislead the admin into thinking something needs attention -->
+            <!-- badge is hidden when count is zero — showing "0" would look like there's something to action when there isn't -->
             <TextView
                 android:id="@+id/tvRequestCount"
                 android:layout_width="28dp"
@@ -4975,9 +5095,10 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_announcement.xm
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="10dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
     app:cardBackgroundColor="?attr/colorPrimary">
@@ -5011,7 +5132,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_announcement.xm
                 android:textStyle="bold"
                 android:visibility="gone" />
 
-            <!-- delete button is gone by default — shown only when the current user has admin permissions -->
+            <!-- delete button hidden by default — only shown if the current user is an admin for this society -->
             <ImageButton
                 android:id="@+id/btnDeletePin"
                 android:layout_width="32dp"
@@ -5031,10 +5152,11 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_announcement.xm
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="?attr/colorOnPrimary"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="Reminder: society meeting this Thursday at 6pm" />
 
 
-        <!-- alpha 0.6 on the timestamp keeps it readable without competing with the pin body text -->
+        <!-- alpha on the timestamp so it reads as secondary without pulling focus from the pin content -->
         <TextView
             android:id="@+id/tvAnnouncementTimestamp"
             android:layout_width="match_parent"
@@ -5043,7 +5165,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_announcement.xm
             android:textColor="?attr/colorOnPrimary"
             android:alpha="0.6"
             android:textSize="12sp"
-            android:gravity="end" />
+            android:gravity="end"
+            tools:text="20 Apr 2026, 14:32" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
@@ -5058,6 +5181,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_browse_society.
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="12dp"
@@ -5071,7 +5195,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_browse_society.
     app:strokeWidth="2dp"
     app:strokeColor="#8D2E3A">
 
-    <!-- accent view is sized 0dp and hidden — it existed in an earlier design and kept in case per-society colouring comes back -->
+    <!-- accent view leftover from an older design — kept it at 0dp in case we bring per-society colour back later -->
     <View
         android:id="@+id/viewAccent"
         android:layout_width="0dp"
@@ -5108,7 +5232,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_browse_society.
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:textColor="?attr/colorOnSurface" />
+                android:textColor="?attr/colorOnSurface"
+                tools:text="Photography Society" />
 
             <TextView
                 android:id="@+id/tvMemberCount"
@@ -5116,11 +5241,12 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_browse_society.
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="47 members" />
 
         </LinearLayout>
 
-        <!-- OutlinedButton keeps the join action visible without the strong fill that a primary button would imply -->
+        <!-- OutlinedButton for the request action — a filled button here felt too dominant next to the society name -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRequestJoin"
             style="@style/Widget.Material3.Button.OutlinedButton"
@@ -5142,9 +5268,10 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_calendar_event.
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="10dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="3dp"
     app:cardBackgroundColor="#FFFFFF">
@@ -5157,7 +5284,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_calendar_event.
         android:padding="14dp">
 
 
-        <!-- fixed 38dp circle with the attending drawable gives each calendar row a consistent left anchor -->
+        <!-- 38dp circle on the left — tried 40 but it pushed the text too far right on smaller screens -->
         <FrameLayout
             android:layout_width="38dp"
             android:layout_height="38dp"
@@ -5185,9 +5312,10 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_calendar_event.
                 android:text="Event Name"
                 android:textStyle="bold"
                 android:textSize="15sp"
-                android:textColor="#1E1E1E" />
+                android:textColor="#1E1E1E"
+                tools:text="Hack Night — Makerspace" />
 
-            <!-- hardcoded colour #757575 rather than colorOnSurfaceVariant because the card bg is always white -->
+            <!-- hardcoded #757575 here because the card bg is always white — colorOnSurfaceVariant wouldn't be right -->
             <TextView
                 android:id="@+id/tvCalEventDateTime"
                 android:layout_width="match_parent"
@@ -5212,12 +5340,13 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_chat.xml
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardChat"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="12dp"
     android:layout_marginEnd="12dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="9dp"
     android:clickable="true"
     android:focusable="true"
     app:cardCornerRadius="14dp"
@@ -5226,7 +5355,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_chat.xml
     app:strokeWidth="2dp"
     app:strokeColor="#8D2E3A">
 
-    <!-- stroke border instead of elevation so the card stands out without casting shadow on the list below -->
+    <!-- stroke instead of shadow here — tried elevation=4dp but the shadows looked too heavy in the list -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -5242,7 +5371,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_chat.xml
             android:background="@drawable/bg_circle_neutral"
             android:padding="4dp"
             android:scaleType="centerInside"
-            android:contentDescription="Society icon" />
+            android:contentDescription="Society icon"
+            tools:src="@drawable/ic_profile" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -5257,16 +5387,18 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_chat.xml
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:textColor="?attr/colorOnSurface" />
+                android:textColor="?attr/colorOnSurface"
+                tools:text="Computing Society" />
 
-            <!-- maxLines not set here intentionally — the preview is populated with a single line from code -->
+            <!-- no maxLines — the preview is always one line from code anyway, not worth adding a constraint here -->
             <TextView
                 android:id="@+id/tvChatPreview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="You: sounds good for Thursday" />
         </LinearLayout>
 
         <TextView
@@ -5274,7 +5406,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_chat.xml
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+            android:textColor="?attr/colorOnSurfaceVariant"
+            tools:text="14:32" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
@@ -5289,6 +5422,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_event.xml
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
@@ -5311,7 +5445,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_event.xml
             android:text="Event Name"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="?attr/colorOnSurface"
+            tools:text="Hack Night — Makerspace" />
 
         <TextView
             android:id="@+id/tvEventDateTime"
@@ -5341,7 +5476,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_event.xml
             app:tint="?attr/colorOnSurfaceVariant"
             android:contentDescription="Expand" />
 
-        <!-- attending badge uses the same drawable as the calendar icon background to stay visually consistent -->
+        <!-- attending badge reuses the same bg_attending_indicator drawable — didn't want a third background style just for this -->
         <TextView
             android:id="@+id/tvAttendingIndicator"
             android:layout_width="wrap_content"
@@ -5355,9 +5490,10 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_event.xml
             android:text="Attending"
             android:textColor="?attr/colorPrimary"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible" />
 
-        <!-- visibility gone by default — the adapter toggles it when the user taps the chevron -->
+        <!-- hidden by default, adapter expands it on tap — tried always showing the description but the list got too long -->
         <LinearLayout
             android:id="@+id/layoutExpanded"
             android:layout_width="match_parent"
@@ -5437,6 +5573,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_gallery_photo.x
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardGalleryPhoto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -5454,7 +5591,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_gallery_photo.x
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- fixed 220dp height gives the photo a consistent frame regardless of the image aspect ratio -->
+        <!-- 220dp height for the photo — went back and forth between 200 and 240, this felt like the right balance -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="220dp">
@@ -5464,9 +5601,10 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_gallery_photo.x
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:contentDescription="Gallery photo" />
+                android:contentDescription="Gallery photo"
+                tools:src="@drawable/ic_gallery" />
 
-            <!-- semi-transparent dark background on the delete button so it's visible over both light and dark photos -->
+            <!-- dark scrim on the delete button so it shows up on bright photos, not just dark ones -->
             <ImageButton
                 android:id="@+id/btnDeletePhoto"
                 android:layout_width="32dp"
@@ -5511,7 +5649,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_gallery_photo.x
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface" />
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="Jamie Whitfield" />
 
                 <TextView
                     android:id="@+id/tvUploadDate"
@@ -5519,7 +5658,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_gallery_photo.x
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:textSize="12sp"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    tools:text="18 Apr 2026" />
 
             </LinearLayout>
 
@@ -5538,6 +5678,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_joined_society.
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="12dp"
@@ -5551,7 +5692,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_joined_society.
     app:strokeWidth="2dp"
     app:strokeColor="#8D2E3A">
 
-    <!-- cardElevation=0 because the stroke already provides enough visual separation from the background -->
+    <!-- elevation=0 since the stroke already lifts the card off the background — didn't need both -->
     <View
         android:id="@+id/viewSocietyAccent"
         android:layout_width="0dp"
@@ -5588,16 +5729,18 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_joined_society.
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:textColor="?attr/colorOnSurface" />
+                android:textColor="?attr/colorOnSurface"
+                tools:text="Photography Society" />
 
-            <!-- subtitle is populated with the role or member count from the adapter, kept empty here -->
+            <!-- subtitle comes from the adapter — could be the role or the member count depending on context -->
             <TextView
                 android:id="@+id/tvSocietySubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="Member" />
 
         </LinearLayout>
 
@@ -5620,28 +5763,30 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_message_receive
 
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:paddingStart="4dp"
-    android:paddingEnd="60dp"
+    android:paddingEnd="64dp"
     android:gravity="bottom">
 
 
-    <!-- avatar is 32dp rather than 40dp so it doesn't dominate the bubble row on small screens -->
+    <!-- 32dp avatar with the crimson ring — the 2dp bottom margin nudges it below the bubble baseline, reads more natural that way -->
     <ImageView
         android:id="@+id/ivSenderAvatar"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="2dp"
         android:src="@drawable/ic_profile"
-        android:background="@drawable/bg_circle_neutral"
+        android:background="@drawable/bg_avatar_ring"
         android:padding="4dp"
         android:scaleType="centerInside"
-        android:contentDescription="Sender avatar" />
+        android:contentDescription="Sender avatar"
+        tools:src="@drawable/ic_profile" />
 
 
     <LinearLayout
@@ -5650,33 +5795,34 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_message_receive
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <!-- sender name is gone by default — shown only in group chats where multiple people write -->
+        <!-- sender name hidden by default — only makes sense in group chats where multiple people are posting -->
         <TextView
             android:id="@+id/tvMessageSenderName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:layout_marginBottom="2dp"
             android:textSize="11sp"
             android:textStyle="bold"
             android:textColor="#88000000"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:text="Alex Morgan"
+            tools:visibility="visible" />
 
-        <com.google.android.material.card.MaterialCardView
+        <!-- drawable background for asymmetric corners — dropped the MaterialCardView wrapper so the bubble feels lighter -->
+        <TextView
+            android:id="@+id/tvMessageReceived"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#F8E7EA">
-
-            <TextView
-                android:id="@+id/tvMessageReceived"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:textColor="#1E1E1E"
-                android:textSize="15sp" />
-        </com.google.android.material.card.MaterialCardView>
+            android:background="@drawable/bg_bubble_received"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="#1E1E1E"
+            android:textSize="15sp"
+            android:elevation="2dp"
+            tools:text="yeah I'll be there, want to grab food after?" />
 
     </LinearLayout>
 
@@ -5690,32 +5836,30 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_message_sent.xm
 
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="end"
     android:paddingTop="6dp"
     android:paddingBottom="6dp">
 
-    <!-- 60dp left margin keeps the sent bubble right-aligned without needing RTL layout tricks -->
-    <com.google.android.material.card.MaterialCardView
+    <!-- pushed in 64dp from the left so it sits clearly on the right — tried 48 first and it looked too centered -->
+    <TextView
+        android:id="@+id/tvMessageSent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginEnd="4dp"
-        app:cardCornerRadius="18dp"
-        app:cardElevation="4dp"
-        app:cardBackgroundColor="#F4DDE1">
-
-        <TextView
-            android:id="@+id/tvMessageSent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="Hello."
-            android:textColor="#1E1E1E"
-            android:textSize="16sp" />
-    </com.google.android.material.card.MaterialCardView>
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/bg_bubble_sent"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="11dp"
+        android:paddingBottom="11dp"
+        android:text="Hello."
+        android:textColor="#1E1E1E"
+        android:textSize="16sp"
+        android:elevation="2dp"
+        tools:text="sounds good for Thursday" />
 </LinearLayout>
 
 
@@ -5728,9 +5872,10 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll.xml
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
+    android:layout_marginBottom="14dp"
     app:cardCornerRadius="20dp"
     app:cardElevation="6dp"
     app:cardBackgroundColor="?attr/colorPrimary">
@@ -5755,7 +5900,9 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll.xml
             android:textColor="?attr/colorOnPrimary"
             android:textSize="11sp"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:text="Photography Society"
+            tools:visibility="visible" />
 
 
         <TextView
@@ -5765,7 +5912,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll.xml
             android:text="Poll Title"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="Where should we hold the Freshers event?" />
 
 
         <TextView
@@ -5783,7 +5931,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll.xml
             android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible" />
 
 
         <TextView
@@ -5810,7 +5959,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll.xml
             android:textSize="14sp" />
 
 
-        <!-- options are inflated dynamically from item_poll_option into this container at bind time -->
+        <!-- options get inflated in here from item_poll_option at bind time — this container stays empty in the XML -->
         <LinearLayout
             android:id="@+id/optionsContainer"
             android:layout_width="match_parent"
@@ -5826,7 +5975,9 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll.xml
             android:textColor="?attr/colorOnPrimary"
             android:alpha="0.75"
             android:textSize="13sp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:text="34 votes"
+            tools:visibility="visible" />
 
 
         <LinearLayout
@@ -5836,7 +5987,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll.xml
             android:gravity="end"
             android:layout_marginTop="12dp">
 
-            <!-- close and delete are gone by default — only shown for the poll creator or an admin -->
+            <!-- close and delete are gone by default — shown only if the current user created the poll or is an admin -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnClosePoll"
                 style="@style/Widget.Material3.Button.OutlinedButton"
@@ -5888,6 +6039,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll_option.xml
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -5915,7 +6067,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll_option.xml
             android:text="Option"
             android:textColor="?attr/colorPrimary"
             android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="Student Union Bar" />
 
         <ImageView
             android:id="@+id/ivCheckbox"
@@ -5926,7 +6079,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll_option.xml
     </LinearLayout>
 
 
-    <!-- vote result row is hidden until the user votes or the poll closes — avoids spoiling results upfront -->
+    <!-- vote result row is hidden until the user has voted — didn't want to show percentages before they pick -->
     <LinearLayout
         android:id="@+id/layoutVoteResult"
         android:layout_width="match_parent"
@@ -5938,7 +6091,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll_option.xml
         android:paddingBottom="12dp"
         android:visibility="gone">
 
-        <!-- 8dp height is thick enough to read at a glance but doesn't overshadow the option label above -->
+        <!-- 8dp progress bar — tried 6 and it was too thin to notice, 10 felt too chunky next to the label -->
         <ProgressBar
             android:id="@+id/progressVotes"
             style="@android:style/Widget.ProgressBar.Horizontal"
@@ -5973,7 +6126,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_poll_option_inp
 ================================================================================
 
 <?xml version="1.0" encoding="utf-8"?>
-<!-- boxStrokeColor set to colorOnPrimary so the outline stays visible on the dark primary card background -->
+<!-- stroke set to colorOnPrimary otherwise the outline disappears against the dark card background -->
 <com.google.android.material.textfield.TextInputLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6007,6 +6160,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_user_management
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -6042,9 +6196,10 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_user_management
             android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnPrimaryContainer"
-            android:text="User Name" />
+            android:text="User Name"
+            tools:text="Jamie Whitfield" />
 
-        <!-- alpha 0.7 dims the email below the name so the hierarchy is clear without using a different colour -->
+        <!-- alpha 0.7 on the email — faded enough to read as secondary without needing a different colour -->
         <TextView
             android:id="@+id/tvUserEmail"
             android:layout_width="wrap_content"
@@ -6056,7 +6211,7 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_user_management
 
     </LinearLayout>
 
-    <!-- role badge uses colorPrimary directly so it inherits the active theme without a separate drawable -->
+    <!-- role badge uses colorPrimary directly — didn't feel like adding another drawable just for this little chip -->
     <TextView
         android:id="@+id/tvUserRole"
         android:layout_width="wrap_content"
@@ -6069,7 +6224,8 @@ FILE: D:\Projects\SocietyHive_Test5\app\src\main\res\layout\item_user_management
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:paddingTop="3dp"
-        android:paddingBottom="3dp" />
+        android:paddingBottom="3dp"
+        tools:text="Admin" />
 
 </LinearLayout>
 

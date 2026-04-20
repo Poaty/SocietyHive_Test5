@@ -314,16 +314,12 @@ public class EventsFragment extends Fragment {
     }
 
     private void hookChips(@NonNull View view) {
-
-
-
-        View.OnClickListener filterListener = v -> applyFilters();
-        Chip chipAll      = view.findViewById(R.id.chipAll);
-        Chip chipThisWeek = view.findViewById(R.id.chipThisWeek);
-        Chip chipNextWeek = view.findViewById(R.id.chipNextWeek);
-        if (chipAll      != null) chipAll.setOnClickListener(filterListener);
-        if (chipThisWeek != null) chipThisWeek.setOnClickListener(filterListener);
-        if (chipNextWeek != null) chipNextWeek.setOnClickListener(filterListener);
+        // per-chip OnClickListeners were firing before the ChipGroup had flipped the checked state
+        // so applyFilters was reading stale values. listening at the group level fixes it
+        ChipGroup group = view.findViewById(R.id.chipGroupFilters);
+        if (group != null) {
+            group.setOnCheckedStateChangeListener((g, checkedIds) -> applyFilters());
+        }
     }
 
     private void applyFilters() {
