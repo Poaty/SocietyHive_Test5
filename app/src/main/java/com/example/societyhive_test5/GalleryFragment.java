@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class GalleryFragment extends Fragment {
 
+    // need to move these into BuildConfig before this ever ships, pretty bad leaving them in source
     private static final String CLOUD_NAME     = "dybgordqu";
     private static final String UPLOAD_PRESET  = "societyhive_gallery";
 
@@ -52,6 +53,8 @@ public class GalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         // init cloudinary - wrapped in try because it crashes if called twice
+        // this same init block ends up in four different fragments, it should really live
+        // in the Application class so it only runs once on cold start
         try {
             Map<String, String> config = new HashMap<>();
             config.put("cloud_name", CLOUD_NAME);
@@ -75,6 +78,10 @@ public class GalleryFragment extends Fragment {
         ViewPager2 viewPager = view.findViewById(R.id.viewPagerGallery);
         FloatingActionButton fabUpload = view.findViewById(R.id.fabUpload);
 
+        if (AuthHelpers.currentUser() == null) {
+            Toast.makeText(requireContext(), "Session expired, please sign in again", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String uid = AuthHelpers.currentUser().getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -122,6 +129,8 @@ public class GalleryFragment extends Fragment {
                     tabSocietyColors.add("");
                 }
 
+                // TODO: if someone has like 20 societies this fires 20 separate reads. whereIn query would
+                //  be better but chunked to 10 because firestore limit. not a priority while user counts are low
                 AtomicInteger remaining = new AtomicInteger(ids.size());
                 Map<String, String> nameMap = new HashMap<>();
                 Map<String, String> colorMap = new HashMap<>();
@@ -151,6 +160,11 @@ public class GalleryFragment extends Fragment {
 
     // wires up the tabs and hides the fab on the All tab (cant upload to all)
     private void setupTabs(TabLayout tabLayout, ViewPager2 viewPager, FloatingActionButton fabUpload) {
+        if (tabSocietyIds.isEmpty()) {
+            fabUpload.setVisibility(View.GONE);
+            return;
+        }
+        if (AuthHelpers.currentUser() == null) return;
         String currentUid = AuthHelpers.currentUser().getUid();
         GalleryPagerAdapter pagerAdapter =
                 new GalleryPagerAdapter(this, tabSocietyIds, tabSocietyColors, currentUid, isAdmin);
@@ -165,7 +179,9 @@ public class GalleryFragment extends Fragment {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                String sid = tabSocietyIds.get(tab.getPosition());
+                int p = tab.getPosition();
+                if (p < 0 || p >= tabSocietyIds.size()) return;
+                String sid = tabSocietyIds.get(p);
                 fabUpload.setVisibility(sid.isEmpty() ? View.GONE : View.VISIBLE);
             }
             @Override public void onTabUnselected(TabLayout.Tab tab) {}
@@ -174,6 +190,7 @@ public class GalleryFragment extends Fragment {
 
         fabUpload.setOnClickListener(v -> {
             int pos = viewPager.getCurrentItem();
+            if (pos < 0 || pos >= tabSocietyIds.size()) return;
             String sid = tabSocietyIds.get(pos);
             if (!sid.isEmpty()) {
                 pendingSocietyId = sid;
@@ -185,6 +202,14 @@ public class GalleryFragment extends Fragment {
     // upload to cloudinary then store the url + metadata in firestore
     private void uploadImage(Uri uri, String societyId) {
         if (!isAdded()) return;
+        if (societyId == null || societyId.isEmpty()) {
+            Toast.makeText(requireContext(), "Pick a society before uploading", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (AuthHelpers.currentUser() == null) {
+            Toast.makeText(requireContext(), "Not signed in", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Toast.makeText(requireContext(), "Uploading…", Toast.LENGTH_SHORT).show();
 
         String uid = AuthHelpers.currentUser().getUid();

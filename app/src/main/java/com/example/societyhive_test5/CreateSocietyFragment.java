@@ -130,8 +130,21 @@ public class CreateSocietyFragment extends Fragment {
             etName.setError("Please enter a society name");
             return;
         }
+        if (name.length() > 60) {
+            etName.setError("Name is too long (max 60)");
+            return;
+        }
+        if (desc.length() > 800) {
+            etDescription.setError("Description is too long (max 800)");
+            return;
+        }
         if (!color.startsWith("#") || color.length() < 4) {
             etColor.setError("Enter a valid hex colour (e.g. #8D2E3A)");
+            return;
+        }
+        // enforce #RRGGBB or #AARRGGBB only — #RGB shorthand is technically valid but not consistent with rest of the app
+        if (color.length() != 7 && color.length() != 9) {
+            etColor.setError("Use #RRGGBB or #AARRGGBB");
             return;
         }
         try { Color.parseColor(color); }

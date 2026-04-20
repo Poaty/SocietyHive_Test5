@@ -96,7 +96,8 @@ public class PollsFragment extends Fragment {
 
                     isAdmin = "admin".equalsIgnoreCase(doc.getString("role"));
 
-                    List<?> adminOf = (List<?>) doc.get("adminOf");
+                    Object adminOfRaw = doc.get("adminOf");
+                    List<?> adminOf = adminOfRaw instanceof List ? (List<?>) adminOfRaw : null;
                     isSocietyAdmin = !isAdmin && adminOf != null && !adminOf.isEmpty();
 
                     userSocietyIds.clear();

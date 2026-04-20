@@ -80,6 +80,7 @@ public class ChatConversationFragment extends Fragment {
         btnSend.setOnClickListener(v -> {
             String text = TextHelpers.trimmed(etMessage);
             if (text.isEmpty()) return;
+            // TODO add a max length (maybe 1000 chars?) before someone pastes a whole book in here
             etMessage.setText("");
             postMessage(text);
         });
@@ -127,6 +128,8 @@ public class ChatConversationFragment extends Fragment {
 
                     if (snapshots == null) return;
 
+                    // TODO: clearing and rebuilding the whole list on every snapshot is wasteful once
+                    //  chats get long. should switch to DiffUtil + documentChanges() at some point
                     messages.clear();
                     for (QueryDocumentSnapshot doc : snapshots) {
                         Message msg = new Message();

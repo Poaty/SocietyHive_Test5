@@ -43,6 +43,16 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, "Enter email and password", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                etEmail.setError("Enter a valid email address");
+                etEmail.requestFocus();
+                return;
+            }
+            if (password.length() < 6) {
+                etPassword.setError("Password must be at least 6 characters");
+                etPassword.requestFocus();
+                return;
+            }
 
             // actually try to sign in
             mAuth.signInWithEmailAndPassword(email, password)
@@ -57,7 +67,13 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
 
-
+                        // guard against the unlikely case where auth says success but user is null
+                        if (mAuth.getCurrentUser() == null) {
+                            Toast.makeText(LoginActivity.this,
+                                    "Login succeeded but session is missing. Try again.",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
 
 
                         // pull their theme preference before launching MainActivity so it doesn't flicker

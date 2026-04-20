@@ -182,10 +182,33 @@ public class CreatePollFragment extends Fragment {
             return;
         }
 
+        if (title.length() > 120) {
+            etTitle.setError("Title is too long (max 120)");
+            return;
+        }
+        if (question.length() > 500) {
+            etQuestion.setError("Question is too long (max 500)");
+            return;
+        }
+
         List<String> options = new ArrayList<>();
         for (TextInputEditText et : optionFields) {
             String t = text(et);
-            if (!t.isEmpty()) options.add(t);
+            if (t.isEmpty()) continue;
+            if (t.length() > 100) {
+                et.setError("Option is too long (max 100)");
+                return;
+            }
+            // case-insensitive duplicate check so "Yes" and "yes" don't both count as real options
+            boolean dup = false;
+            for (String existing : options) {
+                if (existing.equalsIgnoreCase(t)) { dup = true; break; }
+            }
+            if (dup) {
+                et.setError("Duplicate option");
+                return;
+            }
+            options.add(t);
         }
         if (options.size() < 2) {
             Toast.makeText(requireContext(),
@@ -195,6 +218,13 @@ public class CreatePollFragment extends Fragment {
         if (societyIds.isEmpty()) {
             Toast.makeText(requireContext(),
                     "No society selected.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (selectedSocietyIndex < 0 || selectedSocietyIndex >= societyIds.size()) {
+            selectedSocietyIndex = 0;
+        }
+        if (closeDateCal != null && closeDateCal.getTimeInMillis() <= System.currentTimeMillis()) {
+            etCloseDate.setError("Close date must be in the future");
             return;
         }
 

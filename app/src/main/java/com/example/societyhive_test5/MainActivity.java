@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
 
             // guard against double-tapping a nav item triggering two navigations at once
+            // TODO: this flag is resetting synchronously, so the guard only actually works because nav is sync too.
+            //  if we ever animate between destinations this will need to be moved to a proper debounce
             final boolean[] isNavigating = {false};
 
             bottomNav.setOnItemSelectedListener(item -> {
@@ -77,7 +79,10 @@ public class MainActivity extends AppCompatActivity {
                 isNavigating[0] = true;
                 try {
                     navController.navigate(item.getItemId(), null, bottomNavOptions);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                    // swallowing IllegalArgumentException for unknown destination id — happens when the
+                    // nav graph reloads mid-gesture. not a real error, but come back and log it later
+                }
                 isNavigating[0] = false;
                 return true;
             });

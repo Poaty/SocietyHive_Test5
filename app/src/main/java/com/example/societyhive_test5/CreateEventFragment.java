@@ -169,7 +169,6 @@ public class CreateEventFragment extends Fragment {
 
 
     private void tryCreateEvent() {
-        // inline the trim here — name is the most critical field so I want to be explicit
         String name = etEventName.getText() != null ? etEventName.getText().toString().trim() : "";
         String description = text(etDescription);
         String location    = text(etLocation);
@@ -179,8 +178,20 @@ public class CreateEventFragment extends Fragment {
             etEventName.setError("Please enter an event name");
             return;
         }
+        if (name.length() > 100) {
+            etEventName.setError("Name is too long (max 100)");
+            return;
+        }
         if (description.isEmpty()) {
             etDescription.setError("Please enter a description");
+            return;
+        }
+        if (description.length() > 1000) {
+            etDescription.setError("Description is too long (max 1000)");
+            return;
+        }
+        if (location.length() > 120) {
+            etLocation.setError("Location is too long (max 120)");
             return;
         }
         if (!dateTimePicked) {
@@ -188,10 +199,15 @@ public class CreateEventFragment extends Fragment {
                     "Please pick a date and time.", Toast.LENGTH_SHORT).show();
             return;
         }
+        // TODO: past-date check would be nice here. at the moment you can create an event last week
+        //  which turns up as "upcoming" and confuses people
         if (societyIds.isEmpty()) {
             Toast.makeText(requireContext(),
                     "No society selected.", Toast.LENGTH_SHORT).show();
             return;
+        }
+        if (selectedSocietyIndex < 0 || selectedSocietyIndex >= societyIds.size()) {
+            selectedSocietyIndex = 0;
         }
 
         FirebaseUser user = AuthHelpers.currentUser();

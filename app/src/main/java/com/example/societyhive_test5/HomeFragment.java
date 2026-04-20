@@ -82,9 +82,19 @@ public class HomeFragment extends Fragment {
                     showAdminSection(view, isAdmin);
 
 
-                    List<?> adminOf = (List<?>) doc.get("adminOf");
-                    if (!isAdmin && adminOf != null && !adminOf.isEmpty()) {
-                        adminOfSocietyId = (String) adminOf.get(0);
+                    Object adminOfRaw = doc.get("adminOf");
+                    List<?> adminOf = adminOfRaw instanceof List ? (List<?>) adminOfRaw : null;
+                    String firstAdminId = null;
+                    if (adminOf != null) {
+                        for (Object o : adminOf) {
+                            if (o instanceof String && !((String) o).isEmpty()) {
+                                firstAdminId = (String) o;
+                                break;
+                            }
+                        }
+                    }
+                    if (!isAdmin && firstAdminId != null) {
+                        adminOfSocietyId = firstAdminId;
                         showSocietyAdminSection(view, true);
                         wireSocietyAdminTiles(view, adminOfSocietyId);
                     } else {
@@ -93,6 +103,8 @@ public class HomeFragment extends Fragment {
 
 
                     userSocietyIds.clear();
+                    // TODO(me): we're doing this exact same societyIds parse in at least 5 fragments,
+                    //  extract into a UserProfile helper when i get a spare hour
                     List<?> ids = (List<?>) doc.get("societyIds");
                     if (ids != null) {
                         for (Object id : ids) {

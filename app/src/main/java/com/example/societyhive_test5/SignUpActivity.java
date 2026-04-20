@@ -53,6 +53,18 @@ public class SignUpActivity extends AppCompatActivity {
                 return;
             }
 
+            if (fullName.length() < 2 || fullName.length() > 60) {
+                etFullName.setError("Name must be between 2 and 60 characters");
+                etFullName.requestFocus();
+                return;
+            }
+
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                etEmail.setError("Enter a valid email address");
+                etEmail.requestFocus();
+                return;
+            }
+
             if (!password.equals(confirmPassword)) {
                 Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
                 return;
@@ -60,6 +72,13 @@ public class SignUpActivity extends AppCompatActivity {
 
             if (password.length() < 6) {
                 Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // reject whitespace-only passwords (possible because we trim but could slip past if spaces in middle)
+            if (password.contains(" ")) {
+                etPassword.setError("Password cannot contain spaces");
+                etPassword.requestFocus();
                 return;
             }
 
@@ -84,6 +103,8 @@ public class SignUpActivity extends AppCompatActivity {
                         }
 
                         // build the user document - everyone starts as member
+                        // TODO should really trigger a verification email here before letting them sign in.
+                        //  works for the prototype but users typing any old email address will cause headaches
                         Map<String, Object> userData = new HashMap<>();
                         userData.put("fullName", fullName);
                         userData.put("email", user.getEmail());

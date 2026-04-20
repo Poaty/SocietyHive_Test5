@@ -43,6 +43,8 @@ public class CalendarFragment extends Fragment {
     private static final SimpleDateFormat SDF_MONTH  = new SimpleDateFormat("MMMM", Locale.UK);
 
 
+    // TODO these should be pulling from the current theme, not hardcoded. at the moment the calendar
+    //  stays crimson even when someone switches to the blue theme — breaks the whole theming story
     private static final int COLOR_PRIMARY      = 0xFF8D2E3A;
     private static final int COLOR_PRIMARY_LIGHT = 0xFFF3D7DC;
     private static final int COLOR_TEXT_DARK    = 0xFF1E1E1E;
@@ -100,6 +102,8 @@ public class CalendarFragment extends Fragment {
         });
         view.findViewById(R.id.btnPrevYear).setOnClickListener(v -> { currentYear--; updateCalendar(); });
         view.findViewById(R.id.btnNextYear).setOnClickListener(v -> { currentYear++; updateCalendar(); });
+
+        // TODO stop someone spamming next year 50 times and ending up in 2080. clamp ±5 years from today maybe
 
 
         updateMonthYearHeader();
